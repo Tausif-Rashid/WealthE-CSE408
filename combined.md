@@ -1,6 +1,6 @@
 # <div align="center">WealthE API Documentation</div>
 
-### <div align="center"> Group 1 (A1) </div>
+### <div align="center"> Group 7 (A2) </div>
 
 <div align="center">1. 1905002 - Nafis Tahmid </div>
 <div align="center">2. 1905008 - Shattik Islam Rhythm </div>
@@ -12,14 +12,11 @@
 
 1. [Register/ Login Module](#registerlogin-module)
     1. [Login](#login)
-    2. [Login Validation](#login-validate)
-    3. [Register](#register)
-        - [Get Division List and Type List for Farmers](#get-division-list-and-type-list-for-farmers)
-        - [Get Division List for SME/Vendors](#get-division-list-for-smevendors)
-        - [Get District List For Divisions](#get-district-list-for-divisions)
-        - [Get Upazilla List For District](#get-upazilla-list-for-district)
-        - [Get Union List For Upazilla](#get-union-list-for-upazilla)
-    4. [Submit Registration Request](#submit-registration-request)
+    2. [Register](#register)
+        - [Get Tax Zone List](#get-tax-zone-list)
+        - [Get Tax Circle List](#get-tax-circle-list)
+    3. [Submit Registration Request](#submit-registration-request)
+
 2. [Agent Module](#agent-module)
     1. [Agent Dashboard](#agent-dashboard)
     2. [Loan Requests](#loan-requests)
@@ -102,7 +99,8 @@
 
 | API Endpoint              | HTTP Method |
 | ------------------------- | :---------: |
-| [/login]()                |   `GET`     |
+| [/login]()                |   `POST`     |
+
 
 >### Request
 >
@@ -111,46 +109,8 @@
 >```json
 >{
 >
->}
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->    "accountTypes": [
->                       "Admin",
->                       "Agent",
->                       "Farmer",
->                       "SME",
->                       "Vendor"
->                    ]
->}
->```
->
-------------------
-
-### Login Validate
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/login/validate]()       |   `POST`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->    "accountType": "Farmer",
->    "id": 123,
->    "password": "abcd"
+>    "id": "azmal@gmail.com",
+>    "password": "abcd1234"
 >}
 >```
 >
@@ -165,7 +125,7 @@
 >```json
 >{
 >    "success": true,
->    "redirectURL": "farmer/dashboard",
+>    "role": "user",
 >    "token": "123abc123"
 >}
 >```
@@ -193,9 +153,47 @@
 
 ### Register
 
+
+#### Get Tax Zone List
+
 | API Endpoint              | HTTP Method |
 | ------------------------- | :---------: |
-| [/register]()                |   `GET`     |
+| [/register/zones]()                |   `GET`     |
+
+>#### Request
+>
+>##### Request Body
+>
+>```json
+>{
+>
+>}
+>```
+>
+<br>
+
+>#### Response : Success
+>
+>##### Response Code: 200 (`OK`)
+>
+>##### Response Body
+>
+>```json
+>{
+>    "taxZones": [
+>                        "Tax Zone 1", 
+>                        "Tax Zone 2",
+>                        "Tax Zone 15"
+>                   ]
+>}
+>```
+>
+
+#### Get Tax Circle List
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/register/circle]()                |   `GET`     |
 
 >### Request
 >
@@ -203,7 +201,7 @@
 >
 >```json
 >{
->
+>   "taxZone" : "Tax Zone 2"
 >}
 >```
 >
@@ -217,187 +215,15 @@
 >
 >```json
 >{
->    "redirectURL": "/register/farmer"
+>    "taxCircles": [
+>                        "Tax Circle 75", 
+>                        "Tax Circle 76",
+>                        "Tax Circle 78"
+>                   ]
 >}
 >```
 >
 
-#### Get Division List and Type List for Farmers
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/register/farmer]()                |   `GET`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->
->}
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->    "farmerTypes": [
->                        "Dairy", 
->                        "Poultry"
->                   ],
->    "divisions": [
->                        "Dhaka", 
->                        "Sylhet"
->                 ]
->}
->```
->
-
-#### Get Division List for SME/Vendors
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/register/sme]()                |   `GET`     |
-| [/register/vendor]()       |    `GET`    |
-
->### Request
->
->#### Request Body
->
->```json
->{
->
->}
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->    "divisions": [
->                        "Dhaka",
->                        "Sylhet"
->                 ]
->}
->```
->
-
-#### Get District List For Divisions
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/register/division]()                |   `POST`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->    "division": "Sylhet"
->}
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->    "districts": [
->                        "Sylhet",
->                        "Moulvibazar"
->                 ]
->}
->```
->
-
-#### Get Upazilla List for District
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/register/district]()                |   `POST`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->    "district": "Moulvibazar"
->}
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->    "upazillas": [
->                        "Lalganj"
->                        "Sreemangal"
->                 ]
->}
->```
->
-
-#### Get Union List for Upazilla
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/register/upazilla]()                |   `POST`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->    "upazilla": "Lalganj"
->}
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->    "unions": [
->                    "Haatimara",
->                    "Chanpur"
->              ]
->}
->```
->
-
----
 
 ### Submit Registration Request
 
@@ -411,20 +237,30 @@
 >
 >```json
 >{
->    "accountType": "Vendor",
->    "farmerType": null,
+>    "email": "nabila@gmail.com",
+>    "name": "Nabila Tabassum",
 >    "nid": 1234567890,
->    "name": "Lal Mia",
->    "dob": "02-02-2000",
->    "address": "Nilpur, Borodighi, Moulvibazar",
->    "mobile": 123456789
+>    "tin": 232345456767,
+>    "mobile": 0123456789,
+>    "taxZone": 15,
+>    "taxCircle": 78,
+>    "dob": "02-02-1990",
+>    "spouse": "",
+>    "spouseTIN": null,
+>    "isResidential": true,
+>    "benefittedPerson": {
+>           "isFF": false,
+>           "isFemale": true,
+>           "isDisabled": false               
+>}
+>    
+>    
+>    
 >}
 >```
 >
 <br>
 
-> [!NOTE]
-> Farmer type will be null for SME or vendor accounts and will be ignored by the backend.
 <br>
 
 >### Response - Success
@@ -436,7 +272,6 @@
 >```json
 >{
 >    "success": true,
->    "redirectURL": "vendor/dashboard",
 >    "token": "1234cdb32"
 >}
 >```
