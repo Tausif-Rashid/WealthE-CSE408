@@ -79,19 +79,24 @@
     6. [New Ticket](#new-ticket-3)
     7. [Vendor Inventory](#vendor-inventory)
 6. [Admin Module](#admin-module)
-    1. [Admin Support Mailbox](#admin-support-mailbox)
-    2. [Show User Profile to Admin](#show-user-profile-to-admin)
-    3. [Show Transaction History to Admin](#show-transaction-history-to-admin)
-    4. [Show Loan History to Admin](#show-loan-history-to-admin)
-    5. [Show Products & Pricing](#show-products--pricing)
-    6. [Edit Price and Tax of product](#edit-price-and-tax-of-product)
-    7. [Report Generation](#report-generation)
+    1. [Income Rules](#income-rules)
+        - [Get Income Slab](#get-income-slab)
+        - [Create Income Slab](#create-income-slab)
+        - [Update Income Slab](#create-income-slab)
+        - [Delete Income Slab](#create-income-slab)
+    2. [Admin Support Mailbox](#admin-support-mailbox)
+    3. [Show User Profile to Admin](#show-user-profile-to-admin)
+    4. [Show Transaction History to Admin](#show-transaction-history-to-admin)
+    5. [Show Loan History to Admin](#show-loan-history-to-admin)
+    6. [Show Products & Pricing](#show-products--pricing)
+    7. [Edit Price and Tax of product](#edit-price-and-tax-of-product)
+    8. [Report Generation](#report-generation)
         - [Get Division List](#get-division-list)
         - [Get Division Report and District List](#get-division-report-and-district-list)
         - [Get District Report and Upazilla List](#get-district-report-and-upazilla-list)
         - [Get Upazilla Report and Union List](#get-upazilla-report-and-union-list)
         - [Get Union Report](#get-union-report)
-    8. [Change Union Agent](#change-union-agent)
+    9. [Change Union Agent](#change-union-agent)
 
 ---
 
@@ -353,7 +358,7 @@
 
 | API Endpoint              | HTTP Method |
 | ------------------------- | :---------: |
-| [/update-profile]()                |   `UPDATE`     |
+| [/update-profile]()                |   `PUT`     |
 
 >### Request
 >
@@ -3299,6 +3304,189 @@
 ---
 
 ## Admin Module
+[Admin Module](#admin-module)
+    1. [Income Rules](#income-rules)
+        - [Get Income Slab](#get-income-slab)
+        - [Create Income Slab](#create-income-slab)
+        - [Update Income Slab](#create-income-slab)
+        - [Delete Income Slab](#create-income-slab)
+
+### Income Rules
+
+#### Get Income Slab
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/get-income-slab]()                |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>
+>}
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>    "categories": {
+>        "regular": [
+>            { "slab_no": 1, "amount": 350000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },
+>        ],
+>        "elderly": [
+>            { "slab_no": 1, "amount": 400000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },
+>        ],
+>        "disabled": [
+>            { "slab_no": 1, "amount": 500000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },        ],
+>        "f": [
+>            { "slab_no": 1, "amount": 450000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },
+>        ]
+>  }
+>}
+
+>```
+>
+
+#### Create Income Slab
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/create-income-slab]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>    
+>  "category": "regular",
+>  "slab": {
+>    "amount": 750000,
+>    "rate": 20
+>  }
+>}
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 201 (`CREATED`)
+>
+>#### Response Body
+>
+>```json
+>{
+>
+>   "message": "Income slab created successfully."
+>}
+
+>```
+>
+
+#### Update Income Slab
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/update-income-slab]()                |   `PUT`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>    
+>  "category": "regular",
+>  "slab": {
+>    "slab_no": 5,
+>    "amount": 750000,
+>    "rate": 22.5
+>  }
+>}
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>
+>   "message": "Income slab updated successfully."
+>}
+
+>```
+>
+
+
+#### Delete Income Slab
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/delete-income-slab]()                |   `DELETE`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>    
+>  "category": "regular",
+>  "slab": {
+>    "slab_no": 5,
+>  }
+>}
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>   "message": "Income slab deleted successfully."
+>}
+
+>```
+>
+
+
 
 ### Admin Support Mailbox
 
