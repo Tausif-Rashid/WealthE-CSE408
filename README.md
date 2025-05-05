@@ -8,6 +8,31 @@
 
 ----------------------------------------------
 
+## Index
+
+1. [User Module](#user-module)
+    1. [Invesment](#investment)
+        - [Invesment List](#investment-list)
+        - [Edit Investment](#edit-investment)
+        - [Delete Investment](#delete-investment)
+        - [Liquidate Investment](#liquidate-investment)
+        - [Add Investment](#add-investment)
+            - [Add Particular Investment](#add-selected-investment)
+    2. [Tax Estimation](#tax-estimation)
+    3. [Tax Rebate Plan](#tax-rebate-plans)
+        - [Select Option for Rebate Plan](#select-options-from-rebate-plan)
+    4. [Tax Return](#tax-return)
+        - [Tax Return Page-1](#tax-return-page-1)
+            - [Edit Particular Income](#edit-particular-income-amount)
+        - [Tax Return Page-2](#tax-return-page-2)
+        - [Payment](#payment)
+        - [Return Form](#return-form)
+        - [Submit Return Form](#submit-tax-return-form)
+    5. [History](#history)
+        - [Download Previous Return](#download-previous-tax-return-from-history)
+
+----------------------------------
+
 ## User Module
 ---
 ### Investment
@@ -517,6 +542,8 @@
 -----------------------------------------
 
 ### Tax Return
+
+### Tax Return Page-1
 
 | API Endpoint              | HTTP Method |
 | --- | :---: |
