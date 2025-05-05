@@ -28,6 +28,10 @@
     2. [Investment Rules](#investment-rules)
         - [Get Investment Rule](#get-investment-rule)
         - [Edit Investment Rule](#edit-investment-rule)
+    3. [Tax Zone Rules](#tax-zone-rules)
+        - [Get Tax Zone Rules](#get-tax-zone-rules)
+        - [Edit Tax Zone Rules](#edit-tax-zone-rules)
+
     2. [Admin Support Mailbox](#admin-support-mailbox)
     3. [Show User Profile to Admin](#show-user-profile-to-admin)
     4. [Show Transaction History to Admin](#show-transaction-history-to-admin)
@@ -626,6 +630,7 @@
 >    }
 >  ]
 >}
+>```
 >
 <br>
 
@@ -639,6 +644,118 @@
 >{
 >
 >   "message": "Investment category updated successfully."
+>}
+
+>```
+>
+
+### Tax Zone Rules
+
+#### Get Tax Zone Rules
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/get-taxzone-rule]()                |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>
+>}
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>  "specialZones": [
+>    {
+>      "id": 1001,
+>      "Zone Name": "Dhaka North City Corporation",
+>      "taxZone": [1,2],
+>      "minimumTax": 5000
+>    },
+>    {
+>      "id": 1002,
+>      "Zone Name": "Dhaka South City Corporation",
+>      "taxZone": [15,16],
+>      "minimumTax": 5000
+>    },
+>    {
+>      "id": 1003,
+>      "Zone Name": "Gazipur City Corporation",
+>      "taxZone": [27],
+>      "minimumTax": 4000
+>    },
+>  ]
+>}
+
+
+>```
+>
+
+#### Edit Tax Zone Rules
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/edit-taxzone-rule]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>  "specialZones": [
+>    {
+>      "id": 1001,
+>      "Zone Name": "Dhaka North City Corporation",
+>      "taxZone": [1,2,4],
+>      "minimumTax": 5000
+>    },
+>    {
+>      "id": 1002,
+>      "Zone Name": "Dhaka South City Corporation",
+>      "taxZone": [15,16],
+>      "minimumTax": 5000
+>    },
+>    {
+>      "id": 1003,
+>      "Zone Name": "Gazipur City Corporation",
+>      "taxZone": [27],
+>      "minimumTax": 4500
+>    },
+>    {
+>      "id": null,
+>      "Zone Name": "Sylhet City Corporation",
+>      "taxZone": [35],
+>      "minimumTax": 4000
+>    }
+>  ]
+>}
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>
+>   "message": "Tax Zone Rule updated successfully."
 >}
 
 >```
