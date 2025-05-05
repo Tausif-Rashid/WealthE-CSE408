@@ -517,3 +517,82 @@
 -----------------------------------------
 
 ### History
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/history]() |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Response Body
+>    ```json
+>   {
+>       "success": true,
+>       "message": "Tax History is shown successfully",
+>       "Previous Return": [
+>           { 
+>               "tid": 12345,
+>               "title": "Tax Return of 2023",
+>               "Status": "Pending for approval"
+>           },
+>           { 
+>               "tid": 12346,
+>               "title": "Tax Return of 2022",
+>               "Status": "Submitted"
+>           }
+>       ]
+>}
+>```
+>
+<br>
+
+### Download Previous Tax Return From History
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/history/2023/download]() |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Content-type : application/pdf
+>
+>#### Content-Disposition: attachment; filename="tax_return_2023.pdf"
+>
+>#### Response Body
+>    ```json
+>   {
+>       
+>   }
+>```
+>
+<br>
+
+
