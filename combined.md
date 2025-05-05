@@ -31,6 +31,14 @@
     3. [Tax Zone Rules](#tax-zone-rules)
         - [Get Tax Zone Rules](#get-tax-zone-rules)
         - [Edit Tax Zone Rules](#edit-tax-zone-rules)
+    4. [Rebate Rules](#rebate-rules)
+        - [Get Rebate Rules](#get-rebate-rules)
+        - [Edit Rebate Rules](#edit-rebate-rules)
+    4. [Admin File Section](#admin-file-section)
+        - [Get Return List](#get-return-list)
+        - [View Return](#view-return)
+        - [Get Individual Return](#get-individual-return)
+        - [Update Tax Status](#update-tax-status)
 
     2. [Admin Support Mailbox](#admin-support-mailbox)
     3. [Show User Profile to Admin](#show-user-profile-to-admin)
@@ -761,6 +769,269 @@
 >```
 >
 
+### Rebate Rules
 
+#### Get Rebate Rules
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/get-rebate-rule]()                |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>
+>}
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>   "maximumRebate": 1000000,
+>   "defaultRate": 15,
+>   "maximum_of_income": 3
+>
+>}
+
+
+>```
+>
+
+#### Edit Rebate Rules
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/edit-rebate-rule]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>   "maximumRebate": 1000000,
+>   "defaultRate": 12.5,
+>   "maximum_of_income": 5
+>
+>}
+
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>
+>   "message": "Tax Rebate Rule updated successfully."
+>}
+
+>```
+>
+
+
+### Admin File Section
+
+#### Get Return List
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/get-return-list]()                |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>
+>}
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>  "tax_returns": [
+>    {
+>      "id": 443223455,
+>      "TIN": 123456789,
+>      "tax_amount": 15000,
+>      "date": "2024-06-30",
+>      "return_pdf_url": "https://example.com/returns/123456789_2024.pdf"
+>    },
+>    {
+>      "id": 441232455,
+>      "TIN": 987654321,
+>      "tax_amount": 22000,
+>      "date": "2024-09-15",
+>      "return_pdf_url": "https://example.com/returns/987654321_2024.pdf"
+>    },
+>    {
+>      "id": 123323121,
+>      "TIN": 456789123,
+>      "tax_amount": 18500,
+>      "date": "2025-03-20",
+>      "return_pdf_url": "https://example.com/returns/456789123_2025.pdf"
+>    }
+>  ]
+>}
+
+
+
+>```
+>
+
+#### View Return
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/view-return]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>   "id": 443223455
+>
+>}
+
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>      "id": 443223455,
+>      "TIN": 123456789,
+>      "tax_amount": 15000,
+>      "date": "2024-06-30",
+>      "return_pdf_url": "https://example.com/returns/123456789_2024.pdf"
+>}
+>```
+>
+
+#### Get Individual Return
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/get-return]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>   "TIN" : 123456568
+>
+>}
+
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>  "tax_returns": [
+>    {
+>      "id": 443223455,
+>      "TIN" : 123456568,
+>      "tax_amount": 15000,
+>      "date": "2024-06-30",
+>      "return_pdf_url": "https://example.com/returns/123456789_2024.pdf"
+>    },
+>    {
+>      "id": 441232455,
+>      "TIN" : 123456568,
+>      "tax_amount": 12000,
+>      "date": "2023-09-15",
+>      "return_pdf_url": "https://example.com/returns/987654321_2023.pdf"
+>    },
+>    {
+>      "id": 123323121,
+>      "TIN" : 123456568,
+>      "tax_amount": 8500,
+>      "date": "2022-08-20",
+>      "return_pdf_url": "https://example.com/returns/456789123_2022.pdf"
+>    }
+>  ]
+>}
+>
+>
+
+#### Update Tax Status
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/update-tax-status]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>   "id": 123323121,
+>   "isApproved": false,
+>   "complaint": "Asset is not compatible with previous years data."
+>
+>}
+
+
+>```
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>   "message": "feedback sent successfully"
+>}
+>
+>
 
 
