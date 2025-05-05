@@ -16,6 +16,8 @@
         - [Get Tax Zone List](#get-tax-zone-list)
         - [Get Tax Circle List](#get-tax-circle-list)
     3. [Submit Registration Request](#submit-registration-request)
+    4. [Personal Info](#personal-info)
+    5. [Update Personal Info](#update-personal-info)
 
 2. [Agent Module](#agent-module)
     1. [Agent Dashboard](#agent-dashboard)
@@ -265,7 +267,7 @@
 
 >### Response - Success
 >
->#### Response Code: 200 (`OK`)
+>#### Response Code: 201 (`Created`)
 >
 >#### Response Body
 >
@@ -291,6 +293,101 @@
 >}
 >```
 >
+
+<br>
+
+### Personal Info
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/profile]()                |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>   
+>    
+>}
+>```
+>
+<br>
+
+<br>
+
+>### Response - Success
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>    "email": "nabila@gmail.com",
+>    "name": "Nabila Tabassum",
+>    "nid": 1234567890,
+>    "tin": 232345456767,
+>    "mobile": 0123456789,
+>    "taxZone": 15,
+>    "taxCircle": 78,
+>    "dob": "02-02-1990",
+>    "spouse": "",
+>    "spouseTIN": null,
+>    "isResidential": true,
+>    "benefittedPerson": {
+>           "isFF": false,
+>           "isFemale": true,
+>           "isDisabled": false               
+>}
+>    
+>    
+>    
+>}
+>````
+>
+<br>
+
+### Update Personal Info
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/update-profile]()                |   `UPDATE`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>   "taxCircle": 76,
+>   "benefittedPerson": {
+>       "isFF": true    
+>} 
+>    
+>}
+>```
+>
+<br>
+
+<br>
+
+>### Response - Success
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>
+>    
+>}
+>````
+>
+<br>
+
 
 -----------
 
