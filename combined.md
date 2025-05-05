@@ -22,14 +22,12 @@
 2. [Admin Module](#admin-module)
     1. [Income Rules](#income-rules)
         - [Get Income Slab](#get-income-slab)
-        - [Create Income Slab](#create-income-slab)
-        - [Update Income Slab](#create-income-slab)
-        - [Delete Income Slab](#create-income-slab)
+        - [Edit Income Slab](#edit-income-slab)
+        - [Get Categories](#get-categories)
+        - [Edit Categories](#edit-categories)
     2. [Investment Rules](#investment-rules)
         - [Get Investment Rule](#get-investment-rule)
-        - [Create Investment Rule](#create-investment-rule)
-        - [Update Investment Rule](#create-investment-rule)
-        - [Delete Investment Rule](#create-investment-rule)
+        - [Edit Investment Rule](#edit-investment-rule)
     2. [Admin Support Mailbox](#admin-support-mailbox)
     3. [Show User Profile to Admin](#show-user-profile-to-admin)
     4. [Show Transaction History to Admin](#show-transaction-history-to-admin)
@@ -404,11 +402,11 @@
 >```
 >
 
-#### Create Income Slab
+#### Edit Income Slab
 
 | API Endpoint              | HTTP Method |
 | ------------------------- | :---------: |
-| [/admin/create-income-slab]()                |   `POST`     |
+| [/admin/edit-income-slab]()                |   `POST`     |
 
 >### Request
 >
@@ -416,51 +414,31 @@
 >
 >```json
 >{
->    
->  "category": "regular",
->  "slab": {
->    "amount": 750000,
->    "rate": 20
->  }
->}
-
->```
->
-<br>
-
->### Response
->
->#### Response Code: 201 (`CREATED`)
->
->#### Response Body
->
->```json
->{
->
->   "message": "Income slab created successfully."
->}
-
->```
->
-
-#### Update Income Slab
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/admin/update-income-slab]()                |   `PUT`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->    
->  "category": "regular",
->  "slab": {
->    "slab_no": 5,
->    "amount": 750000,
->    "rate": 22.5
+>    "categories": {
+>        "regular": [
+>            { "slab_no": 1, "amount": 350000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },
+>        ],
+>        "elderly": [
+>            { "slab_no": 1, "amount": 400000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },
+>        ],
+>        "disabled": [
+>            { "slab_no": 1, "amount": 500000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },        
+>       ],
+>        "ff": [
+>            { "slab_no": 1, "amount": 450000, "rate": 0 },
+>            { "slab_no": 2, "amount": 100000, "rate": 5 },
+>            { "slab_no": 3, "amount": 250000, "rate": 10 },
+>            { "slab_no": 4, "amount": 500000, "rate": 15 },
+>        ]
 >  }
 >}
 
@@ -483,11 +461,11 @@
 >```
 >
 
-#### Delete Income Slab
+#### Get Categories
 
 | API Endpoint              | HTTP Method |
 | ------------------------- | :---------: |
-| [/admin/delete-income-slab]()                |   `DELETE`     |
+| [/admin/get-categories]()                |   `GET`     |
 
 >### Request
 >
@@ -495,11 +473,7 @@
 >
 >```json
 >{
->    
->  "category": "regular",
->  "slab": {
->    "slab_no": 5
->  }
+>
 >}
 
 >```
@@ -515,10 +489,55 @@
 >```json
 >{
 >
->   "message": "Income slab deleted successfully."
+>   "categories" : ["regular",
+>                   "disabled",
+>                   "ff",
+>                    "elderly"]
 >}
 
 >```
+>
+
+
+#### Edit Categories
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/admin/edit-categories]()                |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>
+>   "categories" : ["regular",
+>                   "disabled",
+>                   "ff",
+>                   "elderly",
+>                   "female"]
+>}
+>
+<br>
+
+>### Response
+>
+>#### Response Code: 200 (`OK`)
+>
+>#### Response Body
+>
+>```json
+>{
+>
+>   "message": "Category updated successfully."
+>}
+
+>```
+>
+
+
+
 
 
 ### Investment Rules
@@ -572,11 +591,11 @@
 >```
 >
 
-#### Create Investment Rule
+#### Edit Investment Rule
 
 | API Endpoint              | HTTP Method |
 | ------------------------- | :---------: |
-| [/admin/create-investment]()                |   `POST`     |
+| [/admin/edit-investment]()                |   `POST`     |
 
 >### Request
 >
@@ -584,48 +603,29 @@
 >
 >```json
 >{
->   "investment_name": "Mutual Funds",
->   "rate": 15    
->
+>  "investment_options": [
+>    {
+>      "id": 1001,
+>      "investment_name": "5 year Bangladesh Sanchaypatra",
+>      "rate": 12.5
+>    },
+>    {
+>      "id": 1002,
+>      "investment_name": "6 month Bangladesh Sanchaypatra",
+>      "rate": 12
+>    },
+>    {
+>      "id": 1003,
+>      "investment_name": "Donation to Zakat Fund",
+>      "rate": 15
+>    },
+>    {
+>      "id": null,
+>      "investment_name": "Mutual Funds",
+>      "rate": 15
+>    }
+>  ]
 >}
-
->```
->
-<br>
-
->### Response
->
->#### Response Code: 201 (`CREATED`)
->
->#### Response Body
->
->```json
->{
->
->   "message": "Investment category created successfully."
->}
-
->```
->
-
-#### Update Investment Rule
-
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/admin/update-investment-rule]()                |   `PUT`     |
-
->### Request
->
->#### Request Body
->
->```json
->{
->    
->   "id": 1003,
->   "rate": 20
->}
-
->```
 >
 <br>
 
@@ -638,43 +638,12 @@
 >```json
 >{
 >
->   "message": "Investment rule updated successfully."
+>   "message": "Investment category updated successfully."
 >}
 
 >```
 >
 
-#### Delete Investment Rule
 
-| API Endpoint              | HTTP Method |
-| ------------------------- | :---------: |
-| [/admin/delete-investment-rule]()                |   `DELETE`     |
 
->### Request
->
->#### Request Body
->
->```json
->{
->   "id": 1004
-> 
->}
-
->```
->
-<br>
-
->### Response
->
->#### Response Code: 200 (`OK`)
->
->#### Response Body
->
->```json
->{
->
->   "message": "Investment deleted successfully."
->}
-
->```
 
