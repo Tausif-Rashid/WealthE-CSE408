@@ -40,19 +40,6 @@
         - [Get Individual Return](#get-individual-return)
         - [Update Tax Status](#update-tax-status)
 
-    2. [Admin Support Mailbox](#admin-support-mailbox)
-    3. [Show User Profile to Admin](#show-user-profile-to-admin)
-    4. [Show Transaction History to Admin](#show-transaction-history-to-admin)
-    5. [Show Loan History to Admin](#show-loan-history-to-admin)
-    6. [Show Products & Pricing](#show-products--pricing)
-    7. [Edit Price and Tax of product](#edit-price-and-tax-of-product)
-    8. [Report Generation](#report-generation)
-        - [Get Division List](#get-division-list)
-        - [Get Division Report and District List](#get-division-report-and-district-list)
-        - [Get District Report and Upazilla List](#get-district-report-and-upazilla-list)
-        - [Get Upazilla Report and Union List](#get-upazilla-report-and-union-list)
-        - [Get Union Report](#get-union-report)
-    9. [Change Union Agent](#change-union-agent)
 
 ---
 
