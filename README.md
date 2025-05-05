@@ -309,7 +309,7 @@
 >
 <br>
 
->### Response - Invalid ID
+>### Response - Bad Request
 >
 >#### Response Code: 400 (`Bad Request`)
 >
@@ -322,15 +322,198 @@
 >
 <br>
 
->### Response - Internal Server error
+--------------
+### Tax Estimation
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_estimation]() |   `GET`     |
+
+>### Request
 >
->#### Response Code: 500 (`Internal Server Error`)
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Response Body
+>
+>    ```json
+>   {
+>       "Estimated Tax (With necessary Calculation)": [
+>           {
+>                 "total_income": 1000000,
+>                 "total_taxable_income": 600000,
+>                 "total_investments": 500000,
+>                 "tax_rebate_on_investments": 30000,
+>                 "net_income_tax": 12000,
+>                 "currency": "BDT"
+>           }
+>       ]
+>   }
+>    ```
+>
+<br>
+
+>### Response - Bad Request
+>
+>#### Response Code: 400 (`Bad Request`)
 >
 >```json
->{
->    "success": false,
->    "error": "Unexpected Error Occur"
+>   {
+>        "success": false,
+>        "error": "Missing or invalid income or investment values"
+>   }
+>```
+>
+<br>
+---------------
+
+### Tax Rebate Plans
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_rebate_plan]() |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Response Body
+>
+>    ```json
+>   {
+>       "Tax Rebate": [
+>           { 
+>               "Objects": [
+>                   {
+>                       "name": "Shanchaypatra",
+>                       "amount": ,
+>                       "interest": "7.5%"
+>                   }
+>               ],
+>               "Rebate Maximum":
+>           },
+>           {
+>               "Objects": [
+>                   {
+>                       "name": "Zakat Fund",
+>                       "amount": ,
+>                       "interest": "0%"                
+>                   }
+>               ],
+>               "Rebate Maximum":
+>           },
+>           {
+>               "Objects": [
+>                   {
+>                       "name": "Fixed Deposite",
+>                       "amount": ,
+>                       "interest": "5%"                
+>                   }
+>               ],
+>               "Rebate Maximum":
+>           }
+>       ]
+>   }
+>    ```
+>
+<br>
+
+### Select Options from Rebate Plan
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_rebate_plan/select_plan]() |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>   ```json
+>   {  
+>       "Tax Rebate Selection": [
+>           { 
+>               "Objects": [
+>                   {
+>                       "name": "Shanchaypatra",
+>                       "amount": 500000,
+>                       "interest": "7.5%"
+>                   }
+>               ],
+>               "Objects": [
+>                   {
+>                       "name": "Zakat Fund",
+>                       "amount": 20000,
+>                       "interest": "0%"
+>                   }
+>               ],
+>           }
+>       ]
 >}
 >```
 >
 <br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Response Body
+>    ```json
+>   {
+>       "success": true,
+>       "message": "Tax Rebate amount calculated successfully",
+>       "Selected Tax Rebate": [
+>           { 
+>               "Objects": [
+>                   {
+>                       "name": "Shanchaypatra",
+>                       "amount": 500000,
+>                       "interest": "7.5%"
+>                   }
+>               ],
+>               "Rebate Maximum": 75000
+>           },
+>           {
+>               "Objects": [
+>                   {
+>                       "name": "Zakat Fund",
+>                       "amount": 20000,
+>                       "interest": "0%"                
+>                   }
+>               ],
+>               "Rebate Maximum": 7500
+>           }
+>       ],
+>       "Total Invested Amount": 520000,
+>       "Maximum Tax Rebate": 82500
+>}
+>```
+>
+<br>
+-----------------------------------------
+
+### History
