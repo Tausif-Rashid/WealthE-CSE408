@@ -516,6 +516,339 @@
 <br>
 -----------------------------------------
 
+### Tax Return
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_return/tax_return_page1]() |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+>#### Response Body
+>    ```json
+>   {
+>       "Particulars of Total Income": [
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Employment",
+>                       "amount": 500000
+>                   }
+>               ]
+>           },
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Financial Asset",
+>                       "amount": 500000
+>                   }
+>               ]
+>           },
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Agriculture",
+>                       "amount": 500000
+>                   }
+>               ]
+>           },
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Rent",
+>                       "amount": 500000
+>                   }
+>               ]
+>           },
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Business",
+>                       "amount": 500000
+>                   }
+>               ]
+>           },
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Capital Gain",
+>                       "amount": 500000
+>                   }
+>               ]
+>           },
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Other Sources",
+>                       "amount": 500000
+>                   }
+>               ]
+>           }
+>       ],
+>       "Total Income": 1000000,
+>       "Total Exempted Income": 400000
+>}
+>```
+>
+<br>
+
+>### Edit Particular Income Amount
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_return/tax_return_page1/edit_income]() |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>   ```json
+>   {  
+>       "Edit Employment Income": [
+>           { 
+>               "Objects": [
+>                   {
+>                       "type": "Income from Employment",
+>                       "amount": 500000
+>                   }
+>               ]
+>           }
+>       ]
+>}
+>```
+>
+<br>
+
+
+>### Response 
+>
+>#### Response Code: 200 (`Okay`)
+
+>#### Response Body
+>
+>```json
+>   {
+>        "success": true,
+>        "message": "Income from employment amount changed successfully"
+>   }
+>```
+>
+<br>
+
+>### Response - Bad Request
+>
+>#### Response Code: 400 (`Bad Request`)
+
+>#### Response Body
+>
+>```json
+>   {
+>        "success": false,
+>        "error": "Invalid amount for Income From employment"
+>   }
+>```
+>
+<br>
+
+> ### Tax Return Page-2
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_return/tax_return_page2]() |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Response Body
+>    ```json
+>   {
+>       "Tax Details": [
+>           { 
+>               "Name": "Gross Tax Before Tax Rebate",    
+>               "Computational details": [
+>                   {
+>                       "name": "Tax on regular income",
+>                       "amount": 148900
+>                   },
+>                   {
+>                       "name": "Tax on income u/s 163",
+>                       "amount": 5000
+>                   }
+>               ],
+>               "Total Amount": 153900
+>           },
+>           { 
+>               "Name": "Tax Rebate",    
+>               "Computational details": [
+>                   {
+>                       "name": "On Investment",
+>                       "amount": 44835
+>                   },
+>                   {
+>                       "name": "Other Rebate",
+>                       "amount": 0
+>                   }
+>               ],
+>               "Total Amount": 44835
+>           },
+>           { 
+>               "Name": "Net Tax after tax Rebate",    
+>               "Total Amount": 109065
+>           },
+>           { 
+>               "Name": "Minimum Tax",    
+>               "Computational details": [
+>                   {
+>                       "name": "TDS related to 163",
+>                       "amount": 0
+>                   },
+>                   {
+>                       "name": "For Location on Income",
+>                       "amount": 5000
+>                   }
+>               ],
+>               "Total Amount": 5000
+>           },
+>           { 
+>               "Name": "Surcharge",    
+>               "Computational details": [
+>                   {
+>                       "name": "Net Wealth Surcharge",
+>                       "amount": 0
+>                   }
+>               ],
+>               "Total Amount": 0
+>           }
+>       ],
+>       "Total Payable Amount": 109065
+>}
+>```
+>
+<br>
+
+--------------------------------------------
+
+> ### Payment
+
+------------------------------------------------
+
+> ### Return Form
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_return/tax_return_form]() |   `GET`     |
+
+>### Request
+>
+>#### Request Body
+>
+>    ```json
+>   {
+>
+>   }
+>    ```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Content-type : application/pdf
+>
+>#### Content-Disposition: attachment; filename="tax_return_form.pdf"
+>
+>#### Response Body
+>    ```json
+>   {
+>       
+>   }
+>```
+>
+<br>
+
+-------------------------------------------------------
+
+>### Submit Tax Return Form
+
+| API Endpoint              | HTTP Method |
+| --- | :---: |
+| [/user/tax_return/submit]() |   `POST`     |
+
+>### Request
+>
+>### Content-Type: multipart/form-data
+
+>#### Request Body
+>
+>    ```json
+>   {
+>       "file": "tax_return_2024.pdf",
+>       "title": "Tax Return of 2024",
+>       "type": "pdf file"
+>
+>   }
+>    ```
+>
+</br>
+
+>### Response 
+>
+>#### Response Code: 200 (`Okay`)
+
+>#### Response Body
+>
+>```json
+>   {
+>        "success": true,
+>        "message": "Pdf file submitted successfully",
+>        "submission id": 123456,
+>        "status": "pending for approval"
+>   }
+>```
+>
+<br>
+
+>### Response - Not Found
+>
+>#### Response Code: 404 (`Not Found`)
+
+>#### Response Body
+>
+>```json
+>   {
+>        "success": false,
+>        "error": "Pdf file not Found"
+>   }
+>```
+>
+<br>
+
+-----------------------------------------
+
 ### History
 
 | API Endpoint              | HTTP Method |
@@ -541,18 +874,18 @@
 >#### Response Body
 >    ```json
 >   {
->       "success": true,
->       "message": "Tax History is shown successfully",
 >       "Previous Return": [
 >           { 
 >               "tid": 12345,
 >               "title": "Tax Return of 2023",
->               "Status": "Pending for approval"
+>               "Status": "Pending for approval",
+>               "download_url": "/user/history/2023/download"
 >           },
 >           { 
 >               "tid": 12346,
 >               "title": "Tax Return of 2022",
->               "Status": "Submitted"
+>               "Status": "Submitted",
+>               "download_url": "/user/history/2022/download"
 >           }
 >       ]
 >}
