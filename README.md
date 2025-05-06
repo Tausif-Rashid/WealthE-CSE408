@@ -12,7 +12,7 @@
 
 1. [User Module](#user-module)
     1. [Invesment](#investment)
-        - [Invesment List](#investment-list)
+        - [Previous Invesment List](#investment-list)
         - [Edit Investment](#edit-investment)
         - [Delete Investment](#delete-investment)
         - [Liquidate Investment](#liquidate-investment)
@@ -26,6 +26,10 @@
             - [Edit Particular Income](#edit-particular-income-amount)
         - [Tax Return Page-2](#tax-return-page-2)
         - [Payment](#payment)
+            - [Get Access Token](#get-bkash-access-token)
+            - [Initiate Payment](#initiate-bkash-payment)
+            - [Execute Payment](#execute-bkash-payment)
+            - [Query Payment](#query-bkash-payment)
         - [Return Form](#return-form)
         - [Submit Return Form](#submit-tax-return-form)
     5. [History](#history)
@@ -779,6 +783,159 @@
 --------------------------------------------
 
 > ### Payment
+>
+> ### Get bKash Access Token
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/user/payment/bkash/token]()  |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>   {
+>       "app_key": "your_app_key",
+>       "app_secret": "your_app_secret"
+>   }
+>```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Content-type : application/json
+>
+>#### Response Body
+>```json
+>   {
+>       "id_token": "eyJhbGciOiJIUzI1NiIsInR...",
+>       "token_type": "Bearer",
+>       "expires_in": "3600"
+>   }
+>```
+>
+
+
+> [!NOTE]
+> Use `id_token` from the response in the **Authorization header** for all future bKash API calls:
+>
+<br>
+
+> ### Initiate bKash Payment
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/user/payment/bkash/initiate]() |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>  "amount": "500.00",
+>  "currency": "BDT",
+>  "intent": "sale",
+>  "payerReference": "USER123",
+>  "merchantInvoiceNumber": "INV0001"
+>}
+>```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Content-type : application/json
+>
+>#### Response Body
+>```json
+>{
+>  "paymentID": "TRX123456789",
+>  "bkashURL": "https://bkash.com/payment/redirect/abc123",
+>  "status": "Initiated"
+>}
+>```
+>
+<br>
+
+---
+
+> ### Execute bKash Payment
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/user/payment/bkash/execute]() |   `POST`     |
+
+>### Request
+>
+>#### Request Body
+>
+>```json
+>{
+>  "paymentID": "TRX123456789"
+>}
+>```
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Content-type : application/json
+>
+>#### Response Body
+>```json
+>{
+>  "transactionStatus": "Completed",
+>  "trxID": "B123XYZ456",
+>  "amount": "500.00",
+>  "paymentTime": "2025-05-06T12:34:56+06:00"
+>}
+>```
+>
+<br>
+
+---
+
+> ### Query bKash Payment
+
+| API Endpoint              | HTTP Method |
+| ------------------------- | :---------: |
+| [/payment/bkash/query]() |   `GET`     |
+
+>### Request
+>
+>#### Query Parameters
+>
+>`paymentID=TRX123456789`
+>
+</br>
+
+>### Response
+>
+>#### Response Code : 200 (`OK`)
+>
+>#### Content-type : application/json
+>
+>#### Response Body
+>```json
+>{
+>  "transactionStatus": "Completed",
+>  "trxID": "B123XYZ456",
+>  "amount": "500.00",
+>  "payerReference": "USER123"
+>}
+>```
+>
+<br>
+
 
 ------------------------------------------------
 
