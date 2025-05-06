@@ -14,8 +14,11 @@
     1. [Income Module](#income-module)
         1. [Employment Income](#employment-income)
         2. [Other Income](#other-income)
+        3. [Get Income Summary](#get-income-summary)
     2. [Expense Module](#expense-module)
-    3. [Asset & Liability Module](#asset-liability-module)
+    3. [Asset & Liability Module](#asset--liability-module)
+        1. [Asset Module](#asset-module)
+        2. [Liability Module](#liability-module)
 ## User Module
 
 ### Income Module
@@ -646,4 +649,425 @@
 
 ## Asset & Liability Module
 
+### Asset Module
+---
 
+### Get List
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/asset/]()    |   `GET`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>    
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>   "asset_list": [
+>           {   "id": "AS001",
+>               "type": "Non-agricultural-property",
+>               "title": "residential plot",
+>               "cost": 200000,
+>               "description": "residential plot ",
+>               "date": "2001-06-01",
+>               "acquisition": "inheritance",
+>               "location": {
+>                   "road": "123 Main St, Mirpur",
+>                   "city": "Dhaka",
+>                   "zip": "1212"
+>               },
+>               "reg_numer": "",
+>               "engine": ,
+>               "interest": "",
+>               "weight": ,
+>           },
+>           {   "id": "AS002",
+>               "type": "Agricultural-property",
+>               "title": "jute field",
+>               "cost": 200000,
+>               "description": "jute field in village", 
+>               "date": "2001-06-01",
+>               "acquisition": "purchase",
+>               "location": {
+>                   "road": "Haripur, Bogura",
+>                   "city": "Bogura",
+>                   "zip": "1812"
+>               },
+>               "reg_numer": "",
+>               "engine": ,
+>               "interest": "",
+>               "weight": ,
+>           },
+>           {   "id": "AS003",
+>               "type": "vehicle",
+>               "title": "toyota corolla",
+>               "cost": 100000,
+>               "description": "Model 2017, 4 door sedan, color: black", 
+>               "date": "2018-06-01",
+>               "acquisition": "purchase",
+>               "location": {
+>                   "road": "",
+>                   "city": "",
+>                   "zip": ""
+>               },
+>               "reg_numer": "DHA Ka 1234",
+>               "engine": 1500,
+>               "interest": "",
+>               "weight": 1200,
+>           },
+>   ],
+>   "categories": [
+>       "Non-agricultural-property",
+>       "Agricultural-property",
+>       "vehicle",
+>       "jewelry",
+>       "sanchaypatra",
+>     ]
+> }
+> ```
+---
+
+### Add Asset
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/asset/add]()    |   `POST`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "type": "Non-agricultural-property",
+>   "title": "residential plot",
+>   "cost": 200000,
+>   "description": "residential plot ",
+>   "date": "2001-06-01",
+>   "acquisition": "inheritance",
+>   "location": {
+>       "road": "123 Main St, Mirpur",
+>       "city": "Dhaka",
+>       "zip": "1212"
+>   },
+>   "reg_numer": "",
+>   "engine": ,
+>   "interest": "",
+>   "weight": ,
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Edit Asset
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/asset/edit]()    |   `POST`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "AS001",
+>   "type": "Agricultural-property",
+>   "title": "jute field",
+>   "cost": 200000,
+>   "description": "jute field in village", 
+>   "date": "2001-06-01",
+>   "acquisition": "purchase",
+>   "location": {
+>       "road": "Haripur, Bogura",
+>       "city": "Bogura",
+>       "zip": "1812"
+>   },
+>   "reg_numer": "",
+>   "engine": ,
+>   "interest": "",
+>   "weight": ,
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Delete Asset
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/asset/delete]()    |   `POST`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "AS001",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Sell Asset
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/asset/sell]()    |   `POST`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "AS001",
+>   "amount": 200000,
+>   "date": "2025-01-01",
+>   "description": "sold for profit",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+
+### Liability Module
+---
+### Get List
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/liability/]()    |   `GET`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>   "liability_list": [
+>           {
+>               "id": "LI001",
+>               "type": "Loan",
+>               "title": "Brac Bank",
+>               "amount": 50000,
+>               "description": "Loan for laptop purchase",
+>               "date": "2022-06-01",
+>               "interest": 0.05,
+>           },
+>           {
+>               "id": "LI002",
+>               "type": "Loan",
+>               "title": "Sonali Bank",
+>               "amount": 500000,
+>               "description": "Loan for house purchase",
+>               "date": "2023-06-01",
+>               "interest": 0.05,
+>           },
+>   ],
+> }
+> ```
+---
+
+
+
+### Add Liability
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/liability/add]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "type": "Loan",
+>   "title": "Brac Bank",
+>   "amount": 50000,
+>   "description": "Loan for laptop purchase",
+>   "date": "2001-06-01",
+>   "interest": 0.05,
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+
+### Edit Liability
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/liability/edit]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "LI001",
+>   "type": "Loan",
+>   "title": "Brac Bank",
+>   "amount": 50000,
+>   "description": "Loan for laptop purchase",
+>   "date": "2001-06-01",
+>   "interest": 0.05,
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+
+### Delete Liability
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/liability/delete]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "LI001",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+
+### Credit Liability
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/liability/credit]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "LI001",
+>   "amount": 5000,
+>   "date": "2025-01-01",
+>   "description": "Loan payment",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
