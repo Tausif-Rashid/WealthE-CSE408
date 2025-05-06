@@ -2,9 +2,9 @@
 
 ### <div align="center"> Group 7 (A2) </div>
 
-<div align="center">1. 2005050 - Nabila Tabassum </div>
-<div align="center">2. 2005052 - Tausif Rashid </div>
-<div align="center">3. 2005056 - Azmal Karim </div>
+<div align="center"> 2005050 - Nabila Tabassum </div>
+<div align="center"> 2005052 - Tausif Rashid </div>
+<div align="center"> 2005056 - Azmal Karim </div>
 
 ----------------------------------------------
 
@@ -19,12 +19,13 @@
 ## User Module
 
 ### Income Module
+---
 ### Employment Income
 
 ### Get List
 | API Endpoint             | HTTP Method |
 | ------------------------ | :---------: |
-| [/user/employment/]()    |   `GET`     |
+| [/user/income/employment/]()    |   `GET`     |
 > ### Request
 >
 > #### Request Body
@@ -74,7 +75,114 @@
 
 | API Endpoint             | HTTP Method |
 | ------------------------ | :---------: |
-| [/user/employment/add]() |   `POST`    |
+| [/user/income/employment/add]() |   `POST`    |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "type" : "basic salary",
+>   "amount" : 10000,
+>   "exempted" : 2000,
+>   "date" : "2023-01-01",
+>   "recurrence" : "monthly",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+>       
+> }
+> ```
+
+---
+
+### Update Employment
+
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/employment/edit]() |   `POST`    |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id" : "EI001",
+>   "type" : "basic salary",
+>   "amount" : 10000,
+>   "exempted" : 2000,
+>   "date" : "2023-01-01",
+>   "recurrence" : "monthly",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+>       
+> }
+> ```
+
+---
+### Delete Employment
+
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/employment/delete]() |   `POST`    |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id" : "EI001",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+>       
+> }
+> ```
+
+---
+### Other Income
+---
+### Get List
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/other/]()    |   `GET`     |
 
 > ### Request
 >
@@ -96,14 +204,445 @@
 >
 > ```json
 > {
+>   "other_income_list": [
+>           {
+>               "type": "Other",
+>               "title": "Freelancing",
+>               "amount": 10000,
+>               "Profit": ,
+>               "date": "2025-01-01",
+>           },
+>           {
+>               "type": "Rent",
+>               "title": "House Rent",
+>               "amount": 15000,
+>               "Profit": ,
+>               "date": "2025-01-01",
+>           },
+>           {
+>               "type": "Agriculture",
+>               "title": "Jute",
+>               "amount": 20000,
+>               "Profit": 5000,
+>               "date": "2025-06-01",
+>           },
+>       ],
+> }
+> ```
+---
+### Add Other Income
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/other/add]()    |   `POST`     |
+
+> ### Request
 >
->       
+> #### Request Body
+>
+> ```json
+> {
+>   "type" : "Agriculture",
+>   "title" : "Jute",
+>   "amount" : 10000,
+>   "profit" : 2000,
+>   "date" : "2024-08-01",
 > }
 > ```
 
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Update Other Income
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/other/edit]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id" : "OI001",
+>   "type" : "Agriculture",
+>   "title" : "Jute",
+>   "amount" : 12000,
+>   "profit" : 3000,
+>   "date" : "2024-08-01",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Delete Other Income
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/other/delete]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id" : "OI001",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Get Income Summary
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/income/summary]()    |   `GET`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+>    {
+>    "total_income": 85200.50,
+>    "monthly_income": {
+>        "2025-01": 7200.00,
+>        "2025-02": 6800.00,
+>        "2025-03": 7900.00,
+>        "2025-04": 7800.00
+>    },
+>    "income_by_type": {
+>        "employment": 60000.00,
+>        "freelancing": 12000.50,
+>        "rental": 10000.00,
+>        "agriculture": 3200.00
+>    },
+>    "chart_data": [
+>        {
+>        "month": "2025-01",
+>        "employment": 5000.00,
+>        "freelancing": 1200.00,
+>        "rental": 800.00,
+>        "agriculture": 200.00
+>        },
+>        {
+>        "month": "2025-02",
+>        "employment": 5000.00,
+>        "freelancing": 1000.00,
+>        "rental": 600.00,
+>        "agriculture": 200.00
+>        },
+>        {
+>        "month": "2025-03",
+>        "employment": 5100.00,
+>        "freelancing": 1600.00,
+>        "rental": 1000.00,
+>        "agriculture": 200.00
+>        },
+>        {
+>        "month": "2025-04",
+>        "employment": 5000.00,
+>        "freelancing": 1800.50,
+>        "rental": 800.00,
+>        "agriculture": 200.00
+>        }
+>    ],
+>    "last_updated": "2025-05-05T14:30:00Z"
+>    }
+> ```
 ---
 
 ## Expense Module
+---
+### Get List
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/expense/]()    |   `GET`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>   "expense_list": [
+>           {
+>               "type": "Utility",
+>               "title": "Electricity Bill",
+>               "description": "march bill",
+>               "amount": 1000,
+>               "date": "2025-04-01",
+>           },
+>           {
+>               "type": "Rent",
+>               "title": "House Rent",
+>               "amount": 25000,
+>               "description": "January Rent",
+>               "date": "2025-01-01",
+>           },
+>           {
+>               "type": "Transport",
+>               "title": "Bus Fare",
+>               "amount": 2000,
+>               "description": "Bus fare for 2 months",
+>               "date": "2025-06-01",
+>           },
+>       ],
+>   "categories": [
+>       "utilities",
+>       "transportation",
+>       "education",
+>       "tds",
+>       "rent",
+>       "healthcare",
+>       "entertainment",
+>       "other"
+>     ]
+> }
+> ```
+---
+### Add Expense
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/expense/add]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "type": "Transport",
+>   "title": "Bus Fare",
+>   "amount": 2000,
+>   "description": "Bus fare for 2 months",
+>   "date": "2025-06-01",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Edit Expense
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/expense/edit]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "EX001",
+>   "type": "Transport",
+>   "title": "Bus Fare",
+>   "amount": 2000,
+>   "description": "Bus fare for 2 months",
+>   "date": "2025-06-01",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Delete Expense
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/expense/delete]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "id": "EX001",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>
+> }
+> ```
+---
+### Get Expense Summary
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/expense/summary]()    |   `GET`     |
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+>   {
+>     "total_expense": 43250.75,
+>     "monthly_expense": {
+>       "2025-01": 10200.00,
+>       "2025-02": 9800.00,
+>       "2025-03": 11500.75,
+>       "2025-04": 11750.00
+>     },
+>     "expense_by_type": {
+>       "utilities": 4200.00,
+>       "transportation": 3800.50,
+>       "education": 9000.00,
+>       "tds": 3000.25,
+>       "rent": 16000.00,
+>       "groceries": 4500.00,
+>       "other": 1750.00
+>     },
+>     "chart_data": [
+>       {
+>         "month": "2025-01",
+>         "utilities": 1000.00,
+>         "transportation": 900.00,
+>         "education": 2000.00,
+>         "tds": 800.00,
+>         "rent": 4000.00,
+>         "groceries": 1000.00,
+>         "other": 500.00
+>       },
+>       {
+>         "month": "2025-02",
+>         "utilities": 1200.00,
+>         "transportation": 1000.00,
+>         "education": 1800.00,
+>         "tds": 700.25,
+>         "rent": 4000.00,
+>         "groceries": 800.00,
+>         "other": 300.00
+>       },
+>       {
+>         "month": "2025-03",
+>         "utilities": 1000.00,
+>         "transportation": 1000.50,
+>         "education": 2500.00,
+>         "tds": 900.00,
+>         "rent": 4000.00,
+>         "groceries": 700.00,
+>         "other": 1400.25
+>       },
+>       {
+>         "month": "2025-04",
+>         "utilities": 1000.00,
+>         "transportation": 900.00,
+>         "education": 2700.00,
+>         "tds": 600.00,
+>         "rent": 4000.00,
+>         "groceries": 2000.00,
+>         "other": 550.00
+>       }
+>     ],
+>     "last_updated": "2025-05-05T14:30:00Z"
+>   }
+> ```
+---
 
 ## Asset & Liability Module
 
