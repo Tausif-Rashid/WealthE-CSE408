@@ -15,28 +15,28 @@
         - [Get Tax Zone List](#get-tax-zone-list)
         - [Get Tax Circle List](#get-tax-circle-list)
     3. [Submit Registration Request](#submit-registration-request)
-    4. [Personal Info](#personal-info)
-    5. [Update Personal Info](#update-personal-info)
 2. [User Module](#user-module) 
-    1. [Income Module](#income-module)
+    1. [Personal Info](#personal-info)
+    2. [Update Personal Info](#update-personal-info)
+    3. [Income Module](#income-module)
         1. [Employment Income](#employment-income)
         2. [Other Income](#other-income)
         3. [Get Income Summary](#get-income-summary)
-    2. [Expense Module](#expense-module)
-    3. [Asset & Liability Module](#asset--liability-module)
+    4. [Expense Module](#expense-module)
+    5. [Asset & Liability Module](#asset--liability-module)
         1. [Asset Module](#asset-module)
         2. [Liability Module](#liability-module)
-    4. [Invesment](#investment)
+    6. [Invesment](#investment)
         - [Previous Invesment List](#investment-list)
         - [Edit Investment](#edit-investment)
         - [Delete Investment](#delete-investment)
         - [Liquidate Investment](#liquidate-investment)
         - [Add Investment](#add-investment)
             - [Add Particular Investment](#add-selected-investment)
-    5. [Tax Estimation](#tax-estimation)
-    6. [Tax Rebate Plan](#tax-rebate-plans)
+    7. [Tax Estimation](#tax-estimation)
+    8. [Tax Rebate Plan](#tax-rebate-plans)
         - [Select Option for Rebate Plan](#select-options-from-rebate-plan)
-    7. [Tax Return](#tax-return)
+    9. [Tax Return](#tax-return)
         - [Tax Return Page-1](#tax-return-page-1)
             - [Edit Particular Income](#edit-particular-income-amount)
         - [Tax Return Page-2](#tax-return-page-2)
@@ -47,7 +47,9 @@
             - [Query Payment](#query-bkash-payment)
         - [Return Form](#return-form)
         - [Submit Return Form](#submit-tax-return-form)
-    8. [History](#history)
+    10. [AI Chat](#ai-chat)
+        - [Get AI Response](#get-ai-response)
+    11. [History](#history)
         - [Download Previous Return](#download-previous-tax-return-from-history)
 3. [Admin Module](#admin-module)
     1. [Income Rules](#income-rules)
@@ -1039,6 +1041,7 @@
 >               "engine": ,
 >               "interest": "",
 >               "weight": ,
+>               "account":"",
 >           },
 >           {   "id": "AS002",
 >               "type": "Agricultural-property",
@@ -1056,6 +1059,7 @@
 >               "engine": ,
 >               "interest": "",
 >               "weight": ,
+>               "account":"",
 >           },
 >           {   "id": "AS003",
 >               "type": "vehicle",
@@ -1073,6 +1077,7 @@
 >               "engine": 1500,
 >               "interest": "",
 >               "weight": 1200,
+>               "account":"",
 >           },
 >   ],
 >   "categories": [
@@ -1081,6 +1086,7 @@
 >       "vehicle",
 >       "jewelry",
 >       "sanchaypatra",
+>       "Bank-deposit",
 >     ]
 > }
 > ```
@@ -1585,7 +1591,8 @@
 >```json
 >   {
 >       "bank_account_id": 987654321
->    
+>       "amount": 50000,
+>       "date": "2022-10-31",
 >   }
 >```
 >
@@ -1716,18 +1723,6 @@
 >
 <br>
 
->### Response - Bad Request
->
->#### Response Code: 400 (`Bad Request`)
->
->```json
->{
->    "success": false,
->    "error": "Missing some field"
->}
->```
->
-<br>
 
 --------------
 ### Tax Estimation
@@ -1814,33 +1809,30 @@
 >   {
 >       "Tax Rebate": [
 >           { 
->               "Objects": [
+>               "Object": 
 >                   {
 >                       "name": "Shanchaypatra",
 >                       "amount": ,
->                       "interest": "7.5%"
->                   }
->               ],
+>                       "interest": 0.075
+>                   },
 >               "Rebate Maximum":
 >           },
 >           {
->               "Objects": [
+>               "Object": 
 >                   {
 >                       "name": "Zakat Fund",
 >                       "amount": ,
->                       "interest": "0%"                
->                   }
->               ],
+>                       "interest": 0                
+>                   },
 >               "Rebate Maximum":
 >           },
 >           {
->               "Objects": [
+>               "Object": 
 >                   {
 >                       "name": "Fixed Deposite",
 >                       "amount": ,
->                       "interest": "5%"                
->                   }
->               ],
+>                       "interest": 0.05                
+>                   },
 >               "Rebate Maximum":
 >           }
 >       ]
@@ -1863,20 +1855,18 @@
 >   {  
 >       "Tax Rebate Selection": [
 >           { 
->               "Objects": [
+>               "Object":
 >                   {
 >                       "name": "Shanchaypatra",
 >                       "amount": 500000,
->                       "interest": "7.5%"
->                   }
->               ],
->               "Objects": [
+>                       "interest": 0.075
+>                   },
+>               "Object": 
 >                   {
 >                       "name": "Zakat Fund",
 >                       "amount": 20000,
->                       "interest": "0%"
->                   }
->               ],
+>                       "interest": 0
+>                   },
 >           }
 >       ]
 >}
@@ -1895,23 +1885,21 @@
 >       "message": "Tax Rebate amount calculated successfully",
 >       "Selected Tax Rebate": [
 >           { 
->               "Objects": [
+>               "Object": 
 >                   {
 >                       "name": "Shanchaypatra",
 >                       "amount": 500000,
->                       "interest": "7.5%"
+>                       "interest": 0.075
 >                   }
->               ],
 >               "Rebate Maximum": 75000
 >           },
 >           {
->               "Objects": [
+>               "Object": 
 >                   {
 >                       "name": "Zakat Fund",
 >                       "amount": 20000,
->                       "interest": "0%"                
->                   }
->               ],
+>                       "interest": 0                
+>                   },
 >               "Rebate Maximum": 7500
 >           }
 >       ],
@@ -1922,6 +1910,39 @@
 >
 <br>
 -----------------------------------------
+
+### AI Chat
+### Get AI Response
+| API Endpoint             | HTTP Method |
+| ------------------------ | :---------: |
+| [/user/ai/chat]()    |   `POST`     |
+
+> ### Request
+>
+> #### Request Body
+>
+> ```json
+> {
+>   "message": "hello",
+> }
+> ```
+
+</br>
+
+> ### Response - Success
+>
+> #### Response Code : 200 (`OK`)
+>
+> #### Response Body
+>
+> ```json
+> {
+>   "message": "welcome",
+> }
+> ```
+---
+
+
 
 ### Tax Return
 
