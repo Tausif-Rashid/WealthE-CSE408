@@ -118,3 +118,6 @@ SELECT
     zone_no,
     generate_series((zone_no - 1) * 22 + 1, zone_no * 22) AS circle_no
 FROM generate_series(1, 31) AS zone_no;
+
+DELETE FROM public.rule_tax_area_list
+WHERE area_name IS NULL;
