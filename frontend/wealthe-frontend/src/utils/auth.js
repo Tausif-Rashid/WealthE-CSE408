@@ -1,13 +1,14 @@
-import bcrypt from 'bcryptjs';
+// Password hashing is handled by Spring Boot backend, no need for frontend hashing
+// import bcrypt from 'bcryptjs';
 
-export const hashPassword = async (password) => {
-  const saltRounds = 10;
-  return await bcrypt.hash(password, saltRounds);
-};
+// export const hashPassword = async (password) => {
+//   const saltRounds = 10;
+//   return await bcrypt.hash(password, saltRounds);
+// };
 
-export const comparePassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword);
-};
+// export const comparePassword = async (password, hashedPassword) => {
+//   return await bcrypt.compare(password, hashedPassword);
+// };
 
 export const validateEmail = (email) => {
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -21,7 +22,7 @@ export const validatePassword = (password) => {
 };
 
 export const setAuthToken = (token) => {
-  localStorage.setItem('token', token);
+  localStorage.setItem('token', token); // Store token in localStorage, better to use cookies 
 };
 
 export const getAuthToken = () => {

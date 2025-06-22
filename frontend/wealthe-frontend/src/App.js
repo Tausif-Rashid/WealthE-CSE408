@@ -27,7 +27,8 @@ const AppRoutes = () => {
       {/* Protected routes */}
       <Route 
         path="/dashboard" 
-        element={
+        element={ 
+          // Wrap a component to pass it as a child, ie. Dashboard
           <ProtectedRoute>
             <Layout>
               <Dashboard />

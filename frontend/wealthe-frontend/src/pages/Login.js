@@ -28,11 +28,14 @@ const Login = () => {
         [name]: ''
       }));
     }
-  };
-  const validateForm = () => {
-    const newErrors = {};    if (!formData.email) {
+  };  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.email) {
       newErrors.email = 'Email is required';
-    } else if (formData.email !== 'user1@test.com' && !validateEmail(formData.email)) {
+    } else if (!validateEmail(formData.email)) {
+      // COMMENTED OUT: Special case for test email - using backend validation now
+      // } else if (formData.email !== 'user1@test.com' && !validateEmail(formData.email)) {
       // TEMPORARY: Allow 'user1@test.com' as valid email for testing
       // TODO: Remove this special case when reverting to normal operation
       newErrors.email = 'Please enter a valid email';
@@ -55,27 +58,28 @@ const Login = () => {
     if (!validateForm()) {
       console.log('Form validation failed'); // Debug log
       return;
-    }
-
-    setLoading(true);
+    }    setLoading(true);
     console.log('Loading set to true'); // Debug log
 
-    try {      // TEMPORARY: Skip password hashing for test credentials
+    try {
+      // COMMENTED OUT: Skip password hashing - backend handles authentication
+      // TEMPORARY: Skip password hashing for test credentials
       // TODO: Remove this condition and always hash passwords
-      let passwordToSend = formData.password;
-      if (!(formData.email === 'user1@test.com' && formData.password === '123')) {
-        // TODO: Uncomment this when reverting to normal operation
-        // passwordToSend = await hashPassword(formData.password);
-      }
+      // let passwordToSend = formData.password;
+      // if (!(formData.email === 'user1@test.com' && formData.password === '123')) {
+      //   TODO: Uncomment this when reverting to normal operation
+      //   passwordToSend = await hashPassword(formData.password);
+      // }
       
-      console.log('Calling login API with:', formData.email, passwordToSend); // Debug log
-      const response = await login(formData.email, passwordToSend);
+      console.log('Calling login API with:', formData.email, formData.password); // Debug log
+      const response = await login(formData.email, formData.password);
       console.log('Login response:', response); // Debug log
       
       if (response.token) {
         setAuthToken(response.token);
-        authLogin(response.user, response.token);
+        authLogin(response.user, response.token); // Store user info in AuthContext
         console.log('Navigating to dashboard'); // Debug log
+        console.log('User logged in:', response.user); // Debug log
         navigate('/dashboard');
       }
     } catch (error) {
@@ -90,23 +94,9 @@ const Login = () => {
   };
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
+      <div className="auth-card">        <div className="auth-header">
           <h1>💰 Welcome Back</h1>
           <p>Sign in to your account</p>
-          {/* TEMPORARY: Test credentials notice */}
-          {/* TODO: Remove this when reverting to normal operation */}
-          <div style={{
-            background: '#e3f2fd',
-            border: '1px solid #2196f3',
-            borderRadius: '5px',
-            padding: '10px',
-            margin: '10px 0',
-            fontSize: '0.9rem',
-            color: '#1976d2'
-          }}>
-            <strong>Test Mode:</strong> Use email "user1@test.com" and password "123" to login
-          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
@@ -169,3 +159,14 @@ const Login = () => {
 };
 
 export default Login;
+
+//Successfull login will redirect to dashboard
+//response:
+// {
+// "user":{
+// "email": "abc@yahoo.com",
+// "id": 2
+// },
+// "message": "Login successful",
+// "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzUwNDAwMDcwLCJleHAiOjE3NTA0ODY0NzB9.ycIt5w5XzeovDg4XsOYu1T77zy5wg6lWxk6XOAOGaW0HH0Sij5Rbw2NVDvObOWVBVxmgwDo32a_8F-HGsXbV6A"
+// }

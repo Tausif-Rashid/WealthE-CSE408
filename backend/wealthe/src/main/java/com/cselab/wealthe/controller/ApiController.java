@@ -1,50 +1,73 @@
 package com.cselab.wealthe.controller;
 
+import com.cselab.wealthe.util.JwtUtil;
+
+//import java.util.logging.Logger;
+
+//import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 public class ApiController {
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @GetMapping("/user_info")
-    @CrossOrigin(origins = "*")
-    public List<Map<String, Object>> getUserInfo(@RequestParam(required = false) Integer id) {
+    @Autowired
+    private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
+
+
+
+
+    @GetMapping("/user/info")
+    public List<Map<String, Object>> getUserInfo() { //Returns an array of user object with 1 element
         String sql;
-        if (id != null) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
             sql = "SELECT * FROM user_info WHERE id = ?";
             return jdbcTemplate.queryForList(sql, id);
-        } else {
-            sql = "SELECT * FROM user_info";
-            return jdbcTemplate.queryForList(sql);
         }
+        logger.debug("failed to get id in /user/info");
+        return null;
     }
 
-    @GetMapping("/user_tax_info")
-    @CrossOrigin(origins = "*")
-    public List<Map<String, Object>> getUserTaxInfo(@RequestParam(required = false) Integer id) {
+    @GetMapping("/user/tax_info")
+    public List<Map<String, Object>> getUserTaxInfo() {
         String sql;
-        if (id != null) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
             sql = "SELECT * FROM user_tax_info WHERE id = ?";
             return jdbcTemplate.queryForList(sql, id);
-        } else {
-            sql = "SELECT * FROM user_tax_info";
-            return jdbcTemplate.queryForList(sql);
         }
+        logger.debug("failed to get id in /user/tax_info");
+        return null;
     }
 
     @GetMapping("/user/expense")
     @CrossOrigin(origins = "*")
-    public List<Map<String, Object>> getUserExpenseList(@RequestParam(required = false) Integer id) {
+    public List<Map<String, Object>> getUserExpenseList() {
         String sql;
-        if (id != null) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
             try{
                 sql = "SELECT id, user_id,type, CAST(amount AS numeric) as amount, description,date FROM expense WHERE user_id=?";
                 return jdbcTemplate.queryForList(sql, id);

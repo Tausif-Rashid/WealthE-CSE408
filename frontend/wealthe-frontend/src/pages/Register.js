@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../utils/api';
-import { setAuthToken, validateEmail, validatePassword, hashPassword } from '../utils/auth';
+import { setAuthToken, validateEmail, validatePassword } from '../utils/auth';
 import { useAuth } from '../components/AuthContext';
 import './Login.css'; // Reusing the same styles
 
@@ -68,16 +68,15 @@ const Register = () => {
       return;
     }
 
-    setLoading(true);
-
-    try {
+    setLoading(true);    try {
+      // COMMENTED OUT: Password hashing - backend handles authentication
       // Hash the password before sending to backend
-      const hashedPassword = await hashPassword(formData.password);
+      // const hashedPassword = await hashPassword(formData.password);
       
       const userData = {
         name: formData.name.trim(),
         email: formData.email,
-        password: hashedPassword,
+        password: formData.password, // Send plain password - backend will hash it
       };
 
       const response = await register(userData);

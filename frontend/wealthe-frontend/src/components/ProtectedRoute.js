@@ -2,8 +2,8 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute = ({ children }) => { //Children specified by app.js, only accessed if authenticated
+  const { isAuthenticated, loading } = useAuth(); // isAuthenticated is set in AuthContext.js, loading is set in useAuth hook
 
   if (loading) {
     return (
@@ -36,7 +36,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  return isAuthenticated ? children : <Navigate to="/login" replace />; // If not authenticated, redirect to login page
 };
 
 export default ProtectedRoute;

@@ -24,7 +24,13 @@ export const AuthProvider = ({ children }) => {
         console.log('Token found, checking user info...');
         try {
           const userData = await getUserInfo();
-          setUser(userData);
+          //setUser(userData);
+          if(!userData){ //running a check to see if login was successful
+            console.error('No user data found, removing token');
+            removeAuthToken();
+            setIsAuthenticated(false);
+            return;
+          }
           setIsAuthenticated(true);
         } catch (error) {
           console.error('Failed to get user info:', error);

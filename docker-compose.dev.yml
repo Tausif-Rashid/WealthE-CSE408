@@ -1,0 +1,41 @@
+version: '3.8'
+
+# Development override for docker-compose
+services:
+  database:
+    ports:
+      - "5432:5432"  # Expose database port for development tools
+    volumes:
+      - ./db/sql:/docker-entrypoint-initdb.d:ro
+      - ./db/dev-data:/tmp/dev-data:ro  # Mount development data
+
+  backend:
+    environment:
+      SPRING_PROFILES_ACTIVE: development
+      SPRING_JPA_SHOW_SQL: true
+      LOGGING_LEVEL_COM_CSELAB_WEALTHE: DEBUG
+      LOGGING_LEVEL_ROOT: INFO
+      SPRING_DEVTOOLS_RESTART_ENABLED: true
+    volumes:
+      - ./backend/wealthe/src:/app/src:ro  # Mount source for hot reload
+      - ./backend/wealthe/target:/app/target
+    ports:
+      - "8081:8081"
+      - "5005:5005"  # Debug port
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar app.jar
+
+  frontend:
+    build:
+      context: ./frontend/wealthe-frontend
+      dockerfile: Dockerfile.dev
+    environment:
+      - REACT_APP_API_URL=http://localhost:8081
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ./frontend/wealthe-frontend/src:/app/src:ro
+      - ./frontend/wealthe-frontend/public:/app/public:ro
+      - /app/node_modules  # Anonymous volume for node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
