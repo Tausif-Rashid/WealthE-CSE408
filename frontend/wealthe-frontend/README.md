@@ -46,6 +46,7 @@ The frontend expects these backend endpoints:
    npm start
    ```
 
+
 3. **Open your browser:**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
