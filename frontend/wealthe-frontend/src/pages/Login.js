@@ -76,6 +76,9 @@ const Login = () => {
       console.log('Login response:', response); // Debug log
       
       if (response.token) {
+        if (response.user.role == "admin"){
+          console.log ("yahoo");
+        }
         setAuthToken(response.token);
         authLogin(response.user, response.token); // Store user info in AuthContext
         console.log('Navigating to dashboard'); // Debug log
