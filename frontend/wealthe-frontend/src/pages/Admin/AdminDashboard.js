@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
+import { getTotalUsers } from '../../utils/api';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -13,8 +14,23 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
-    // TODO: Implement admin statistics fetching
-    // This would be connected to your backend API
+    const fetchStats = async () => {
+      setLoading(true);
+      try {
+        const response = await getTotalUsers();
+        setStats(prev => ({
+          ...prev,
+          totalUsers: response.total
+        }));
+      } catch (err) {
+        setError('Failed to load dashboard statistics');
+        console.error('Error fetching statistics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   if (loading) return <div className="loading">Loading...</div>;

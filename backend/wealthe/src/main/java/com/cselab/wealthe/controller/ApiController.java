@@ -30,7 +30,7 @@ public class ApiController {
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
 
-
+    
 
     @GetMapping("/user/info")
     public List<Map<String, Object>> getUserInfo() { //Returns an array of user object with 1 element

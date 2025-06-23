@@ -1,22 +1,23 @@
 package com.cselab.wealthe.controller;
 
 import com.cselab.wealthe.util.JwtUtil;
-import org.slf4j.Logger;
+
+//import java.util.logging.Logger;
+
+//import org.slf4j.LoggerFactory;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminApiController {
 
     @Autowired
@@ -25,25 +26,20 @@ public class AdminApiController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
     private static final Logger logger = LoggerFactory.getLogger(AdminApiController.class);
 
-
-
-
     @GetMapping("/admin/total-users")
-    public List<Map<String, Object>> getUserInfo() { //Returns an array of user object with 1 element
-        String sql;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        int id = Integer.parseInt(auth.getName());
-
-        if (id != 0) {
-            sql = "SELECT COUNT FROM user_info WHERE role = 'user' ";
-            return jdbcTemplate.queryForList(sql);
+    public Map<String, Object> getTotalUsers() {
+        try {
+            String sql = "SELECT COUNT(*) as total FROM credentials WHERE role = 'user'";
+            System.out.println("api called for admin total user");
+            return jdbcTemplate.queryForMap(sql);
+        } catch (Exception e) {
+            logger.error("Failed to get total users count: " + e.getMessage());
+            return Map.of("total", 0);
         }
-        logger.debug("failed to return number of users");
-        return null;
     }
+
 
     /*@GetMapping("/user/tax_info")
     public List<Map<String, Object>> getUserTaxInfo() {

@@ -126,3 +126,9 @@ export const getUserExpense = async () => {
     method: 'GET',
   });
 };
+
+export const getTotalUsers = async () => {
+  return apiCall('/admin/total-users', {
+    method: 'GET',
+  });
+};
