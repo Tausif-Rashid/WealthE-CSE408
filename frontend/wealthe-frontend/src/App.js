@@ -7,28 +7,28 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
+import AdminDashboard from './pages/Admin/AdminDashboard';
 import './App.css';
 
 const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <Routes>
       {/* Public routes - redirect to dashboard if already authenticated */}
       <Route 
         path="/login" 
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
+        element={isAuthenticated ? <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : <Login />} 
       />
       <Route 
         path="/register" 
-        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />} 
+        element={isAuthenticated ? <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : <Register />} 
       />
       
       {/* Protected routes */}
       <Route 
         path="/dashboard" 
         element={ 
-          // Wrap a component to pass it as a child, ie. Dashboard
           <ProtectedRoute>
             <Layout>
               <Dashboard />
@@ -36,6 +36,19 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
+
+      {/* Admin routes */}
+      <Route 
+        path="/admin/dashboard" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <AdminDashboard />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
       <Route 
         path="/expenses" 
         element={
@@ -47,12 +60,12 @@ const AppRoutes = () => {
         } 
       />
       
-      {/* Default route - redirect based on authentication */}
+      {/* Default route - redirect based on authentication and role */}
       <Route 
         path="/" 
         element={
           isAuthenticated ? 
-            <Navigate to="/dashboard" replace /> : 
+            <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : 
             <Navigate to="/login" replace />
         } 
       />
@@ -62,7 +75,7 @@ const AppRoutes = () => {
         path="*" 
         element={
           isAuthenticated ? 
-            <Navigate to="/dashboard" replace /> : 
+            <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : 
             <Navigate to="/login" replace />
         } 
       />

@@ -1,0 +1,107 @@
+.admin-sidebar {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1a237e 0%, #303f9f 100%);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+
+.admin-sidebar-header {
+  margin-bottom: 2rem;
+}
+
+.admin-sidebar-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.admin-user-info {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.admin-user-info p {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.admin-badge {
+  background: #4caf50;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+}
+
+.admin-sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-sidebar-nav li {
+  margin-bottom: 0.5rem;
+}
+
+.admin-sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.admin-sidebar-nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar-nav a.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-icon {
+  margin-right: 1rem;
+  font-size: 1.2rem;
+}
+
+.admin-sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-logout-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.admin-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.admin-logout-btn span:last-child {
+  margin-left: 0.5rem;
+}

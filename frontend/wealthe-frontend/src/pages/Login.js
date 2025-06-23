@@ -78,6 +78,7 @@ const Login = () => {
       if (response.token) {
         if (response.user.role == "admin"){
           console.log ("yahoo");
+          navigate('/Admin/AdminDashboard');
         }
         setAuthToken(response.token);
         authLogin(response.user, response.token); // Store user info in AuthContext
