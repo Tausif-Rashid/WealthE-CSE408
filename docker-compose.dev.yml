@@ -1,12 +1,14 @@
-version: '3.8'
+
+#run dev version with:
+#docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 # Development override for docker-compose
 services:
   database:
     ports:
-      - "5432:5432"  # Expose database port for development tools
+      - "5454:5432"  # Expose database port for development tools
     volumes:
-      - ./db/sql:/docker-entrypoint-initdb.d:ro
+      #- ./db/sql:/docker-entrypoint-initdb.d:ro
       #- ./db/dev-data:/tmp/dev-data:ro  # Mount development data
 
   backend:

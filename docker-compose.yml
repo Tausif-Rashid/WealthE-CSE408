@@ -1,25 +1,26 @@
-version: '3.8'
 
 services:
   # PostgreSQL Database
   database:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: wealthe-db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-wealthe_db}
-      POSTGRES_USER: ${DB_USER:-wealthe_user}
+      POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-wealthe_password}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/sql_final:/docker-entrypoint-initdb.d:ro #this shema and data should be loaded in db inside container
+      #- ./db/sql_final:/docker-entrypoint-initdb.d:ro #this schema and data should be loaded in db inside container
+      - ./backupv13.dump:/docker-entrypoint-initdb.d/backup.dump
+      - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "${DB_PORT:-5454}:5432"
     networks:
       - wealthe-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-wealthe_user} -d ${DB_NAME:-wealthe_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-wealthe_db}"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -35,7 +36,7 @@ services:
     environment:
       # Database configuration
       SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:-wealthe_db}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER:-wealthe_user}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgres}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-wealthe_password}
       
       # JPA/Hibernate configuration
@@ -44,7 +45,7 @@ services:
       SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
       
       # JWT configuration
-      JWT_SECRET: ${JWT_SECRET:-your-256-bit-secret-key-here-change-this-in-production}
+      JWT_SECRET: ${JWT_SECRET:-your-256-bit-secret-key-here-change-this-in-production-keep-github-secrets-for-hiding}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
       
       # Server configuration
@@ -55,7 +56,7 @@ services:
       
       # Actuator for health checks
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info
-      MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: when_authorized
+      
     ports:
       - "${BACKEND_PORT:-8081}:8081"
     networks:
