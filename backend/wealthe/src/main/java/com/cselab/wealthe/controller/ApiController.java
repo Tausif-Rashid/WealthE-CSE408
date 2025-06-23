@@ -53,7 +53,10 @@ public class ApiController {
         int id = Integer.parseInt(auth.getName());
 
         if (id != 0) {
-            sql = "SELECT * FROM user_tax_info WHERE id = ?";
+            //sql = "SELECT * FROM user_tax_info WHERE id = ?";
+            sql = "SELECT user_tax_info.id, tin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name, credentials.email\n" +
+                    "FROM user_tax_info\n" +
+                    "JOIN credentials ON user_tax_info.id = credentials.id WHERE user_tax_info.id = ?";
             return jdbcTemplate.queryForList(sql, id);
         }
         logger.debug("failed to get id in /user/tax_info");

@@ -13,7 +13,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/sql:/docker-entrypoint-initdb.d:ro
+      - ./db/sql_final:/docker-entrypoint-initdb.d:ro #this shema and data should be loaded in db inside container
     ports:
       - "${DB_PORT:-5432}:5432"
     networks:

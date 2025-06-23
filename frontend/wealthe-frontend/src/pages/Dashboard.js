@@ -4,7 +4,7 @@ import { getUserInfo, getTaxInfo } from '../utils/api';
 import './Dashboard.css';
 
 const Dashboard = () => {
-  const { user } = useAuth(); // user in auth context, id and email
+  const { user, setUser } = useAuth(); // user in auth context, id and email
   const [userInfo, setUserInfo] = useState(null);
   const [taxInfo, setTaxInfo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +45,8 @@ const Dashboard = () => {
           }
           console.log('Fetched tax info:', taxData); // Debug log
           setTaxInfo(taxData?.[0] || null);
+          setUser({ email: taxData?.[0]?.email, id: taxData?.[0]?.id }); // Update user in auth context from db
+          
         } catch (err) {
           setError('Failed to load tax information');
           console.error('Error fetching tax info:', err);
@@ -99,7 +101,7 @@ const Dashboard = () => {
             <div className="stat-icon">📧</div>
             <div className="stat-info">
               <h3>Email</h3>
-              <p className="stat-value">{user?.email || 'N/A'}</p> 
+              <p className="stat-value">{taxInfo?.email || 'N/A'}</p> 
               {/* //id and email is stored in user from authContext.js */}
               <small>Your email address</small>
             </div>
@@ -110,7 +112,8 @@ const Dashboard = () => {
             <div className="details-grid">
               <div className="detail-item">
                 <label>ID:</label>
-                <span>{user?.id || 'Not available'}</span>
+                <span>{user?.id || 'Not available'}</span> 
+                {/*this id is from user for testing, use from userInfo */}
               </div>
               <div className="detail-item">
                 <label>Full Name:</label>
@@ -204,6 +207,7 @@ export default Dashboard;
 // "is_disabled": false,
 // "tax_zone": 1,
 // "tax_circle": 2,
-// "area_name": "Dhaka"
+// "area_name": "Dhaka",
+// "email": "abc@yahoo.com"
 // }
 // ]

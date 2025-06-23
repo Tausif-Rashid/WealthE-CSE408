@@ -7,7 +7,7 @@ services:
       - "5432:5432"  # Expose database port for development tools
     volumes:
       - ./db/sql:/docker-entrypoint-initdb.d:ro
-      - ./db/dev-data:/tmp/dev-data:ro  # Mount development data
+      #- ./db/dev-data:/tmp/dev-data:ro  # Mount development data
 
   backend:
     environment:

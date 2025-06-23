@@ -89,7 +89,7 @@ public class AuthController {
             Map<String, Object> user = users.get(0);
             String storedPassword = (String) user.get("password_hash");
             System.out.println(storedPassword);
-            System.out.println(passwordEncoder.encode(storedPassword));
+            System.out.println(passwordEncoder.encode(password));
 
             // Verify password
             if (!passwordEncoder.matches(password, storedPassword)) {

@@ -32,3 +32,11 @@ export const getAuthToken = () => {
 export const removeAuthToken = () => {
   localStorage.removeItem('token');
 };
+
+export const setAuthRole = (role) => {
+  localStorage.setItem('role', role); // Store user/admin in localStorage, better to use cookies 
+};
+
+export const getAuthRole = () => {
+  return localStorage.getItem('role');
+};
