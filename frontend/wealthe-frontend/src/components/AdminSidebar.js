@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import './AdminSidebar.css';
@@ -6,14 +6,22 @@ import './AdminSidebar.css';
 const AdminSidebar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [isRulesOpen, setIsRulesOpen] = useState(false);
 
   const adminNavItems = [
     { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
-    { path: '/admin/users', icon: '👥', label: 'Users' },
-    { path: '/admin/transactions', icon: '💰', label: 'Transactions' },
-    { path: '/admin/support', icon: '💬', label: 'Support' },
-    { path: '/admin/reports', icon: '📈', label: 'Reports' },
-    { path: '/admin/settings', icon: '⚙️', label: 'Settings' }
+    { path: '/admin/files', icon: '📁', label: 'Files' },
+    {
+      path: '/admin/rules',
+      icon: '📋',
+      label: 'Rules',
+      subItems: [
+        { path: '/admin/rules/income', label: 'Income' },
+        { path: '/admin/rules/investment', label: 'Investment' },
+        { path: '/admin/rules/rebate', label: 'Rebate' },
+        { path: '/admin/rules/zone', label: 'Zone Rules' }
+      ]
+    }
   ];
 
   return (
@@ -30,13 +38,44 @@ const AdminSidebar = () => {
         <ul>
           {adminNavItems.map((item) => (
             <li key={item.path}>
-              <Link
-                to={item.path}
-                className={location.pathname === item.path ? 'active' : ''}
-              >
-                <span className="nav-icon">{item.icon}</span>
-                <span className="nav-label">{item.label}</span>
-              </Link>
+              {item.subItems ? (
+                <div>
+                  <button
+                    className={`nav-item ${location.pathname.startsWith(item.path) ? 'active' : ''}`}
+                    onClick={() => setIsRulesOpen(!isRulesOpen)}
+                  >
+                    <div className="nav-item-content">
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                    </div>
+                    <span className="arrow-icon">{isRulesOpen ? '▲' : '▼'}</span>
+                  </button>
+                  {isRulesOpen && (
+                    <ul className="subnav">
+                      {item.subItems.map((subItem) => (
+                        <li key={subItem.path}>
+                          <Link
+                            to={subItem.path}
+                            className={location.pathname === subItem.path ? 'active' : ''}
+                          >
+                            {subItem.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  to={item.path}
+                  className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                >
+                  <div className="nav-item-content">
+                    <span className="nav-icon">{item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                  </div>
+                </Link>
+              )}
             </li>
           ))}
         </ul>

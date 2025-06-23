@@ -39,7 +39,7 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-info">
-            <h3>Total Transactions</h3>
+            <h3># of Tax Payers</h3>
             <p className="stat-value">{stats.totalTransactions}</p>
           </div>
         </div>
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <div className="stat-icon">✅</div>
           <div className="stat-info">
-            <h3>Active Users</h3>
+            <h3>Amount of Tax Paid</h3>
             <p className="stat-value">{stats.activeUsers}</p>
           </div>
         </div>

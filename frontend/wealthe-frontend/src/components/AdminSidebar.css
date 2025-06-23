@@ -9,6 +9,7 @@
   position: fixed;
   left: 0;
   top: 0;
+  z-index: 1000;
 }
 
 .admin-sidebar-header {
@@ -55,27 +56,76 @@
   margin-bottom: 0.5rem;
 }
 
-.admin-sidebar-nav a {
+.nav-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   padding: 0.75rem 1rem;
   color: white;
   text-decoration: none;
+  border: none;
+  background: transparent;
   border-radius: 8px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
-.admin-sidebar-nav a:hover {
+.nav-item:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.admin-sidebar-nav a.active {
+.nav-item.active {
   background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-item-content {
+  display: flex;
+  align-items: center;
 }
 
 .nav-icon {
   margin-right: 1rem;
   font-size: 1.2rem;
+}
+
+.nav-label {
+  font-size: 1rem;
+}
+
+.arrow-icon {
+  font-size: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.subnav {
+  margin-left: 2.75rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.subnav a {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: white;
+  text-decoration: none;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.subnav a:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.subnav a.active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 500;
 }
 
 .admin-sidebar-footer {
