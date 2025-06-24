@@ -157,12 +157,15 @@ const AdminDashboard = () => {
   };
 
   const handleCancel = () => {
+    // Clear editing state
     setEditingField({ id: null, field: null });
     setTempValue('');
+    setError(''); // Clear any error messages
   };
 
   const renderCell = (slab, field, index) => {
     const isEditing = editingField.id === slab.id && editingField.field === field;
+    const isLastRow = isLastIndex(index);
 
     if (isEditing) {
       return (
@@ -172,8 +175,6 @@ const AdminDashboard = () => {
               type="text"
               value={tempValue}
               onChange={(e) => setTempValue(e.target.value)}
-              onBlur={() => handleSave(slab.id, field, tempValue)}
-              autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleSave(slab.id, field, tempValue);
@@ -182,6 +183,7 @@ const AdminDashboard = () => {
                 }
               }}
               className="edit-input"
+              autoFocus
             />
             <div className="input-actions">
               <button 
@@ -194,6 +196,7 @@ const AdminDashboard = () => {
               <button 
                 className="cancel-btn"
                 onClick={handleCancel}
+                type="button"
               >
                 ✕
               </button>
@@ -203,41 +206,35 @@ const AdminDashboard = () => {
       );
     }
 
-    if (field === 'slab_size' && isLastIndex(index)) {
-      return (
-        <td>
-          <span className="cell-content">
-            <span className={Object.keys(pendingChanges).some(key => key.startsWith(`${slab.id}_${field}`)) ? 'changed-value' : ''}>
-              Rest
-            </span>
-            <svg 
-              className="edit-icon" 
-              onClick={() => handleEditClick(slab.id, field, slab[field])}
-              viewBox="0 0 20 20" 
-              fill="currentColor"
-            >
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-            </svg>
-          </span>
-        </td>
-      );
-    }
+    if (field === 'slab_size') {
+      let label;
+      if (index === 0) {
+        label = 'First';
+      } else if (isLastRow) {
+        label = 'Rest';
+      } else {
+        label = 'Next';
+      }
 
-    if (field === 'slab_size' && index === 0) {
       return (
         <td>
           <span className="cell-content">
-            <span className={Object.keys(pendingChanges).some(key => key.startsWith(`${slab.id}_${field}`)) ? 'changed-value' : ''}>
-              First
-            </span>
-            <svg 
-              className="edit-icon" 
-              onClick={() => handleEditClick(slab.id, field, slab[field])}
-              viewBox="0 0 20 20" 
-              fill="currentColor"
-            >
-              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-            </svg>
+            <span className="slab-label">{label}</span>
+            {!isLastRow && (
+              <span className={Object.keys(pendingChanges).some(key => key.startsWith(`${slab.id}_${field}`)) ? 'changed-value' : ''}>
+                {Number(slab[field]).toLocaleString()}
+              </span>
+            )}
+            {!isLastRow && (
+              <svg 
+                className="edit-icon" 
+                onClick={() => handleEditClick(slab.id, field, slab[field])}
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+            )}
           </span>
         </td>
       );
@@ -245,9 +242,9 @@ const AdminDashboard = () => {
 
     return (
       <td>
-        <span className="cell-content">
+        <span className={"cell-content" + (field === 'tax_rate' ? ' tax-rate' : '')}>
           <span className={Object.keys(pendingChanges).some(key => key.startsWith(`${slab.id}_${field}`)) ? 'changed-value' : ''}>
-            {field === 'slab_size' ? `${Number(slab[field]).toLocaleString()}` : `${slab[field]}%`}
+            {field === 'tax_rate' ? `${slab[field]}%` : Number(slab[field]).toLocaleString()}
           </span>
           <svg 
             className="edit-icon" 
@@ -271,7 +268,7 @@ const AdminDashboard = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="category-toggle">
+      <div className="category-toggle" style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '20px' }}>
         <button
           onClick={() => setActiveCategory('regular')}
           className={activeCategory === 'regular' ? 'active' : ''}
@@ -284,13 +281,31 @@ const AdminDashboard = () => {
         >
           Female
         </button>
+        <button
+          onClick={() => setActiveCategory('elderly')}
+          className={activeCategory === 'elderly' ? 'active' : ''}
+        >
+          Elderly
+        </button>
+        <button
+          onClick={() => setActiveCategory('disabled')}
+          className={activeCategory === 'disabled' ? 'active' : ''}
+        >
+          Disabled
+        </button>
+        <button
+          onClick={() => setActiveCategory('ff')}
+          className={activeCategory === 'ff' ? 'active' : ''}
+        >
+          Freedom Fighter
+        </button>
       </div>
 
       <div className="slab-table">
         <table>
           <thead>
             <tr>
-              <th>Slab No.</th>
+              <th >Slab No.</th>
               <th>Slab Size</th>
               <th>Tax Rate (%)</th>
             </tr>

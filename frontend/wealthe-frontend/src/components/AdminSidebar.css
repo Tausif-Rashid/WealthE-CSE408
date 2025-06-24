@@ -222,15 +222,15 @@ tr:hover .edit-icon:hover {
 
 .save-btn,
 .cancel-btn {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border: none;
-  border-radius: 3px;
+  border-radius: 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   transition: all 0.2s ease;
 }
@@ -417,4 +417,9 @@ tr:hover .edit-icon:hover {
   padding: 2px 4px;
   border-radius: 3px;
   font-weight: 500;
+}
+
+.slab-table th:nth-child(2),
+.slab-table th:nth-child(3) {
+  text-align: right;
 }
