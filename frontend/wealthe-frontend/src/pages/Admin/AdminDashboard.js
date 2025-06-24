@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getInvestmentCategories, getIncomeSlabs, getTotalUsers } from '../../utils/api';
+import { getRebateRules, getIncomeSlabs, getTotalUsers } from '../../utils/api';
 import { getUserInfo } from '../../utils/api';
 
 const AdminDashboard = () => {
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       try {
         setLoading(true);
         console.log(" Income Slabs: ");
-        const response = await getInvestmentCategories();
+        const response = await getRebateRules();
         console.log(" Income Slabs: ");
         console.log(response);
       } catch (err) {

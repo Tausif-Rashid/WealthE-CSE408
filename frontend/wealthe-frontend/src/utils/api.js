@@ -156,3 +156,10 @@ export const getInvestmentCategories = async () => {
     method: 'GET',
   });
 };
+
+export const getRebateRules = async () => {
+  return apiCall('/admin/rebate-rules', {
+    method: 'GET',
+  });
+};
+

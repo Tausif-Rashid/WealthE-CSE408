@@ -101,8 +101,10 @@ public class AdminApiController {
 
         try{
             sql = "SELECT id, title, rate_rebate, \n" +
+                    "       min_amount::numeric(20,2) AS minimum, \n" +
+                    "       max_amount::numeric(20,2) AS maximum,\n" +
                     "       description \n" +
-                    "FROM rule_investment_type;";
+                    "FROM rule_investment_type;\n";
             System.out.println("SQL successfully run");
             List<Map<String, Object>> temp = jdbcTemplate.queryForList(sql);
             System.out.println(temp);
