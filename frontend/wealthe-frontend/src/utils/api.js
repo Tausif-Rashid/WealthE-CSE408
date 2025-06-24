@@ -163,3 +163,16 @@ export const getRebateRules = async () => {
   });
 };
 
+export const getTaxAreaList = async () => {
+  return apiCall('/admin/tax-area-list', {
+    method: 'GET',
+  });
+};
+
+export const getMinimumTaxList = async () => {
+  return apiCall('/admin/minimum-tax-list', {
+    method: 'GET',
+  });
+};
+
+

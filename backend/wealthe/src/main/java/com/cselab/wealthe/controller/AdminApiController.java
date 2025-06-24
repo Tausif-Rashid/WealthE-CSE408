@@ -125,7 +125,7 @@ public class AdminApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         try{
-            sql = "SELECT * FROM rule_rebate\n";
+            sql = "SELECT id, max_rebate_amount::numeric(20,2) AS maximum, max_of_income FROM rule_rebate";
             return jdbcTemplate.queryForList(sql);
         }catch(Exception e){
             System.out.println("Error occured: " + e);
@@ -159,7 +159,7 @@ public class AdminApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         try{
-            sql = "SELECT * FROM rule_tax_zone_min_tax\n";
+            sql = "SELECT id, area_name, min_amount::numeric(20,2) AS minimum FROM rule_tax_zone_min_tax";
             return jdbcTemplate.queryForList(sql);
         }catch(Exception e){
             System.out.println("Error occured: " + e);

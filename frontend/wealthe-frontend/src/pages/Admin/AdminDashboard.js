@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getRebateRules, getIncomeSlabs, getTotalUsers } from '../../utils/api';
+import { getMinimumTaxList, getTaxAreaList, getTotalUsers } from '../../utils/api';
 import { getUserInfo } from '../../utils/api';
 
 const AdminDashboard = () => {
@@ -48,8 +48,7 @@ const AdminDashboard = () => {
       try {
         setLoading(true);
         console.log(" Income Slabs: ");
-        const response = await getRebateRules();
-        console.log(" Income Slabs: ");
+        const response = await getMinimumTaxList();
         console.log(response);
       } catch (err) {
         setError('Failed to load Income Slab');
