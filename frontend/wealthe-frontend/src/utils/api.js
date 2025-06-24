@@ -216,3 +216,13 @@ export const addTaxZoneRule = async (zoneData) => {
     body: JSON.stringify(zoneData),
   });
 };
+
+export const updateRebateRule = async (updateData) => {
+  return apiCall('/admin/edit-rebate-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateData),
+  });
+};

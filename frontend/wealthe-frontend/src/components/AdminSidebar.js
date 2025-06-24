@@ -10,6 +10,7 @@ const AdminSidebar = () => {
 
   const adminNavItems = [
     { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
+    { path: '/admin/files', icon: '📁', label: 'Files' },
     {
       path: '/admin/rules',
       icon: '📋',
@@ -20,8 +21,8 @@ const AdminSidebar = () => {
         { path: '/admin/rules/rebate', label: 'Rebate Rules' },
         { path: '/admin/rules/taxzone', label: 'Tax Zone Rules' }
       ]
-    },
-    { path: '/admin/files', icon: '📁', label: 'Files' }
+    }
+    
   ];
 
   return (
