@@ -52,7 +52,7 @@ jobs:
       with:
         context: ./backend/wealthe
         push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
+        tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/wealthe-cse408-backend:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -61,7 +61,8 @@ jobs:
       with:
         context: ./frontend/wealthe-frontend
         push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+        #tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+        tags: ${{ env.REGISTRY }}/${{ github.repository_owner }}/wealthe-cse408-frontend:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
