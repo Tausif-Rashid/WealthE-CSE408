@@ -10,6 +10,8 @@ const RebateRule = () => {
   const [error, setError] = useState('');
   const [rebateData, setRebateData] = useState(null);
   const [editingField, setEditingField] = useState(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState({});
   const [tempValues, setTempValues] = useState({
     maximum: '',
     max_of_income: ''
@@ -51,26 +53,43 @@ const RebateRule = () => {
     }));
   };
 
-  const handleSave = async (field) => {
+  const handleSave = (field) => {
+    const value = parseFloat(tempValues[field]);
+    if (isNaN(value) || value < 0) {
+      setError('Please enter a valid number');
+      return;
+    }
+
+    setPendingChanges(prev => ({
+      ...prev,
+      [field]: { value, oldValue: rebateData[field] }
+    }));
+    setHasUnsavedChanges(true);
+    setEditingField(null);
+    setError('');
+  };
+
+  const handleConfirmUpdate = async () => {
     try {
-      const value = parseFloat(tempValues[field]);
-      if (isNaN(value) || value < 0) {
-        throw new Error('Please enter a valid number');
-      }
+      if (Object.keys(pendingChanges).length === 0) return;
 
       const updateData = {
-        id: rebateData.id,
-        [field]: value
+        id: rebateData.id
       };
+      
+      Object.entries(pendingChanges).forEach(([field, { value }]) => {
+        updateData[field] = value;
+      });
 
       await updateRebateRule(updateData);
       
       setRebateData(prev => ({
         ...prev,
-        [field]: value
+        ...Object.fromEntries(Object.entries(pendingChanges).map(([field, { value }]) => [field, value]))
       }));
       
-      setEditingField(null);
+      setPendingChanges({});
+      setHasUnsavedChanges(false);
       setError('');
     } catch (err) {
       setError(err.message || 'Failed to update rebate rule');
@@ -79,6 +98,8 @@ const RebateRule = () => {
 
   const handleCancel = () => {
     setEditingField(null);
+    setPendingChanges({});
+    setHasUnsavedChanges(false);
     setError('');
   };
 
@@ -123,7 +144,9 @@ const RebateRule = () => {
                   </div>
                 ) : (
                   <span className="cell-content">
-                    <span>{rebateData?.maximum.toLocaleString()}</span>
+                    <span className={pendingChanges.maximum ? 'changed-value' : ''}>
+                      {pendingChanges.maximum?.value?.toLocaleString() || rebateData?.maximum.toLocaleString()}
+                    </span>
                     <svg 
                       className="edit-icon" 
                       onClick={() => handleEditClick('maximum')}
@@ -158,7 +181,9 @@ const RebateRule = () => {
                   </div>
                 ) : (
                   <span className="cell-content">
-                    <span>{rebateData?.max_of_income}%</span>
+                    <span className={pendingChanges.max_of_income ? 'changed-value' : ''}>
+                      {pendingChanges.max_of_income?.value || rebateData?.max_of_income}%
+                    </span>
                     <svg 
                       className="edit-icon" 
                       onClick={() => handleEditClick('max_of_income')}
@@ -174,6 +199,30 @@ const RebateRule = () => {
           </tbody>
         </table>
       </div>
+
+      {hasUnsavedChanges && (
+        <div className="update-controls">
+          <div className="changes-info">
+            <span className="changes-count">
+              {Object.keys(pendingChanges).length} unsaved change{Object.keys(pendingChanges).length !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className="control-buttons">
+            <button 
+              className="discard-btn"
+              onClick={handleCancel}
+            >
+              Discard Changes
+            </button>
+            <button 
+              className="update-btn"
+              onClick={handleConfirmUpdate}
+            >
+              Update All Changes
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

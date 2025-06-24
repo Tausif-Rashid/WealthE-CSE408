@@ -223,6 +223,10 @@ export const updateRebateRule = async (updateData) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(updateData),
+    body: JSON.stringify({
+      maximumRebate: updateData.maximum,
+      maximum_of_income: updateData.max_of_income
+    }),
   });
 };
+

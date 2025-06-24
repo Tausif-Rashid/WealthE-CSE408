@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,15 +183,9 @@ public class AdminApiController {
             // Check if we're updating slab_size or tax_rate
             if (request.containsKey("slab_size")) {
                 Double slabSize = Double.parseDouble(request.get("slab_size").toString());
-                // Try different approaches for monetary conversion
-                // Option 1: Direct cast (if your DB supports it)
+
                 System.out.println("size: " + slabSize);
                 sql = "UPDATE rule_income SET slab_length = ? WHERE id = ?";
-                // Option 2: If Option 1 fails, try formatting as string first
-                // sql = "UPDATE rule_income SET slab_length = CAST(' + CAST(? AS VARCHAR) AS MONEY) WHERE id = ?";
-
-                // Option 3: If your column is actually numeric, just use direct assignment
-//                 sql = "UPDATE rule_income SET slab_length = ? WHERE id = ?";
 
                 jdbcTemplate.update(sql, slabSize, id);
             }
@@ -215,6 +210,65 @@ public class AdminApiController {
         }
     }
 
+
+    @PostMapping("/admin/edit-rebate-rule")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> updateRebateRule(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = 1; // Always update record with id = 1
+
+            for (Map.Entry<String, Object> entry : request.entrySet()) {
+                String column = entry.getKey();
+                if (column=="maximum_of_income"){
+                    column = "max_of_income";
+                }
+                Object value = entry.getValue();
+                if (column == "maximumRebate"){
+                    column = "max_rebate_amount";
+                }
+
+                // Skip "id" field or null values
+                if ("id".equalsIgnoreCase(column) || value == null) {
+                    continue;
+                }
+
+                // Try to parse value as a Number
+                BigDecimal numericValue = null;
+
+                if (value instanceof Number) {
+                    numericValue = BigDecimal.valueOf(((Number) value).doubleValue());
+                } else if (value instanceof String) {
+                    try {
+                        numericValue = new BigDecimal((String) value);
+                    } catch (NumberFormatException ex) {
+                        System.out.println("Skipping non-numeric value for column '" + column + "': " + value);
+                        continue;
+                    }
+                } else {
+                    System.out.println("Unsupported value type for column '" + column + "': " + value.getClass());
+                    continue;
+                }
+
+                // Build SQL and execute update
+                String sql = "UPDATE rule_rebate SET " + column + " = ? WHERE id = ?";
+                jdbcTemplate.update(sql, numericValue, id);
+            }
+
+            response.put("success", true);
+            response.put("message", "Income rule updated successfully for id = 1");
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update income rule: " + e.getMessage());
+            return response;
+        }
+    }
     /*@GetMapping("/user/tax_info")
     public List<Map<String, Object>> getUserTaxInfo() {
         String sql;
