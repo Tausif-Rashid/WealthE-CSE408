@@ -1,0 +1,88 @@
+name: Deploy WealthE
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Single job that tests, builds, and deploys
+  deploy:
+    runs-on: ubuntu-latest
+    name: Test, Build & Deploy
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Quick tests only
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: frontend/wealthe-frontend/package-lock.json
+
+    - name: Run Frontend Tests
+      working-directory: ./frontend/wealthe-frontend
+      run: |
+        npm ci
+        npm test -- --watchAll=false --passWithNoTests
+      env:
+        CI: true
+
+    # Build and push images
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push Backend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend/wealthe
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-backend:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Frontend
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend/wealthe-frontend
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-frontend:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    # Deploy to Azure VM
+    - name: Deploy to VM
+      run: |
+        # Setup SSH
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+        
+        # Deploy
+        ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} << 'EOF'
+          cd ~/wealthe
+          docker login ${{ env.REGISTRY }} -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker compose pull
+          docker compose up -d
+          docker system prune -f
+        EOF
+
+    - name: Health Check
+      run: |
+        sleep 30
+        curl -f http://${{ secrets.VM_HOST }} || echo "Frontend not ready yet"
+        curl -f http://${{ secrets.VM_HOST }}:8081/actuator/health || echo "Backend not ready yet"
