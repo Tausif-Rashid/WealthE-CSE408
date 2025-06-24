@@ -9,14 +9,14 @@ const Sidebar = () => {
   
   // Define navigation items based on user role
   const getNavItems = () => {
-    if (user?.role === 'admin') {
-      return [
-        { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
-        { path: '/admin/users', icon: '👥', label: 'User Management' },
-        { path: '/admin/transactions', icon: '💰', label: 'Transactions' },
-        { path: '/admin/reports', icon: '📈', label: 'Reports' }
-      ];
-    }
+      // if (user?.role === 'admin') {
+      //   return [
+      //     { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
+      //     { path: '/admin/users', icon: '👥', label: 'User Management' },
+      //     { path: '/admin/transactions', icon: '💰', label: 'Transactions' },
+      //     { path: '/admin/reports', icon: '📈', label: 'Reports' }
+      //   ];
+      // }
     
     return [
       { path: '/dashboard', icon: '🏠', label: 'Dashboard' },

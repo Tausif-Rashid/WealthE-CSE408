@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
 import { getTotalUsers } from '../../utils/api';
+import { getUserInfo } from '../../utils/api';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+  const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
@@ -28,6 +30,20 @@ const AdminDashboard = () => {
       } finally {
         setLoading(false);
       }
+      try {
+        const userData = await getUserInfo();
+          if (!userData) {
+              throw new Error('No user data found');
+          }
+          console.log('Fetched user info:', userData); // Debug log
+        setUserInfo(userData?.[0] || null);
+      } catch (err) {
+        setError('Failed to load user information');
+        console.error('Error fetching user info:', err);
+      } finally {
+          //console.log('Done fetch user data'); // Debug log
+        setLoading(false);
+      }
     };
 
     fetchStats();
@@ -40,7 +56,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <div className="admin-header">
         <h1>Admin Dashboard</h1>
-        <p>Welcome back, {user?.email}</p>
+        <p>Welcome back, <b> <big> {userInfo?.name} </big> </b>  </p>
       </div>
 
       <div className="stats-grid">
