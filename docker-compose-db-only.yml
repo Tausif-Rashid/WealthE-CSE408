@@ -1,0 +1,41 @@
+
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:17-alpine
+    container_name: wealthe-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-wealthe_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-wealthe_password}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      #- ./db/sql_final:/docker-entrypoint-initdb.d:ro #this schema and data should be loaded in db inside container
+      - ./backupv13.dump:/docker-entrypoint-initdb.d/backup.dump
+      - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh
+    ports:
+      - "${DB_PORT:-5401}:5432"
+    networks:
+      - wealthe-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-wealthe_db}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+
+networks:
+  wealthe-network:
+    driver: bridge
+    name: wealthe-network-1
+
+volumes:
+  postgres_data:
+    driver: local
+    name: wealthe-postgres-data
+  backend_logs:
+    driver: local
+    name: wealthe-backend-logs

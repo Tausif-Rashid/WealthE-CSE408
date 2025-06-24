@@ -1,0 +1,23 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/frontend/wealthe-frontend/node_modules
+/frontend/wealthe-frontend/.pnp
+/frontend/wealthe-frontend/.pnp.js
+
+# testing
+/frontend/wealthe-frontend/coverage
+
+# production
+/frontend/wealthe-frontend/build
+
+# misc
+/frontend/wealthe-frontend/.DS_Store
+/frontend/wealthe-frontend/.env.local
+/frontend/wealthe-frontend/.env.development.local
+/frontend/wealthe-frontend/.env.test.local
+/frontend/wealthe-frontend/.env.production.local
+
+/frontend/wealthe-frontend/npm-debug.log*
+/frontend/wealthe-frontend/yarn-debug.log*
+/frontend/wealthe-frontend/yarn-error.log*
