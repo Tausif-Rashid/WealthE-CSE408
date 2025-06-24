@@ -12,7 +12,7 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalTransactions: 0,
-    activeUsers: 0
+    pendingFiles: 0
   });
 
   useEffect(() => {
@@ -79,8 +79,8 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <div className="stat-icon">✅</div>
           <div className="stat-info">
-            <h3>Amount of Tax Paid</h3>
-            <p className="stat-value">{stats.activeUsers}</p>
+            <h3>Pending Files</h3>
+            <p className="stat-value">{stats.pendingFiles}</p>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import Sidebar from './Sidebar';
 import AdminSidebar from './AdminSidebar';
 import './Layout.css';
+import { getAuthRole } from '../utils/auth';
 
 const Layout = ({ children }) => {
   const { user } = useAuth();
@@ -10,7 +11,7 @@ const Layout = ({ children }) => {
 
   return (
     <div className="layout">
-      {isAdmin ? <AdminSidebar /> : <Sidebar />}
+      {getAuthRole()==="admin" ? <AdminSidebar /> : <Sidebar />}
       <main className="content">
         {children}
       </main>
