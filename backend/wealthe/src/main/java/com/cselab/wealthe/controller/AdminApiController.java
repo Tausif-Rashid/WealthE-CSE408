@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +48,8 @@ public class AdminApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         try{
-            sql = "SELECT id, category, slab_no, slab_length::numeric(15,2) AS slab_size, tax_rate\n" +
-                    "FROM rule_income\n" +
-                    "LIMIT 12;\n";
+            sql = "SELECT id, category, slab_no, slab_length AS slab_size, tax_rate\n" +
+                    "FROM rule_income ORDER BY ID\n";
             return jdbcTemplate.queryForList(sql);
         }catch(Exception e){
             System.out.println("Error occured: " + e);
@@ -169,6 +169,51 @@ public class AdminApiController {
 
     }
 
+    @PostMapping("/admin/update-income-slab")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> updateIncomeSlab(@RequestBody Map<String, Object> request) {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            // Check if we're updating slab_size or tax_rate
+            if (request.containsKey("slab_size")) {
+                Double slabSize = Double.parseDouble(request.get("slab_size").toString());
+                // Try different approaches for monetary conversion
+                // Option 1: Direct cast (if your DB supports it)
+                System.out.println("size: " + slabSize);
+                sql = "UPDATE rule_income SET slab_length = ? WHERE id = ?";
+                // Option 2: If Option 1 fails, try formatting as string first
+                // sql = "UPDATE rule_income SET slab_length = CAST(' + CAST(? AS VARCHAR) AS MONEY) WHERE id = ?";
+
+                // Option 3: If your column is actually numeric, just use direct assignment
+//                 sql = "UPDATE rule_income SET slab_length = ? WHERE id = ?";
+
+                jdbcTemplate.update(sql, slabSize, id);
+            }
+
+            if (request.containsKey("tax_rate")) {
+                Double taxRate = Double.parseDouble(request.get("tax_rate").toString());
+                // Make sure the column name is correct
+                sql = "UPDATE rule_income SET tax_rate = ? WHERE id = ?";
+                jdbcTemplate.update(sql, taxRate, id);
+            }
+
+            response.put("success", true);
+            response.put("message", "Income slab updated successfully");
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace(); // This will give you more detailed error info
+            response.put("success", false);
+            response.put("message", "Failed to update income slab: " + e.getMessage());
+            return response;
+        }
+    }
 
     /*@GetMapping("/user/tax_info")
     public List<Map<String, Object>> getUserTaxInfo() {

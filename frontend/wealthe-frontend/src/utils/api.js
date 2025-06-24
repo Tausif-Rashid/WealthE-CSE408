@@ -176,3 +176,15 @@ export const getMinimumTaxList = async () => {
 };
 
 
+export const updateIncomeSlab = async (slabId, updateData) => {
+  return apiCall(`/admin/update-income-slab`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: slabId,
+      ...updateData
+    }),
+  });
+};
