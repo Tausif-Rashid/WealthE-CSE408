@@ -12,10 +12,24 @@ const TaxZoneRule = () => {
   const [taxAreaOptions, setTaxAreaOptions] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [deleteDialog, setDeleteDialog] = useState({
+    show: false,
+    zoneId: null,
+    zoneName: ''
+  });
   const [formData, setFormData] = useState({
     area_name: '',
     minimum: ''
   });
+
+  // Sort function to put "Rest" at the bottom
+  const sortTaxZones = (zones) => {
+    return [...zones].sort((a, b) => {
+      if (a.area_name === 'Rest') return 1;
+      if (b.area_name === 'Rest') return -1;
+      return a.area_name.localeCompare(b.area_name);
+    });
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +42,8 @@ const TaxZoneRule = () => {
           getTaxAreaList()
         ]);
         
-        setTaxZoneData(taxZones);
+        // Sort the tax zones before setting state
+        setTaxZoneData(sortTaxZones(taxZones));
         setTaxAreaOptions(taxAreas);
       } catch (err) {
         setError('Failed to load tax zone data');
@@ -54,25 +69,36 @@ const TaxZoneRule = () => {
     setEditingId(zone.id);
     setFormData({
       area_name: zone.area_name,
-      minimum: zone.minimum.toString().replace(/[^0-9.]/g, '')
+      minimum: zone.minimum.toString()
     });
   };
 
-  const handleDelete = async (id, areaName) => {
+  const handleDeleteClick = (id, areaName) => {
     if (areaName === 'Rest') {
       setError('Cannot delete the Rest area');
       return;
     }
     
-    if (window.confirm('Are you sure you want to delete this tax zone?')) {
-      try {
-        await deleteTaxZoneRule(id);
-        setTaxZoneData(prev => prev.filter(item => item.id !== id));
-      } catch (err) {
-        setError('Failed to delete tax zone');
-        console.error('Error deleting tax zone:', err);
-      }
+    setDeleteDialog({
+      show: true,
+      zoneId: id,
+      zoneName: areaName
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteTaxZoneRule(deleteDialog.zoneId);
+      setTaxZoneData(prev => prev.filter(item => item.id !== deleteDialog.zoneId));
+      setDeleteDialog({ show: false, zoneId: null, zoneName: '' });
+    } catch (err) {
+      setError('Failed to delete tax zone');
+      console.error('Error deleting tax zone:', err);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialog({ show: false, zoneId: null, zoneName: '' });
   };
 
   const handleSubmit = async (e) => {
@@ -85,14 +111,16 @@ const TaxZoneRule = () => {
 
       if (editingId) {
         await updateTaxZoneRule(editingId, zoneData);
-        setTaxZoneData(prev => prev.map(zone => 
-          zone.id === editingId 
-            ? { ...zone, ...zoneData }
-            : zone
+        setTaxZoneData(prev => sortTaxZones(
+          prev.map(zone => 
+            zone.id === editingId 
+              ? { ...zone, ...zoneData }
+              : zone
+          )
         ));
       } else {
         const newZone = await addTaxZoneRule(zoneData);
-        setTaxZoneData(prev => [...prev, newZone]);
+        setTaxZoneData(prev => sortTaxZones([...prev, newZone]));
       }
 
       setIsEditing(false);
@@ -119,6 +147,19 @@ const TaxZoneRule = () => {
       </div>
 
       {error && <div className="error-message">{error}</div>}
+
+      {deleteDialog.show && (
+        <div className="dialog-overlay">
+          <div className="dialog-content">
+            <h2>Delete Tax Zone</h2>
+            <p>Are you sure you want to delete the tax zone for {deleteDialog.zoneName}?</p>
+            <div className="dialog-buttons">
+              <button onClick={handleConfirmDelete} className="confirm-btn">Delete</button>
+              <button onClick={handleCancelDelete} className="cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isEditing && (
         <div className="form-container">
@@ -152,7 +193,14 @@ const TaxZoneRule = () => {
             </div>
             <div className="form-buttons">
               <button type="submit" className="submit-btn">Save</button>
-              <button type="button" className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+              <button type="button" className="cancel-btn" onClick={() => {
+                setIsEditing(false);
+                setEditingId(null);
+                setFormData({
+                  area_name: '',
+                  minimum: ''
+                });
+              }}>Cancel</button>
             </div>
           </form>
         </div>
@@ -164,7 +212,7 @@ const TaxZoneRule = () => {
             <tr>
               <th>Area Name</th>
               <th>Minimum Tax (৳)</th>
-              <th>Actions</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -172,12 +220,30 @@ const TaxZoneRule = () => {
               taxZoneData.map((zone) => (
                 <tr key={zone.id}>
                   <td>{zone.area_name}</td>
-                  <td>{zone.minimum.toLocaleString()}</td>
+                  <td>{zone.minimum}</td>
                   <td>
                     <div className="action-buttons">
-                      <button className="edit-btn" onClick={() => handleEdit(zone)}>Edit</button>
+                      <svg 
+                        className="edit-icon" 
+                        onClick={() => handleEdit(zone)}
+                        viewBox="0 0 20 20" 
+                        fill="currentColor"
+                        width="20"
+                        height="20"
+                      >
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
                       {zone.area_name !== 'Rest' && (
-                        <button className="delete-btn" onClick={() => handleDelete(zone.id, zone.area_name)}>Delete</button>
+                        <svg
+                          className="delete-icon"
+                          onClick={() => handleDeleteClick(zone.id, zone.area_name)}
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          width="20"
+                          height="20"
+                        >
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm4 0a1 1 0 112 0v6a1 1 0 11-2 0V8z" clipRule="evenodd" />
+                        </svg>
                       )}
                     </div>
                   </td>

@@ -196,14 +196,19 @@ export const updateTaxZoneRule = async (zoneId, updateData) => {
     },
     body: JSON.stringify({
       id: zoneId,
-      ...updateData
+      area_name: updateData.area_name,
+      min_amount: updateData.minimum
     }),
   });
 };
 
 export const deleteTaxZoneRule = async (zoneId) => {
-  return apiCall(`/admin/delete-taxzone-rule/${zoneId}`, {
-    method: 'DELETE',
+  return apiCall('/admin/delete-taxzone-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: zoneId }),
   });
 };
 
@@ -213,7 +218,10 @@ export const addTaxZoneRule = async (zoneData) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(zoneData),
+    body: JSON.stringify({
+      area_name: zoneData.area_name,
+      min_amount: zoneData.minimum
+    }),
   });
 };
 

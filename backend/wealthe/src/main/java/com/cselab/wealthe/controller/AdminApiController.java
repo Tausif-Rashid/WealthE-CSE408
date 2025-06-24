@@ -210,6 +210,192 @@ public class AdminApiController {
         }
     }
 
+    @PostMapping("/admin/delete-taxzone-rule")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deleteMinTax(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract id from request
+            if (!request.containsKey("id")) {
+                response.put("success", false);
+                response.put("message", "Missing 'id' in request body");
+                return response;
+            }
+
+            Integer id = null;
+            Object idObj = request.get("id");
+
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                try {
+                    id = Integer.parseInt((String) idObj);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid ID format: must be an integer");
+                }
+            } else {
+                throw new IllegalArgumentException("ID must be an integer or string representation of an integer");
+            }
+
+            // Perform deletion
+            String sql = "DELETE FROM rule_tax_zone_min_tax WHERE id = ?";
+            int rowsAffected = jdbcTemplate.update(sql, id);
+
+            if (rowsAffected == 0) {
+                response.put("success", false);
+                response.put("message", "No record found with the given ID");
+                return response;
+            }
+
+            // Build success response
+            response.put("success", true);
+            response.put("message", "Record deleted successfully");
+            response.put("deleted_id", id);
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+
+            response.put("success", false);
+            response.put("message", "Failed to delete record: " + e.getMessage());
+            return response;
+        }
+    }
+
+
+
+    @PostMapping("/admin/add-taxzone-rule")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> addMinTax(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract required fields
+            if (!request.containsKey("area_name") || !request.containsKey("min_amount")) {
+                response.put("success", false);
+                response.put("message", "Missing 'area_name' or 'min_amount' in request");
+                return response;
+            }
+
+            String areaName = request.get("area_name").toString();
+            Object amountObj = request.get("min_amount");
+
+            BigDecimal minAmount;
+
+            // Handle different types of numeric input (Double, Integer, String)
+            if (amountObj instanceof Number) {
+                minAmount = BigDecimal.valueOf(((Number) amountObj).doubleValue());
+            } else if (amountObj instanceof String) {
+                try {
+                    minAmount = new BigDecimal((String) amountObj);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid min_amount: must be a number");
+                }
+            } else {
+                throw new IllegalArgumentException("min_amount must be a number or string representation of a number");
+            }
+
+            // Perform insert
+            String sql = "INSERT INTO rule_tax_zone_min_tax(area_name, min_amount) VALUES (?, ?)";
+            jdbcTemplate.update(sql, areaName, minAmount);
+
+            // Build success response
+            response.put("success", true);
+            response.put("message", "Minimum tax rule added successfully");
+            response.put("area_name", areaName);
+            response.put("min_amount", minAmount);
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+
+            response.put("success", false);
+            response.put("message", "Failed to add minimum tax rule: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/admin/edit-taxzone-rule")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> updateMinTax(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Validate required fields
+            if (!request.containsKey("id") ||
+                    !request.containsKey("area_name") ||
+                    !request.containsKey("min_amount")) {
+                response.put("success", false);
+                response.put("message", "Missing required fields (id, area_name, min_amount)");
+                return response;
+            }
+
+            // Extract and parse id
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                try {
+                    id = Integer.parseInt((String) idObj);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid ID format: must be an integer");
+                }
+            } else {
+                throw new IllegalArgumentException("ID must be an integer or string representation of an integer");
+            }
+
+            // Extract area name
+            String areaName = request.get("area_name").toString();
+
+            // Extract and parse min_amount as BigDecimal for precision
+            BigDecimal minAmount;
+            Object amountObj = request.get("min_amount");
+
+            if (amountObj instanceof Number) {
+                minAmount = BigDecimal.valueOf(((Number) amountObj).doubleValue());
+            } else if (amountObj instanceof String) {
+                try {
+                    minAmount = new BigDecimal((String) amountObj);
+                } catch (NumberFormatException ex) {
+                    throw new IllegalArgumentException("Invalid min_amount: must be a number");
+                }
+            } else {
+                throw new IllegalArgumentException("min_amount must be a number or string representation of a number");
+            }
+
+            // Perform the update
+            String sql = "UPDATE rule_tax_zone_min_tax SET area_name = ?, min_amount = ? WHERE id = ?";
+            int rowsAffected = jdbcTemplate.update(sql, areaName, minAmount, id);
+
+            if (rowsAffected == 0) {
+                response.put("success", false);
+                response.put("message", "No record found with the given ID");
+                return response;
+            }
+
+            // Build success response
+            response.put("success", true);
+            response.put("message", "Minimum tax rule updated successfully");
+            response.put("updated_id", id);
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+
+            response.put("success", false);
+            response.put("message", "Failed to update minimum tax rule: " + e.getMessage());
+            return response;
+        }
+    }
+
 
     @PostMapping("/admin/edit-rebate-rule")
     @CrossOrigin(origins = "*")
