@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getMinimumTaxList, getTaxAreaList, getTotalUsers } from '../../utils/api';
+import { getRebateRules, getMinimumTaxList, getTotalUsers } from '../../utils/api';
 import { getUserInfo } from '../../utils/api';
 
 const AdminDashboard = () => {

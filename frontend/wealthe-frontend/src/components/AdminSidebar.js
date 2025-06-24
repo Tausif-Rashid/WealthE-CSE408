@@ -10,16 +10,15 @@ const AdminSidebar = () => {
 
   const adminNavItems = [
     { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
-    { path: '/admin/files', icon: '📁', label: 'Files' },
     {
       path: '/admin/rules',
       icon: '📋',
-      label: 'Rules',
+      label: 'Rules Management',
       subItems: [
-        { path: '/admin/rules/income', label: 'Income' },
-        { path: '/admin/rules/investment', label: 'Investment' },
-        { path: '/admin/rules/rebate', label: 'Rebate' },
-        { path: '/admin/rules/zone', label: 'Zone Rules' }
+        { path: '/admin/rules/income', label: 'Income Rules' },
+        { path: '/admin/rules/investment', label: 'Investment Rules' },
+        { path: '/admin/rules/rebate', label: 'Rebate Rules' },
+        { path: '/admin/rules/taxzone', label: 'Tax Zone Rules' }
       ]
     }
   ];
@@ -81,6 +80,7 @@ const AdminSidebar = () => {
         </ul>
       </nav>
 
+      
       <div className="admin-sidebar-footer">
         <button onClick={logout} className="admin-logout-btn">
           <span className="nav-icon">🚪</span>

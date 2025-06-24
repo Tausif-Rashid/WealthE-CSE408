@@ -9,6 +9,9 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import IncomeRule from './pages/Admin/IncomeRule';
+import InvestmentRule from './pages/Admin/InvestmentRule';
+import RebateRule from './pages/Admin/RebateRule';
+import TaxZoneRule from './pages/Admin/TaxZoneRule';
 import './App.css';
 import { getAuthRole } from './utils/auth';
 
@@ -53,13 +56,42 @@ const AppRoutes = () => {
           </ProtectedRoute>
         } 
       />
-      {/* Admin routes */}
       <Route 
         path="/admin/rules/income" 
         element={ 
           <ProtectedRoute>
             <Layout>
               <IncomeRule />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/rules/investment" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <InvestmentRule />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/rules/rebate" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <RebateRule />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/admin/rules/taxzone" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <TaxZoneRule />
             </Layout>
           </ProtectedRoute>
         } 
