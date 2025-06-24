@@ -175,7 +175,6 @@ export const getMinimumTaxList = async () => {
   });
 };
 
-
 export const updateIncomeSlab = async (slabId, updateData) => {
   return apiCall(`/admin/update-income-slab`, {
     method: 'POST',
@@ -186,5 +185,34 @@ export const updateIncomeSlab = async (slabId, updateData) => {
       id: slabId,
       ...updateData
     }),
+  });
+};
+
+export const updateTaxZoneRule = async (zoneId, updateData) => {
+  return apiCall('/admin/edit-taxzone-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: zoneId,
+      ...updateData
+    }),
+  });
+};
+
+export const deleteTaxZoneRule = async (zoneId) => {
+  return apiCall(`/admin/delete-taxzone-rule/${zoneId}`, {
+    method: 'DELETE',
+  });
+};
+
+export const addTaxZoneRule = async (zoneData) => {
+  return apiCall('/admin/add-taxzone-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(zoneData),
   });
 };

@@ -100,15 +100,15 @@
 
 .subnav {
   margin-left: 2.75rem;
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
 }
 
 .subnav a {
   display: block;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   color: white;
   text-decoration: none;
   font-size: 0.9rem;
@@ -126,6 +126,11 @@
   opacity: 1;
   background: rgba(255, 255, 255, 0.2);
   font-weight: 500;
+}
+
+/* Added margin to create more space between items */
+.subnav li:not(:last-child) {
+  margin-bottom: 0.5rem;
 }
 
 .admin-sidebar-footer {

@@ -142,7 +142,7 @@ public class AdminApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         try{
-            sql = "SELECT * FROM rule_tax_area_list\n";
+            sql = "SELECT DISTINCT area_name FROM rule_tax_area_list\n";
             return jdbcTemplate.queryForList(sql);
         }catch(Exception e){
             System.out.println("Error occured: " + e);

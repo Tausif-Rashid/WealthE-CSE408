@@ -58,6 +58,17 @@ const InvestmentRule = () => {
     });
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this category?')) {
+      try {
+        // TODO: Implement API call to delete
+        setInvestmentData(prev => prev.filter(item => item.id !== id));
+      } catch (err) {
+        setError('Failed to delete category');
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     // TODO: Implement API call to save changes
@@ -139,31 +150,17 @@ const InvestmentRule = () => {
               />
             </div>
             <div className="form-buttons">
-              <button type="submit">Save</button>
-              <button type="button" onClick={() => setIsEditing(false)}>Cancel</button>
+              <button type="submit" className="submit-btn">Save</button>
+              <button type="button" className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="slab-table">
-        <div className="table-actions">
-          <button onClick={() => {
-            setIsEditing(true);
-            setEditingId(null);
-            setFormData({
-              title: '',
-              rate_rebate: '',
-              minimum: '',
-              maximum: '',
-              description: ''
-            });
-          }}>Add New Category</button>
-        </div>
+      <div className="slab-table investment-table">
         <table>
           <thead>
             <tr>
-              <th>ID</th>
               <th>Title</th>
               <th>Rate/Rebate (%)</th>
               <th>Minimum (৳)</th>
@@ -176,24 +173,44 @@ const InvestmentRule = () => {
             {investmentData.length > 0 ? (
               investmentData.map((investment) => (
                 <tr key={investment.id}>
-                  <td>{investment.id}</td>
                   <td>{investment.title}</td>
                   <td>{investment.rate_rebate}%</td>
-                  <td>{investment.minimum.toLocaleString()}</td>
-                  <td>{investment.maximum.toLocaleString()}</td>
+                  <td>{investment.minimum === 2147483647 ? 'N/A' : investment.minimum.toLocaleString()}</td>
+                  <td>{investment.maximum === 2147483647 ? 'N/A' : investment.maximum.toLocaleString()}</td>
                   <td>{investment.description}</td>
                   <td>
-                    <button onClick={() => handleEdit(investment)}>Edit</button>
+                    <div className="action-buttons">
+                      <button className="edit-btn" onClick={() => handleEdit(investment)}>Edit</button>
+                      <button className="delete-btn" onClick={() => handleDelete(investment.id)}>Delete</button>
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="7">No investment categories found</td>
+                <td colSpan="6">No investment categories found</td>
               </tr>
             )}
           </tbody>
         </table>
+        <div className="add-category-container">
+          <button 
+            className="add-category-btn"
+            onClick={() => {
+              setIsEditing(true);
+              setEditingId(null);
+              setFormData({
+                title: '',
+                rate_rebate: '',
+                minimum: '',
+                maximum: '',
+                description: ''
+              });
+            }}
+          >
+            Add New Category
+          </button>
+        </div>
       </div>
     </div>
   );

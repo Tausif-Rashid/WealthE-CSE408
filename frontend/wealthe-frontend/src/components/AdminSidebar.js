@@ -20,7 +20,8 @@ const AdminSidebar = () => {
         { path: '/admin/rules/rebate', label: 'Rebate Rules' },
         { path: '/admin/rules/taxzone', label: 'Tax Zone Rules' }
       ]
-    }
+    },
+    { path: '/admin/files', icon: '📁', label: 'Files' }
   ];
 
   return (
