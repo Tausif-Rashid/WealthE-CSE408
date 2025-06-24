@@ -15,17 +15,18 @@ const AppRoutes = () => {
   const { isAuthenticated, user } = useAuth();
   console.log (user);
   console.log (isAuthenticated);
+  console.log ("app.js" + getAuthRole());
 
   return (
     <Routes>
       {/* Public routes - redirect to dashboard if already authenticated */}
       <Route 
         path="/login" 
-        element={isAuthenticated ? <Navigate to={getAuthRole === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : <Login />} 
+        element={isAuthenticated ? <Navigate to={getAuthRole() === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : <Login />} 
       />
       <Route 
         path="/register" 
-        element={isAuthenticated ? <Navigate to={getAuthRole === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : <Register />} 
+        element={isAuthenticated ? <Navigate to={getAuthRole() === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : <Register />} 
       />
       
       {/* Protected routes */}
