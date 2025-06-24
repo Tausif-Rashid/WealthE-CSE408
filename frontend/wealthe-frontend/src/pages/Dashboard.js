@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
-        console.log('Fetch user called in Dashboard 123...'); // Debug log
+        console.log('Fetch user called in Dashboard 1234...'); // Debug log
         setLoading(true);
         try {
           const userData = await getUserInfo();
