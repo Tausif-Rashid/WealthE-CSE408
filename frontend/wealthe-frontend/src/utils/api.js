@@ -132,3 +132,27 @@ export const getTotalUsers = async () => {
     method: 'GET',
   });
 };
+
+export const getIncomeSlabs = async () => {
+  return apiCall('/admin/income-slabs', {
+    method: 'GET',
+  });
+};
+
+export const getIncomeCategories = async () => {
+  return apiCall('/admin/income-categories', {
+    method: 'GET',
+  });
+};
+
+export const getExpenseCategories = async () => {
+  return apiCall('/admin/expense-categories', {
+    method: 'GET',
+  });
+};
+
+export const getInvestmentCategories = async () => {
+  return apiCall('/admin/investment-categories', {
+    method: 'GET',
+  });
+};

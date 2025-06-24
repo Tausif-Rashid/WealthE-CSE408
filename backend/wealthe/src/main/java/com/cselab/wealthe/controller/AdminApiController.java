@@ -40,6 +40,133 @@ public class AdminApiController {
         }
     }
 
+    @GetMapping("/admin/income-slabs")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getIncomeSlab() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT id, category, slab_no, slab_length::numeric(15,2) AS slab_size, tax_rate\n" +
+                    "FROM rule_income\n" +
+                    "LIMIT 12;\n";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
+    @GetMapping("/admin/income-categories")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getIncomeCategories() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT * FROM rule_income_category\n";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
+    @GetMapping("/admin/expense-categories")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getExpenseCategories() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT * FROM rule_expense_category\n";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
+    @GetMapping("/admin/investment-categories")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getInvestmentType() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT id, title, rate_rebate, \n" +
+                    "       description \n" +
+                    "FROM rule_investment_type;";
+            System.out.println("SQL successfully run");
+            List<Map<String, Object>> temp = jdbcTemplate.queryForList(sql);
+            System.out.println(temp);
+            return temp;
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+
+    }
+
+    @GetMapping("/admin/rebate-rules")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getRebateRules() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT * FROM rule_rebate\n";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
+    @GetMapping("/admin/tax-area-list")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getTaxAreaList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT * FROM rule_tax_area_list\n";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
+    @GetMapping("/admin/minimum-tax-list")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getMinimumTaxList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT * FROM rule_tax_zone_min_tax\n";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
 
     /*@GetMapping("/user/tax_info")
     public List<Map<String, Object>> getUserTaxInfo() {

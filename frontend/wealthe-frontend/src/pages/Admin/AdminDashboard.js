@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getTotalUsers } from '../../utils/api';
+import { getInvestmentCategories, getIncomeSlabs, getTotalUsers } from '../../utils/api';
 import { getUserInfo } from '../../utils/api';
 
 const AdminDashboard = () => {
@@ -31,6 +31,7 @@ const AdminDashboard = () => {
         setLoading(false);
       }
       try {
+        setLoading(true);
         const userData = await getUserInfo();
           if (!userData) {
               throw new Error('No user data found');
@@ -42,6 +43,18 @@ const AdminDashboard = () => {
         console.error('Error fetching user info:', err);
       } finally {
           //console.log('Done fetch user data'); // Debug log
+        setLoading(false);
+      }
+      try {
+        setLoading(true);
+        console.log(" Income Slabs: ");
+        const response = await getInvestmentCategories();
+        console.log(" Income Slabs: ");
+        console.log(response);
+      } catch (err) {
+        setError('Failed to load Income Slab');
+        console.error('Error fetching Income Slab:', err);
+      } finally {
         setLoading(false);
       }
     };
