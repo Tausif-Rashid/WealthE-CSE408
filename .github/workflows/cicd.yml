@@ -6,7 +6,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: wealthe-cse408
+  IMAGE_NAME: tausif-rashid/wealthe-cse408
+  IMAGE_NAME_REPO: ${{ github.repository }}
+  #ghcr.io/tausif-rashid/wealthe-cse408-backend:latest
 
 jobs:
   # Single job that tests, builds, and deploys
