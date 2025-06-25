@@ -126,3 +126,115 @@ export const getUserExpense = async () => {
     method: 'GET',
   });
 };
+
+export const getTotalUsers = async () => {
+  return apiCall('/admin/total-users', {
+    method: 'GET',
+  });
+};
+
+export const getIncomeSlabs = async () => {
+  return apiCall('/admin/income-slabs', {
+    method: 'GET',
+  });
+};
+
+export const getIncomeCategories = async () => {
+  return apiCall('/admin/income-categories', {
+    method: 'GET',
+  });
+};
+
+export const getExpenseCategories = async () => {
+  return apiCall('/admin/expense-categories', {
+    method: 'GET',
+  });
+};
+
+export const getInvestmentCategories = async () => {
+  return apiCall('/admin/investment-categories', {
+    method: 'GET',
+  });
+};
+
+export const getRebateRules = async () => {
+  return apiCall('/admin/rebate-rules', {
+    method: 'GET',
+  });
+};
+
+export const getTaxAreaList = async () => {
+  return apiCall('/admin/tax-area-list', {
+    method: 'GET',
+  });
+};
+
+export const getMinimumTaxList = async () => {
+  return apiCall('/admin/minimum-tax-list', {
+    method: 'GET',
+  });
+};
+
+export const updateIncomeSlab = async (slabId, updateData) => {
+  return apiCall(`/admin/update-income-slab`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: slabId,
+      ...updateData
+    }),
+  });
+};
+
+export const updateTaxZoneRule = async (zoneId, updateData) => {
+  return apiCall('/admin/edit-taxzone-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: zoneId,
+      area_name: updateData.area_name,
+      min_amount: updateData.minimum
+    }),
+  });
+};
+
+export const deleteTaxZoneRule = async (zoneId) => {
+  return apiCall('/admin/delete-taxzone-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: zoneId }),
+  });
+};
+
+export const addTaxZoneRule = async (zoneData) => {
+  return apiCall('/admin/add-taxzone-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      area_name: zoneData.area_name,
+      min_amount: zoneData.minimum
+    }),
+  });
+};
+
+export const updateRebateRule = async (updateData) => {
+  return apiCall('/admin/edit-rebate-rule', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      maximumRebate: updateData.maximum,
+      maximum_of_income: updateData.max_of_income
+    }),
+  });
+};
+
