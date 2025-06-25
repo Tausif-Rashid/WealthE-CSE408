@@ -2,6 +2,8 @@ package com.cselab.wealthe.controller;
 
 import com.cselab.wealthe.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +25,6 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    @CrossOrigin(origins = "*")
     public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
         String email = request.get("email");
         String password = request.get("password");
@@ -35,7 +36,7 @@ public class AuthController {
         }
 
         // Check if user already exists
-        String checkUserSql = "SELECT COUNT(*) FROM users WHERE email = ?";
+        String checkUserSql = "SELECT COUNT(*) FROM credentials WHERE email = ?";
         Integer userCount = jdbcTemplate.queryForObject(checkUserSql, Integer.class, email);
 
         if (userCount != null && userCount > 0) {
@@ -44,12 +45,77 @@ public class AuthController {
 
         // Hash password and insert user
         String hashedPassword = passwordEncoder.encode(password);
-        String insertSql = "INSERT INTO users (email, password, name, created_at) VALUES (?, ?, ?, NOW()) RETURNING id";
+
+        String insertTax = """
+                INSERT INTO user_tax_info(
+                \ttin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)
+                \tVALUES ('1234567890', TRUE, FALSE, FALSE, FALSE, 1, 2, 'Dhaka')
+                """;
+        jdbcTemplate.update(insertTax);
+
+        String sqlID = "SELECT MAX(id) FROM user_tax_info";
+
+        Integer userId = jdbcTemplate.queryForObject(sqlID, Integer.class);
+        System.out.println("Received new id :" + userId);
+
+        String insertSql = """
+                DO $$
+                DECLARE
+                    new_user_id INT;
+                BEGIN
+                    -- Insert into user_tax_info and get user_id
+                    INSERT INTO public.user_tax_info(
+                \ttin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)
+                \tVALUES ('1234567890', TRUE, FALSE, FALSE, FALSE, 1, 2, 'Dhaka')
+                \tRETURNING id INTO new_user_id;
+
+                    -- Use the returned id in second insert
+                    INSERT INTO public.user_info(
+                \tid, name, phone, nid, dob, spouse_name, spouse_tin)
+                \tVALUES (new_user_id,?,'01234556778', '12345667890', '2002-1-1', null, null);
+
+                \tINSERT INTO public.credentials(
+                \tid, email, password_hash)
+                \tVALUES (new_user_id, ?, ?);
+
+                END;
+                $$;""";
+        try {
+            //jdbcTemplate.update(insertSql, name, email, hashedPassword);
+            String userInfoSql = "INSERT INTO public.user_info(\n" +
+                    " \tid, name, phone, nid, dob, spouse_name, spouse_tin)\n" +
+                    " \tVALUES (?,?,'01234556778', '12345667890', '2002-1-1', null, null)";
+            jdbcTemplate.update(userInfoSql,userId, name);
+            String roleAssign = "user";
+            if(name.contains("admin")) roleAssign = "admin";
+            String credSQL = """
+                    \tINSERT INTO public.credentials(
+                    \tid, email, password_hash,role)
+                    \tVALUES (?, ?, ?,?)
+                    """;
+            jdbcTemplate.update(credSQL,userId, email, hashedPassword, roleAssign);
+            System.out.println("User data inserted successfully");
+        } catch (DataAccessException e) {
+            System.err.println("Error inserting user data: " + e.getMessage());
+            throw e;
+        }
 
         try {
-            Integer userId = jdbcTemplate.queryForObject(insertSql, Integer.class, email, hashedPassword, name);
+            //Integer userId = jdbcTemplate.queryForObject(insertSql, Integer.class, email, hashedPassword, name);
 
             // Generate JWT token
+
+            String sql2 = "SELECT id FROM public.credentials WHERE email = ?";
+
+            try {
+                userId = jdbcTemplate.queryForObject(sql2, Integer.class, email);
+            } catch (EmptyResultDataAccessException e) {
+                // No user found with this email
+                return null;
+            } catch (DataAccessException e) {
+                System.err.println("Error getting user ID: " + e.getMessage());
+                throw e;
+            }
             String token = jwtUtil.generateToken(userId.toString());
 
             return ResponseEntity.ok(Map.of(

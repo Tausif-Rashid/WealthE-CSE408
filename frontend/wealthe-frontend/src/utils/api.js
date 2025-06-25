@@ -87,13 +87,13 @@ export const login = async (email, password) => {
 export const register = async (userData) => {
   
   // Use actual backend API for registration
-  const response = await apiCall('/register/submit', {
+  const response = await apiCall('/register', {
     method: 'POST',
     body: JSON.stringify(userData),
   });
 
   // Transform backend response to match frontend expectations
-  if (response.success && response.token) {
+  if (response.token) {
     return {
       token: response.token,
       user: {
