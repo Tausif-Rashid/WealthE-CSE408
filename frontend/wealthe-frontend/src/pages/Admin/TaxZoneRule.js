@@ -192,8 +192,8 @@ const TaxZoneRule = () => {
               />
             </div>
             <div className="form-buttons">
-              <button type="submit" className="submit-btn">Save</button>
-              <button type="button" className="cancel-btn" onClick={() => {
+              <button type="submit" className="form-submit-btn">Save</button>
+              <button type="button" className="form-cancel-btn" onClick={() => {
                 setIsEditing(false);
                 setEditingId(null);
                 setFormData({
@@ -257,7 +257,7 @@ const TaxZoneRule = () => {
           </tbody>
         </table>
         <div className="add-category-container">
-          <button 
+          <button  
             className="add-category-btn"
             onClick={() => {
               setIsEditing(true);

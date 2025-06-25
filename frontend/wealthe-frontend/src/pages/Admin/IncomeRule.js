@@ -187,14 +187,14 @@ const AdminDashboard = () => {
             />
             <div className="input-actions">
               <button 
-                className="save-btn"
+                className="icon-save-btn"
                 onClick={() => handleSave(slab.id, field, tempValue)}
                 title="Save changes (will be applied when Update is clicked)"
               >
                 ✓
               </button>
               <button 
-                className="cancel-btn"
+                className="icon-cancel-btn"
                 onClick={handleCancel}
                 type="button"
               >
