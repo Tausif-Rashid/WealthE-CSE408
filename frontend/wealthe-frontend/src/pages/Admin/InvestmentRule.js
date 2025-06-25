@@ -90,7 +90,7 @@ const InvestmentRule = () => {
     <div className="admin-dashboard">
       <div className="admin-header">
         <h1>Investment Categories</h1>
-        <p>Welcome back, <b>{userInfo?.name}</b></p>
+        {/* <p>Welcome back, <b>{userInfo?.name}</b></p> */}
       </div>
 
       {isEditing && (

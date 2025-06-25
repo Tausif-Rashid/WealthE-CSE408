@@ -144,7 +144,7 @@ const TaxZoneRule = () => {
     <div className="admin-dashboard">
       <div className="admin-header">
         <h1>Tax Zone Rules</h1>
-        <p>Welcome back, <b>{userInfo?.name}</b></p>
+        {/* <p>Welcome back, <b>{userInfo?.name}</b></p> */}
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -156,7 +156,7 @@ const TaxZoneRule = () => {
             <p>Are you sure you want to delete the tax zone for {deleteDialog.zoneName}?</p>
             <div className="dialog-buttons">
               <button onClick={handleConfirmDelete} className="confirm-btn">Delete</button>
-              <button onClick={handleCancelDelete} className="cancel-btn">Cancel</button>
+              <button onClick={handleCancelDelete} className="dialog-cancel-btn">Cancel</button>
             </div>
           </div>
         </div>

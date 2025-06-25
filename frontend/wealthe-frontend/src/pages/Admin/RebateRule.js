@@ -110,7 +110,7 @@ const RebateRule = () => {
     <div className="admin-dashboard">
       <div className="admin-header">
         <h1>Rebate Rules</h1>
-        <p>Welcome back, <b>{userInfo?.name}</b></p>
+        {/* <p>Welcome back, <b>{userInfo?.name}</b></p> */}
       </div>
 
       {error && <div className="error-message">{error}</div>}

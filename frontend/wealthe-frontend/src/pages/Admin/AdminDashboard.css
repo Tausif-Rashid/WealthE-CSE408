@@ -713,7 +713,7 @@ tr:hover .delete-icon {
   background-color: #dc2626;
 }
 
-.dialog-buttons .cancel-btn {
+.dialog-buttons .dialog-cancel-btn {
   padding: 0.5rem 1rem;
   background-color: #6b7280;
   color: white;
@@ -724,7 +724,7 @@ tr:hover .delete-icon {
   transition: all 0.2s ease;
 }
 
-.dialog-buttons .cancel-btn:hover {
+.dialog-buttons .dialog-cancel-btn:hover {
   background-color: #4b5563;
 }
 
