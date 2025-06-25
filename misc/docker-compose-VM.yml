@@ -35,7 +35,7 @@ services:
     image: ghcr.io/tausif-rashid/wealthe-cse408-frontend:latest
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "80:3000"
     depends_on:
       - backend
 
