@@ -120,7 +120,8 @@ const TaxZoneRule = () => {
         ));
       } else {
         const newZone = await addTaxZoneRule(zoneData);
-        setTaxZoneData(prev => sortTaxZones([...prev, newZone]));
+        // Refresh the page after successfully adding a new tax zone
+        window.location.reload();
       }
 
       setIsEditing(false);
