@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-wealthe_db}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-wealthe123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backupv13.dump:/docker-entrypoint-initdb.d/backup.dump:ro
+      - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh:ro
+    ports:
+      - "5432:5432"
+
+  backend:
+    #image: ghcr.io/${GITHUB_REPOSITORY:-yourrepo}/wealthe-backend:latest
+    image: ghcr.io/tausif-rashid/wealthe-cse408-backend:latest
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/${DB_NAME:-wealthe_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-wealthe123}
+      JWT_SECRET: ${JWT_SECRET:-mySecretKey1234567890123456789012345678901234567890123456789012345678901234567890}
+      CORS_ALLOWED_ORIGINS: http://localhost,http://${VM_HOST:-localhost}
+    ports:
+      - "8081:8081"
+    depends_on:
+      - database
+
+  frontend:
+    #image: ghcr.io/${GITHUB_REPOSITORY:-yourrepo}/wealthe-frontend:latest
+    image: ghcr.io/tausif-rashid/wealthe-cse408-frontend:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
