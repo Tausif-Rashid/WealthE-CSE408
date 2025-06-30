@@ -167,7 +167,7 @@ public class AdminApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         try{
-            sql = "SELECT id, area_name, min_amount::numeric(20,2) AS minimum FROM rule_tax_zone_min_tax";
+            sql = "SELECT id, area_name, min_amount::numeric(20,2) AS minimum FROM rule_tax_zone_min_tax ORDER BY id";
             return jdbcTemplate.queryForList(sql);
         }catch(Exception e){
             System.out.println("Error occured: " + e);

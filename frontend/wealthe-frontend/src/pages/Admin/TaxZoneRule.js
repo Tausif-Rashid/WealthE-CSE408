@@ -22,12 +22,15 @@ const TaxZoneRule = () => {
     minimum: ''
   });
 
-  // Sort function to put "Rest" at the bottom
+  // Sort function to put "Rest" at the bottom and others by ID
   const sortTaxZones = (zones) => {
     return [...zones].sort((a, b) => {
+      // Always put "Rest" at the bottom
       if (a.area_name === 'Rest') return 1;
       if (b.area_name === 'Rest') return -1;
-      return a.area_name.localeCompare(b.area_name);
+      
+      // For other areas, sort by ID
+      return a.id - b.id;
     });
   };
 
@@ -167,19 +170,34 @@ const TaxZoneRule = () => {
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Area Name:</label>
-              <select
-                name="area_name"
-                value={formData.area_name}
-                onChange={handleInputChange}
-                required
-              >
-                <option value="">Select an area</option>
-                {taxAreaOptions.map((area, index) => (
-                  <option key={index} value={area.area_name}>
-                    {area.area_name}
-                  </option>
-                ))}
-              </select>
+              {editingId ? (
+                <input
+                  type="text"
+                  name="area_name"
+                  value={formData.area_name}
+                  readOnly
+                  className="readonly-input"
+                  style={{
+                    backgroundColor: '#f8f9fa',
+                    color: '#6c757d',
+                    cursor: 'not-allowed'
+                  }}
+                />
+              ) : (
+                <select
+                  name="area_name"
+                  value={formData.area_name}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Select an area</option>
+                  {taxAreaOptions.map((area, index) => (
+                    <option key={index} value={area.area_name}>
+                      {area.area_name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             <div className="form-group">
               <label>Minimum Tax (৳):</label>
