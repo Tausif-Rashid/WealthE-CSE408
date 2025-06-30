@@ -272,12 +272,14 @@ export const addInvestmentCategory = async (categoryData) => {
 };
 
 export const deleteInvestmentCategory = async (categoryId) => {
+  
   return apiCall('/admin/delete-investment-category', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ id: categoryId }),
+    
   });
 };
 

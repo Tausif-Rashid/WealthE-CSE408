@@ -175,8 +175,8 @@ const RebateRule = () => {
                       autoFocus
                     />
                     <div className="input-actions">
-                      <button className="save-btn" onClick={() => handleSave('max_of_income')}>✓</button>
-                      <button className="cancel-btn" onClick={handleCancel}>✕</button>
+                      <button className="icon-save-btn" onClick={() => handleSave('max_of_income')}>✓</button>
+                      <button className="icon-cancel-btn" onClick={handleCancel}>✕</button>
                     </div>
                   </div>
                 ) : (
