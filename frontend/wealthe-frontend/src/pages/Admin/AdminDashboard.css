@@ -481,6 +481,7 @@ tr:hover .delete-icon {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
+  margin-bottom: 2rem;
 }
 
 .add-category-btn {
@@ -859,4 +860,6 @@ tr:hover .delete-icon {
   margin: auto; /* centers the container */
   padding: 20px;
   box-sizing: border-box;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
 }

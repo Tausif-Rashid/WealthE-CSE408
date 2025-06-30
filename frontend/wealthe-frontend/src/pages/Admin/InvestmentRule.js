@@ -31,8 +31,8 @@ const InvestmentRule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await getUserInfo();
-        setUserInfo(userData?.[0] || null);
+        // const userData = await getUserInfo();
+        // setUserInfo(userData?.[0] || null);
 
         const investments = await getInvestmentCategories();
         setInvestmentData(investments);
@@ -125,6 +125,7 @@ const InvestmentRule = () => {
         
         // Add to local state
         setInvestmentData(prev => [...prev, newCategory]);
+        window.location.reload();
       }
       
       // Reset form

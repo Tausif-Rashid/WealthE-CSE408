@@ -20,8 +20,8 @@ const RebateRule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await getUserInfo();
-        setUserInfo(userData?.[0] || null);
+        // const userData = await getUserInfo();
+        // setUserInfo(userData?.[0] || null);
 
         const rebateRules = await getRebateRules();
         if (rebateRules?.length > 0) {

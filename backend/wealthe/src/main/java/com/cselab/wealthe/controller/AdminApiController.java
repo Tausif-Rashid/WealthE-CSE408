@@ -149,7 +149,8 @@ public class AdminApiController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         try{
-            sql = "SELECT DISTINCT area_name FROM rule_tax_area_list\n";
+            sql = "SELECT DISTINCT area_name from rule_tax_area_list \n" +
+                    "EXCEPT SELECT area_name from rule_tax_zone_min_tax;";
             return jdbcTemplate.queryForList(sql);
         }catch(Exception e){
             System.out.println("Error occured: " + e);
@@ -601,7 +602,9 @@ public class AdminApiController {
                 minimum = BigDecimal.valueOf(((Number) minimumObj).doubleValue());
             } else if (minimumObj instanceof String) {
                 try {
-                    minimum = new BigDecimal((String) minimumObj);
+                    String cleanMinimum = ((String) minimumObj).replace(",", "");
+                    minimum = new BigDecimal(cleanMinimum);
+
                 } catch (NumberFormatException ex) {
                     throw new IllegalArgumentException("Invalid minimum: must be a number");
                 }
@@ -611,7 +614,8 @@ public class AdminApiController {
 
             // Handle maximum conversion
             if (maximumObj instanceof Number) {
-                maximum = BigDecimal.valueOf(((Number) maximumObj).doubleValue());
+                String cleanMaximum = ((String) minimumObj).replace(",", "");
+                maximum = new BigDecimal(cleanMaximum);
             } else if (maximumObj instanceof String) {
                 try {
                     maximum = new BigDecimal((String) maximumObj);
@@ -623,7 +627,7 @@ public class AdminApiController {
             }
 
             // Perform insert with generated key
-            String sql = "INSERT INTO investment_categories (title, rate_rebate, min_amount, max_amount, description) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO rule_investment_type (title, rate_rebate, min_amount, max_amount, description) VALUES (?, ?, ?, ?, ?)";
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
             int rowsInserted = jdbcTemplate.update(connection -> {

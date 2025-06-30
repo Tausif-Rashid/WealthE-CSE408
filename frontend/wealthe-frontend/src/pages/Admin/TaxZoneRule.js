@@ -34,8 +34,8 @@ const TaxZoneRule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await getUserInfo();
-        setUserInfo(userData?.[0] || null);
+        // const userData = await getUserInfo();
+        // setUserInfo(userData?.[0] || null);
 
         const [taxZones, taxAreas] = await Promise.all([
           getMinimumTaxList(),
