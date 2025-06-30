@@ -8,6 +8,8 @@ import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
@@ -453,6 +455,42 @@ public class AdminApiController {
             response.put("success", false);
             response.put("message", "Failed to update income rule: " + e.getMessage());
             return response;
+        }
+    }
+
+    @PostMapping("/admin/edit-investment-category")
+    public ResponseEntity<?> editInvestmentCategory(@RequestBody Map<String, Object> request) {
+        try {
+            // Extract data from request
+            Integer id = (Integer) request.get("id");
+            String title = (String) request.get("title");
+            Double rateRebate = Double.valueOf(request.get("rate_rebate").toString());
+            Integer minimum = Integer.valueOf(request.get("minimum").toString());
+            Integer maximum = Integer.valueOf(request.get("maximum").toString());
+            String description = (String) request.get("description");
+
+            // Validate required fields
+            if (id == null || title == null || rateRebate == null || minimum == null || maximum == null || description == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing required fields"));
+            }
+
+            // Update investment category in database
+            String updateQuery = "UPDATE rule_investment_type SET title = ?, rate_rebate = ?, min_amount = ?, max_amount = ?, description = ? WHERE id = ?";
+
+            int rowsUpdated = jdbcTemplate.update(updateQuery, title, rateRebate, minimum, maximum, description, id);
+
+            if (rowsUpdated > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Investment category updated successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Investment category not found or no changes made"));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to update investment category: " + e.getMessage()));
         }
     }
     /*@GetMapping("/user/tax_info")
