@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getUserInfo, getInvestmentCategories } from '../../utils/api';
+import { 
+  getUserInfo, 
+  getInvestmentCategories, 
+  updateInvestmentCategory, 
+  addInvestmentCategory, 
+  deleteInvestmentCategory 
+} from '../../utils/api';
 
 const InvestmentRule = () => {
   const { user } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [investmentData, setInvestmentData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -56,31 +63,66 @@ const InvestmentRule = () => {
       maximum: investment.maximum,
       description: investment.description
     });
+    setError(''); // Clear any error messages
+    setSuccess(''); // Clear any success messages
   };
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
-        // TODO: Implement API call to delete
+        await deleteInvestmentCategory(id);
         setInvestmentData(prev => prev.filter(item => item.id !== id));
+        setError(''); // Clear any previous errors
       } catch (err) {
         setError('Failed to delete category');
+        console.error('Error deleting category:', err);
       }
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement API call to save changes
-    setIsEditing(false);
-    setEditingId(null);
-    setFormData({
-      title: '',
-      rate_rebate: '',
-      minimum: '',
-      maximum: '',
-      description: ''
-    });
+    
+    try {
+      setError(''); // Clear any previous errors
+      
+      if (editingId) {
+        // Update existing category
+        await updateInvestmentCategory(editingId, formData);
+        
+        // Update the local state
+        setInvestmentData(prev => prev.map(item => 
+          item.id === editingId 
+            ? { ...item, ...formData, rate_rebate: parseFloat(formData.rate_rebate) }
+            : item
+        ));
+      } else {
+        // Add new category
+        const newCategory = await addInvestmentCategory(formData);
+        
+        // Add to local state
+        setInvestmentData(prev => [...prev, newCategory]);
+      }
+      
+      // Reset form
+      setIsEditing(false);
+      setEditingId(null);
+      setFormData({
+        title: '',
+        rate_rebate: '',
+        minimum: '',
+        maximum: '',
+        description: ''
+      });
+      
+      // Show success message
+      setSuccess(editingId ? 'Category updated successfully!' : 'Category added successfully!');
+      setTimeout(() => setSuccess(''), 3000); // Clear success message after 3 seconds
+      
+    } catch (err) {
+      setError(editingId ? 'Failed to update category' : 'Failed to add category');
+      console.error('Error saving category:', err);
+    }
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -91,10 +133,13 @@ const InvestmentRule = () => {
       <div className="admin-header">
         <h1>Investment Categories</h1>
         {/* <p>Welcome back, <b>{userInfo?.name}</b></p> */}
+        {error && <div className="error-message" style={{color: 'red', marginTop: '10px'}}>{error}</div>}
+        {success && <div className="success-message" style={{color: 'green', marginTop: '10px'}}>{success}</div>}
       </div>
 
       {isEditing && (
         <div className="form-container">
+          <h2>{editingId ? 'Edit Investment Category' : 'Add New Investment Category'}</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Title:</label>
@@ -150,8 +195,20 @@ const InvestmentRule = () => {
               />
             </div>
             <div className="form-buttons">
-              <button type="submit" className="submit-btn">Save</button>
-              <button type="button" className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+              <button type="submit" className="form-submit-btn">
+                {editingId ? 'Update Category' : 'Add Category'}
+              </button>
+              <button 
+                type="button" 
+                className="form-cancel-btn" 
+                onClick={() => {
+                  setIsEditing(false);
+                  setError('');
+                  setSuccess('');
+                }}
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </div>
@@ -206,6 +263,8 @@ const InvestmentRule = () => {
                 maximum: '',
                 description: ''
               });
+              setError(''); // Clear any error messages
+              setSuccess(''); // Clear any success messages
             }}
           >
             Add New Category

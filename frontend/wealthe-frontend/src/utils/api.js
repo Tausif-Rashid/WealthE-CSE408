@@ -1,6 +1,6 @@
 //import { data } from "react-router-dom";
-//const API_BASE_URL = 'http://localhost:8081';
-const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
+const API_BASE_URL = 'http://localhost:8081';
+// const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
 
 
 export const apiCall = async (endpoint, options = {}) => {
@@ -235,6 +235,49 @@ export const updateRebateRule = async (updateData) => {
       maximumRebate: updateData.maximum,
       maximum_of_income: updateData.max_of_income
     }),
+  });
+};
+
+export const updateInvestmentCategory = async (categoryId, updateData) => {
+  return apiCall('/admin/edit-investment-category', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: categoryId,
+      title: updateData.title,
+      rate_rebate: updateData.rate_rebate,
+      minimum: updateData.minimum,
+      maximum: updateData.maximum,
+      description: updateData.description
+    }),
+  });
+};
+
+export const addInvestmentCategory = async (categoryData) => {
+  return apiCall('/admin/add-investment-category', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: categoryData.title,
+      rate_rebate: categoryData.rate_rebate,
+      minimum: categoryData.minimum,
+      maximum: categoryData.maximum,
+      description: categoryData.description
+    }),
+  });
+};
+
+export const deleteInvestmentCategory = async (categoryId) => {
+  return apiCall('/admin/delete-investment-category', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: categoryId }),
   });
 };
 
