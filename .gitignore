@@ -21,3 +21,9 @@
 /frontend/wealthe-frontend/npm-debug.log*
 /frontend/wealthe-frontend/yarn-debug.log*
 /frontend/wealthe-frontend/yarn-error.log*
+
+#java
+*.class
+*.jar
+*.war
+
