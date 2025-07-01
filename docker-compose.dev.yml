@@ -7,9 +7,6 @@ services:
   database:
     ports:
       - "5454:5432"  # Expose database port for development tools
-    volumes:
-      #- ./db/sql:/docker-entrypoint-initdb.d:ro
-      #- ./db/dev-data:/tmp/dev-data:ro  # Mount development data
 
   backend:
     environment:
@@ -31,7 +28,7 @@ services:
       context: ./frontend/wealthe-frontend
       dockerfile: Dockerfile.dev
     environment:
-      - REACT_APP_API_URL=http://localhost:8081
+      - REACT_APP_API_BASE_URL=http://localhost:8081
       - CHOKIDAR_USEPOLLING=true
     volumes:
       - ./frontend/wealthe-frontend/src:/app/src:ro

@@ -79,7 +79,7 @@ const Login = () => {
         setAuthToken(response.token);
         authLogin(response.user, response.token); // Store user info in AuthContext
 
-        if (response.user.role == "admin"){
+        if (response.user.role === "admin"){
           setAuthRole("admin");
           console.log("Admin Role: ");
           console.log (getAuthRole());
