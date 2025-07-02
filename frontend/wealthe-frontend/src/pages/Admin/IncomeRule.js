@@ -22,8 +22,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await getUserInfo();
-        setUserInfo(userData?.[0] || null);
+        // const userData = await getUserInfo();
+        // setUserInfo(userData?.[0] || null);
 
         const slabs = await getIncomeSlabs();
         setSlabData(slabs);
