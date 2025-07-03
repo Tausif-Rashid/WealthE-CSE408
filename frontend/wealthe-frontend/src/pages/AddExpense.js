@@ -240,10 +240,10 @@ const AddExpense = () => {
 
           {/* Action Buttons */}
           <div className="form-actions">
-            <button type="button" onClick={handleCancel} className="cancel-btn">
+            <button type="button" onClick={handleCancel} className="add-cancel-btn">
               Cancel
             </button>
-            <button type="submit" className="add-btn">
+            <button type="submit" className="add-add-btn">
               Add Expense
             </button>
           </div>

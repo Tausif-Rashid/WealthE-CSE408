@@ -126,6 +126,67 @@
   color: #999;
 }
 
+/* Prevent scroll wheel from changing number input values */
+.form-input[type="number"] {
+  appearance: textfield; /* Standard property */
+  -moz-appearance: textfield; /* Firefox */
+  -webkit-appearance: textfield; /* Safari/Chrome */
+  /* Additional protection against increment/decrement */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Remove spinner arrows completely */
+.form-input[type="number"]::-webkit-outer-spin-button,
+.form-input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Firefox spinner removal */
+.form-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Prevent any pointer events on the right side of number inputs */
+.form-input[type="number"]:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  /* Ensure no spinner interaction */
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Additional protection - disable any increment/decrement styling */
+.form-input[type="number"]::-webkit-increment-button,
+.form-input[type="number"]::-webkit-decrement-button {
+  display: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Prevent text selection in number inputs to avoid accidental changes */
+.form-input[type="number"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 /* Textarea specific */
 textarea.form-input {
   resize: vertical;
@@ -160,6 +221,7 @@ textarea.form-input {
 
 .radio-checkmark {
   font-weight: 500;
+  margin: 3px;
 }
 
 /* Recurrence Group Animation */
@@ -197,8 +259,8 @@ textarea.form-input {
   border-top: 1px solid #e9ecef;
 }
 
-.cancel-btn,
-.add-btn {
+.add-cancel-btn,
+.add-add-btn {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
@@ -207,30 +269,34 @@ textarea.form-input {
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 120px;
+  height: 48px; /* Fixed height for both buttons */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.cancel-btn {
-  background-color: #6c757d;
+.add-cancel-btn {
+  background-color: red;
   color: white;
 }
 
-.cancel-btn:hover {
-  background-color: #5a6268;
+.add-cancel-btn:hover {
+  background-color: #e31d5f;
   transform: translateY(-1px);
 }
 
-.add-btn {
+.add-add-btn {
   background-color: #007bff;
   color: white;
 }
 
-.add-btn:hover {
+.add-add-btn:hover {
   background-color: #0056b3;
   transform: translateY(-1px);
 }
 
-.cancel-btn:active,
-.add-btn:active {
+.add-cancel-btn:active,
+.add-add-btn:active {
   transform: translateY(0);
 }
 
