@@ -1,8 +1,8 @@
 
 //import { data } from "react-router";
-// const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = 'http://localhost:8081';
 //const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://172.174.246.178:8081'; 
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://172.174.246.178:8081'; 
 
 
 export const apiCall = async (endpoint, options = {}) => {
