@@ -149,6 +149,7 @@ public class AuthController {
             List<Map<String, Object>> users = jdbcTemplate.queryForList(sql, email);
 
             if (users.isEmpty()) {
+                System.out.println("No user found by email");
                 return ResponseEntity.badRequest().body(Map.of("error", "Invalid credentials"));
             }
 
