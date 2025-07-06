@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
+import AddExpense from './pages/AddExpense';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import IncomeRule from './pages/Admin/IncomeRule';
 import InvestmentRule from './pages/Admin/InvestmentRule';
@@ -104,6 +105,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <Expenses />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-expense" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddExpense />
             </Layout>
           </ProtectedRoute>
         } 
