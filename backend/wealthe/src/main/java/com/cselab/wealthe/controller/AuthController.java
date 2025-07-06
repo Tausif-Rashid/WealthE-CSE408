@@ -46,82 +46,85 @@ public class AuthController {
         // Hash password and insert user
         String hashedPassword = passwordEncoder.encode(password);
 
-        String insertTax = """
-                INSERT INTO user_tax_info(
-                \ttin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)
-                \tVALUES ('1234567890', TRUE, FALSE, FALSE, FALSE, 1, 2, 'Dhaka')
+//        String insertTax = """
+//                INSERT INTO user_tax_info(
+//                \ttin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)
+//                \tVALUES ('1234567890', TRUE, FALSE, FALSE, FALSE, 1, 2, 'Dhaka')
+//                """;
+        String insertCredentials = """
+                INSERT INTO public.credentials(
+                email, password_hash,role)
+                VALUES (?, ?,?)
                 """;
-        jdbcTemplate.update(insertTax);
+        //jdbcTemplate.update(insertTax);
+        jdbcTemplate.update(insertCredentials,email,hashedPassword,"user");
 
-        String sqlID = "SELECT MAX(id) FROM user_tax_info";
-
-        Integer userId = jdbcTemplate.queryForObject(sqlID, Integer.class);
+        //Get the newly generated id for the user
+        String getIdNew = "SELECT id FROM public.credentials WHERE email = ?";
+        Integer userId = jdbcTemplate.queryForObject(getIdNew, Integer.class, email);
         System.out.println("Received new id :" + userId);
 
-        String insertSql = """
-                DO $$
-                DECLARE
-                    new_user_id INT;
-                BEGIN
-                    -- Insert into user_tax_info and get user_id
-                    INSERT INTO public.user_tax_info(
-                \ttin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)
-                \tVALUES ('1234567890', TRUE, FALSE, FALSE, FALSE, 1, 2, 'Dhaka')
-                \tRETURNING id INTO new_user_id;
+        if(userId==null){
+            System.out.println("Error getting user ID");
+            return ResponseEntity.badRequest().body(Map.of("error", "Registration failed: ID not created"));
+        }
 
-                    -- Use the returned id in second insert
-                    INSERT INTO public.user_info(
-                \tid, name, phone, nid, dob, spouse_name, spouse_tin)
-                \tVALUES (new_user_id,?,'01234556778', '12345667890', '2002-1-1', null, null);
-
-                \tINSERT INTO public.credentials(
-                \tid, email, password_hash)
-                \tVALUES (new_user_id, ?, ?);
-
-                END;
-                $$;""";
+//        String insertSql = """
+//                DO $$
+//                DECLARE
+//                    new_user_id INT;
+//                BEGIN
+//                    -- Insert into user_tax_info and get user_id
+//                    INSERT INTO public.user_tax_info(
+//                \ttin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)
+//                \tVALUES ('1234567890', TRUE, FALSE, FALSE, FALSE, 1, 2, 'Dhaka')
+//                \tRETURNING id INTO new_user_id;
+//
+//                    -- Use the returned id in second insert
+//                    INSERT INTO public.user_info(
+//                \tid, name, phone, nid, dob, spouse_name, spouse_tin)
+//                \tVALUES (new_user_id,?,'01234556778', '12345667890', '2002-1-1', null, null);
+//
+//                \tINSERT INTO public.credentials(
+//                \tid, email, password_hash)
+//                \tVALUES (new_user_id, ?, ?);
+//
+//                END;
+//                $$;""";
         try {
             //jdbcTemplate.update(insertSql, name, email, hashedPassword);
+            // Entry user's name
             String userInfoSql = "INSERT INTO public.user_info(\n" +
                     " \tid, name, phone, nid, dob, spouse_name, spouse_tin)\n" +
-                    " \tVALUES (?,?,'01234556778', '12345667890', '2002-1-1', null, null)";
+                    " \tVALUES (?,?,'0', '0', '2002-1-1', null, null)";
             jdbcTemplate.update(userInfoSql,userId, name);
-            String roleAssign = "user";
-            if(name.contains("admin")) roleAssign = "admin";
-            String credSQL = """
-                    \tINSERT INTO public.credentials(
-                    \tid, email, password_hash,role)
-                    \tVALUES (?, ?, ?,?)
-                    """;
-            jdbcTemplate.update(credSQL,userId, email, hashedPassword, roleAssign);
-            System.out.println("User data inserted successfully");
+
+            //String roleAssign = "user";
+//            String credSQL = """
+//                    \tINSERT INTO public.credentials(
+//                    \tid, email, password_hash,role)
+//                    \tVALUES (?, ?, ?,?)
+//                    """;
+            //jdbcTemplate.update(credSQL,userId, email, hashedPassword, roleAssign);
+            System.out.println("User info inserted successfully");
         } catch (DataAccessException e) {
             System.err.println("Error inserting user data: " + e.getMessage());
             throw e;
         }
 
         try {
-            //Integer userId = jdbcTemplate.queryForObject(insertSql, Integer.class, email, hashedPassword, name);
 
-            // Generate JWT token
 
-            String sql2 = "SELECT id FROM public.credentials WHERE email = ?";
-
-            try {
-                userId = jdbcTemplate.queryForObject(sql2, Integer.class, email);
-            } catch (EmptyResultDataAccessException e) {
-                // No user found with this email
-                return null;
-            } catch (DataAccessException e) {
-                System.err.println("Error getting user ID: " + e.getMessage());
-                throw e;
-            }
-            String token = jwtUtil.generateToken(userId.toString());
+            // Generate and return JWT token
+            String token="";
+            token = jwtUtil.generateToken(userId.toString());
 
             return ResponseEntity.ok(Map.of(
                     "message", "User registered successfully",
                     "userId", userId,
-                    "token", token
+                    "token", token,
+                    "role", "user"
+
             ));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", "Registration failed: " + e.getMessage()));
