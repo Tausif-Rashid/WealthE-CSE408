@@ -114,7 +114,7 @@ public class AdminApiController {
                     "FROM rule_investment_type ORDER BY id;\n";
             System.out.println("SQL successfully run");
             List<Map<String, Object>> temp = jdbcTemplate.queryForList(sql);
-            System.out.println(temp);
+            //System.out.println(temp);
             return temp;
         }catch(Exception e){
             System.out.println("Error occured: " + e);
