@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { getAuthToken, removeAuthToken } from '../utils/auth';
+import { getAuthToken, removeAuthRole, removeAuthToken } from '../utils/auth';
 import { getUserInfo } from '../utils/api';
 
 const AuthContext = createContext();
@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     removeAuthToken();
+    removeAuthRole();
     setUser(null);
     setIsAuthenticated(false);
   };
