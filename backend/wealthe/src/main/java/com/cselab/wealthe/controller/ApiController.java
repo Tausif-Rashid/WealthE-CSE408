@@ -30,7 +30,7 @@ public class ApiController {
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
 
-
+    
 
     @GetMapping("/user/info")
     public List<Map<String, Object>> getUserInfo() { //Returns an array of user object with 1 element
@@ -72,7 +72,7 @@ public class ApiController {
 
         if (id != 0) {
             try{
-                sql = "SELECT id, user_id,type, CAST(amount AS numeric) as amount, description,date FROM expense WHERE user_id=?";
+                sql = "SELECT id, user_id,type, amount, description,date FROM expense WHERE user_id=? ORDER BY date DESC";
                 return jdbcTemplate.queryForList(sql, id);
             }catch(Exception e){
                 System.out.println(e);

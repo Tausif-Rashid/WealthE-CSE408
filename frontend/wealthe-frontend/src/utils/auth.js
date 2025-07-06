@@ -40,3 +40,7 @@ export const setAuthRole = (role) => {
 export const getAuthRole = () => {
   return localStorage.getItem('role');
 };
+
+export const removeAuthRole = () => {
+  localStorage.removeItem('role');
+};

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { register } from '../utils/api';
-import { setAuthToken, validateEmail, validatePassword } from '../utils/auth';
+import { setAuthRole, setAuthToken, validateEmail, validatePassword } from '../utils/auth';
 import { useAuth } from '../components/AuthContext';
 import './Login.css'; // Reusing the same styles
 
@@ -83,7 +83,8 @@ const Register = () => {
       
       if (response.token) {
         setAuthToken(response.token);
-        authLogin(response.user, response.token);
+        setAuthRole(response.role); // Set role as 'user' after registration
+        authLogin(formData.email, response.token);
         navigate('/dashboard');
       }
     } catch (error) {

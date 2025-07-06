@@ -1,13 +1,18 @@
 import React from 'react';
+import { useAuth } from './AuthContext';
 import Sidebar from './Sidebar';
+import AdminSidebar from './AdminSidebar';
 import './Layout.css';
+import { getAuthRole } from '../utils/auth';
 
-const Layout = ({ children }) => { // Layout component to wrap pages with sidebar
-  // Always render the sidebar and the main content area (children , specified by App.js)
+const Layout = ({ children }) => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+
   return (
     <div className="layout">
-      <Sidebar />
-      <main className="main-content">
+      {getAuthRole()==="admin" ? <AdminSidebar /> : <Sidebar />}
+      <main className="content">
         {children}
       </main>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { login } from '../utils/api';
-import { setAuthToken, validateEmail } from '../utils/auth';
+import { getAuthRole, setAuthRole, setAuthToken, validateEmail } from '../utils/auth';
 import { useAuth } from '../components/AuthContext';
 import './Login.css';
 
@@ -78,9 +78,21 @@ const Login = () => {
       if (response.token) {
         setAuthToken(response.token);
         authLogin(response.user, response.token); // Store user info in AuthContext
-        console.log('Navigating to dashboard'); // Debug log
-        console.log('User logged in:', response.user); // Debug log
-        navigate('/dashboard');
+
+        if (response.user.role === "admin"){
+          setAuthRole("admin");
+          console.log("Admin Role: ");
+          console.log (getAuthRole());
+          navigate('/admin/dashboard');
+        }
+        else {
+          setAuthRole("user");
+          console.log('Navigating to dashboard'); // Debug log
+          console.log('User logged in:', response.user); // Debug log
+          navigate('/dashboard');
+        }
+        
+        
       }
     } catch (error) {
       console.error('Login error:', error); // Debug log

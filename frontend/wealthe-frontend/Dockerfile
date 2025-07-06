@@ -1,22 +1,51 @@
-
-# Development Dockerfile for React with hot reload
-FROM node:18-alpine
+# Multi-stage build for React application
+# Stage 1: Build stage
+FROM node:18-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy package files first (for better caching)
 COPY package*.json ./
-RUN npm ci --silent
+
+# Install dependencies
+RUN npm ci --only=production --silent
 
 # Copy source code
 COPY . .
 
-# Expose port
-EXPOSE 3000
+# Build the application
+RUN npm run build
 
-# Start development server
-CMD ["npm", "start"]
+# Stage 2: Production stage with Nginx
+FROM nginx:1.25-alpine AS production
+
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nginxgroup && \
+    adduser -u 1001 -S nginxuser -G nginxgroup
+
+# Copy custom nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built application from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Change ownership of nginx directories
+#RUN chown -R nginxuser:nginxgroup /var/cache/nginx /var/run /var/log/nginx /usr/share/nginx/html
+
+# Switch to non-root user
+#USER nginxuser
+
+# Expose port
+EXPOSE 80
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost/health || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
+
 
 
 # # Multi-stage build for React application
