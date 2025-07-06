@@ -135,7 +135,7 @@ public class AuthController {
         String password = request.get("password");
 
         System.out.println(email);
-        System.out.println(password);
+        //System.out.println(password);
 
 
         // Validation
@@ -152,6 +152,10 @@ public class AuthController {
                 System.out.println("No user found by email");
                 return ResponseEntity.badRequest().body(Map.of("error", "Invalid credentials"));
             }
+
+            //test : attempting to read db returned value
+            System.out.println(users.get(0).get("email"));
+            System.out.println(users.get(0).get("id"));
 
             Map<String, Object> user = users.get(0);
             String storedPassword = (String) user.get("password_hash");
