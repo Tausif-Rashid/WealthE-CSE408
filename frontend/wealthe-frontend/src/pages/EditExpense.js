@@ -52,8 +52,8 @@ const EditExpense = () => {
             amount: expenseToEdit.amount || '',
             description: expenseToEdit.description || '',
             date: expenseToEdit.date || '',
-            isRecurring: expenseToEdit.isRecurring || false,
-            recurrenceType: expenseToEdit.recurrenceType || ''
+            isRecurring: expenseToEdit.recurrence !== null ? expenseToEdit.recurrence : false,
+            recurrenceType: expenseToEdit.recurrence || ''
           });
         } else {
           setError('Expense not found');
@@ -175,16 +175,6 @@ const EditExpense = () => {
       isRecurring: value === 'yes',
       recurrenceType: value === 'no' ? '' : prev.recurrenceType
     }));
-  };
-
-  const handleStopRecurrence = () => {
-    if (window.confirm('Are you sure you want to stop the recurrence for this expense?')) {
-      setFormData(prev => ({
-        ...prev,
-        isRecurring: false,
-        recurrenceType: ''
-      }));
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -350,62 +340,55 @@ const EditExpense = () => {
             />
           </div>
 
-          {/* Recurring Section */}
+          {/* Recurring Radio Buttons */}
           <div className="form-group">
-            <label className="form-label">Recurring Status</label>
-            
-            {/* If original expense was NOT recurring, don't show recurrence options */}
-            {!originalExpense?.isRecurring && (
-              <div className="recurring-info">
-                <p style={{ color: '#666', fontStyle: 'italic' }}>
-                  This expense is not recurring. Recurrence options are not available for non-recurring expenses.
-                </p>
-              </div>
-            )}
-
-            {/* If original expense WAS recurring, show current status and stop option */}
-            {originalExpense?.isRecurring && (
-              <div className="recurring-controls">
-                <div className="current-recurrence">
-                  <p><strong>Current Recurrence:</strong> {originalExpense.recurrenceType || 'Not specified'}</p>
-                  
-                  {formData.isRecurring ? (
-                    <div className="recurrence-active">
-                      <p style={{ color: '#28a745' }}>✓ This expense is currently recurring</p>
-                      <button 
-                        type="button" 
-                        onClick={handleStopRecurrence}
-                        className="stop-recurrence-btn"
-                        style={{
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                          marginTop: '10px'
-                        }}
-                      >
-                        Stop Recurrence
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="recurrence-stopped">
-                      <p style={{ color: '#dc3545' }}>⚠ Recurrence has been stopped</p>
-                      <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                        This expense will no longer repeat automatically.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <label className="form-label">Recurring?</label>
+            <div className="radio-group">
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="recurring"
+                  value="no"
+                  checked={!formData.isRecurring}
+                  onChange={(e) => handleRecurringChange(e.target.value)}
+                />
+                <span className="radio-checkmark"></span>
+                No
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="recurring"
+                  value="yes"
+                  checked={formData.isRecurring}
+                  onChange={(e) => handleRecurringChange(e.target.value)}
+                />
+                <span className="radio-checkmark"></span>
+                Yes
+              </label>
+            </div>
           </div>
 
-          {/* Hidden fields to maintain recurrence data structure */}
-          <input type="hidden" name="isRecurring" value={formData.isRecurring} />
-          <input type="hidden" name="recurrenceType" value={formData.recurrenceType} />
+          {/* Recurrence Type Dropdown (appears only if recurring is selected) */}
+          {formData.isRecurring && (
+            <div className="form-group recurrence-group">
+              <label htmlFor="recurrenceType">Recurrence Type *</label>
+              <select
+                id="recurrenceType"
+                name="recurrenceType"
+                value={formData.recurrenceType}
+                onChange={handleInputChange}
+                required
+                className="form-input"
+              >
+                <option value="">Select recurrence type</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="annual">Annual</option>
+              </select>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="form-actions">

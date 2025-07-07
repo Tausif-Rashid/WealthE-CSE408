@@ -72,7 +72,7 @@ public class ApiController {
 
         if (id != 0) {
             try{
-                sql = "SELECT id, user_id,type, amount, description,date FROM expense WHERE user_id=? ORDER BY date DESC";
+                sql = "SELECT * FROM expense WHERE user_id=? ORDER BY date DESC";
                 return jdbcTemplate.queryForList(sql, id);
             }catch(Exception e){
                 System.out.println(e);
