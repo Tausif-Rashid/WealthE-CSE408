@@ -241,5 +241,45 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/delete-expense")
+    public ResponseEntity<?> deleteExpense(@RequestBody Map<String, Object> request) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/delete-expense");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("error", "Unauthorized user"));
+            }
+
+            // Extract expense ID from request
+            Integer expenseId = (Integer) request.get("id");
+
+            // Validate required fields
+            if (expenseId == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing expense ID"));
+            }
+
+
+            // Delete the expense
+            String deleteQuery = "DELETE FROM expense WHERE id = ?";
+            int rowsDeleted = jdbcTemplate.update(deleteQuery, expenseId);
+
+            if (rowsDeleted > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Expense deleted successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Failed to delete expense"));
+            }
+
+        } catch (Exception e) {
+            logger.error("Error deleting expense: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete expense: " + e.getMessage()));
+        }
+    }
 
 }
