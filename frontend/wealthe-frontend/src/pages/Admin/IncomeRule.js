@@ -26,6 +26,7 @@ const AdminDashboard = () => {
         setUserInfo(userData?.[0] || null);
 
         const slabs = await getIncomeSlabs();
+        console.log(slabs); 
         setSlabData(slabs);
       } catch (err) {
         setError('Failed to load dashboard data');
