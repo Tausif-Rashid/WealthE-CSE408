@@ -168,4 +168,46 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/edit-expense")
+    public ResponseEntity<?> editExpense(@RequestBody Map<String, Object> request) {
+        try {
+            // Extract data from request
+            Integer id = (Integer) request.get("id");
+            String type = (String) request.get("type");
+            Double amount = Double.valueOf(request.get("amount").toString());
+            String description = (String) request.get("description");
+            String date = (String) request.get("date");
+            Boolean isRecurring = (Boolean) request.get("isRecurring");
+            String recurrenceType = null;
+
+            // Only extract recurrenceType if isRecurring is true
+            if (isRecurring != null && isRecurring) {
+                recurrenceType = (String) request.get("recurrenceType");
+            }
+
+            // Validate required fields
+            if (id == null || type == null || amount == null || description == null || date == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Missing required fields"));
+            }
+
+            // Update expense in database
+            String updateQuery = "UPDATE expense SET type = ?, amount = ?, description = ?, date = ?, is_recurring = ?, recurrence_type = ? WHERE id = ?";
+
+            int rowsUpdated = jdbcTemplate.update(updateQuery, type, amount, description, date, isRecurring, recurrenceType, id);
+
+            if (rowsUpdated > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Expense updated successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Expense not found or no changes made"));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to update expense: " + e.getMessage()));
+        }
+    }
+
 }

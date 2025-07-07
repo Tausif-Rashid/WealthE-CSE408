@@ -1,7 +1,7 @@
 //import { data } from "react-router";
 const API_BASE_URL = 'http://localhost:8081';
 // const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
-// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://172.174.246.178:8081'; 
+// const API_BASE_URL = process.env.REACT_APP_API_BASE_URL; 
 
 
 export const apiCall = async (endpoint, options = {}) => {
@@ -324,6 +324,36 @@ export const addExpense = async (expenseData) => {
       date: expenseData.date,
       isRecurring: expenseData.isRecurring,
       recurrenceType: expenseData.recurrenceType
+    }),
+  });
+};
+
+export const editExpense = async (expenseId, expenseData) => {
+  return apiCall('/user/edit-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: expenseId,
+      type: expenseData.type,
+      amount: expenseData.amount,
+      description: expenseData.description,
+      date: expenseData.date,
+      isRecurring: expenseData.isRecurring,
+      recurrenceType: expenseData.recurrenceType
+    }),
+  });
+};
+
+export const deleteExpense = async (expenseId) => {
+  return apiCall('/user/delete-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: expenseId
     }),
   });
 };

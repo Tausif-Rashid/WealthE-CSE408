@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { getUserExpense, getExpenseCategories } from '../utils/api';
+import { getUserExpense, getExpenseCategories, deleteExpense } from '../utils/api';
 import './Expenses.css';
 
 const Expenses = () => {
@@ -63,13 +63,24 @@ const Expenses = () => {
   };
 
   const handleEditExpense = (expenseId) => {
-    // TODO: Implement edit expense functionality
-    console.log('Edit expense with ID:', expenseId);
+    navigate('/edit-expense', { state: { expenseId } });
   };
 
-  const handleDeleteExpense = (expenseId) => {
-    // TODO: Implement delete expense functionality
-    console.log('Delete expense with ID:', expenseId);
+  const handleDeleteExpense = async (expenseId) => {
+    if (window.confirm('Are you sure you want to delete this expense?')) {
+      try {
+        await deleteExpense(expenseId);
+        
+        // Remove the deleted expense from the local state
+        setExpenses(prevExpenses => prevExpenses.filter(expense => expense.id !== expenseId));
+        setFilteredExpenses(prevFiltered => prevFiltered.filter(expense => expense.id !== expenseId));
+        
+        console.log('Expense deleted successfully');
+      } catch (error) {
+        console.error('Error deleting expense:', error);
+        setError('Failed to delete expense. Please try again.');
+      }
+    }
   };
 
   const handleAddExpense = () => {
