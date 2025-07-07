@@ -29,7 +29,34 @@ export const apiCall = async (endpoint, options = {}) => {
       }
     }
     
-    const data = await response.json();
+    // Check if response has content
+    const contentType = response.headers.get('content-type');
+    const hasJsonContent = contentType && contentType.includes('application/json');
+    
+    // Get response text first to debug what's being returned
+    const responseText = await response.text();
+    console.log('Response status:', response.status);
+    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+    console.log('Response text:', responseText);
+    
+    // If response is empty or not JSON, handle accordingly
+    if (!responseText) {
+      if (response.ok) {
+        return { success: true, message: 'Operation completed successfully' };
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    }
+    
+    // Try to parse JSON
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Response was not valid JSON:', responseText);
+      throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}...`);
+    }
 
     if (!response.ok) {
       throw new Error(data.message || data.error || `HTTP ${response.status}: ${response.statusText}`);
@@ -234,6 +261,68 @@ export const updateRebateRule = async (updateData) => {
     body: JSON.stringify({
       maximumRebate: updateData.maximum,
       maximum_of_income: updateData.max_of_income
+    }),
+  });
+};
+
+export const updateInvestmentCategory = async (categoryId, updateData) => {
+  return apiCall('/admin/edit-investment-category', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: categoryId,
+      title: updateData.title,
+      rate_rebate: updateData.rate_rebate,
+      minimum: updateData.minimum,
+      maximum: updateData.maximum,
+      description: updateData.description
+    }),
+  });
+};
+
+export const addInvestmentCategory = async (categoryData) => {
+  return apiCall('/admin/add-investment-category', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: categoryData.title,
+      rate_rebate: categoryData.rate_rebate,
+      minimum: categoryData.minimum,
+      maximum: categoryData.maximum,
+      description: categoryData.description
+    }),
+  });
+};
+
+export const deleteInvestmentCategory = async (categoryId) => {
+  
+  return apiCall('/admin/delete-investment-category', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: categoryId }),
+    
+  });
+};
+
+export const addExpense = async (expenseData) => {
+  return apiCall('/user/add-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: expenseData.type,
+      amount: expenseData.amount,
+      description: expenseData.description,
+      date: expenseData.date,
+      isRecurring: expenseData.isRecurring,
+      recurrenceType: expenseData.recurrenceType
     }),
   });
 };

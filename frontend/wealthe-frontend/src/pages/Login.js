@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { login } from '../utils/api';
 import { getAuthRole, setAuthRole, setAuthToken, validateEmail } from '../utils/auth';
 import { useAuth } from '../components/AuthContext';
@@ -79,7 +79,7 @@ const Login = () => {
         setAuthToken(response.token);
         authLogin(response.user, response.token); // Store user info in AuthContext
 
-        if (response.user.role == "admin"){
+        if (response.user.role === "admin"){
           setAuthRole("admin");
           console.log("Admin Role: ");
           console.log (getAuthRole());

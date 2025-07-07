@@ -12,8 +12,10 @@ COPY pom.xml .
 COPY .mvn .mvn
 
 # Download dependencies (this layer will be cached if pom.xml doesn't change)
-RUN chmod +x mvnw
-RUN ./mvnw dependency:go-offline -B
+RUN sed -i 's/\r$//' mvnw # Ensure line endings are correct for Unix
+RUN chmod +x ./mvnw
+#RUN ls -la
+RUN ./mvnw dependency:go-offline # Download dependencies without building the project
 
 # Copy source code
 COPY src ./src
@@ -21,6 +23,7 @@ COPY src ./src
 # Build the application
 RUN ./mvnw clean package -DskipTests -B
 
+# 2 stage makes image smaller
 # Stage 2: Runtime stage
 FROM eclipse-temurin:17-jre-alpine AS runtime
 

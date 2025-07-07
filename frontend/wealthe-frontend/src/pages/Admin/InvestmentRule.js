@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getUserInfo, getInvestmentCategories } from '../../utils/api';
+import { 
+  getUserInfo, 
+  getInvestmentCategories, 
+  updateInvestmentCategory, 
+  addInvestmentCategory, 
+  deleteInvestmentCategory 
+} from '../../utils/api';
 
 const InvestmentRule = () => {
   const { user } = useAuth();
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [investmentData, setInvestmentData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     rate_rebate: '',
@@ -22,8 +31,8 @@ const InvestmentRule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await getUserInfo();
-        setUserInfo(userData?.[0] || null);
+        // const userData = await getUserInfo();
+        // setUserInfo(userData?.[0] || null);
 
         const investments = await getInvestmentCategories();
         setInvestmentData(investments);
@@ -56,31 +65,88 @@ const InvestmentRule = () => {
       maximum: investment.maximum,
       description: investment.description
     });
+    setError(''); // Clear any error messages
+    setSuccess(''); // Clear any success messages
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      try {
-        // TODO: Implement API call to delete
-        setInvestmentData(prev => prev.filter(item => item.id !== id));
-      } catch (err) {
-        setError('Failed to delete category');
-      }
+  const handleDelete = (investment) => {
+    setCategoryToDelete(investment);
+    setShowDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+    
+    try {
+      setError(''); // Clear any previous errors
+      await deleteInvestmentCategory(categoryToDelete.id);
+      
+      // Remove from local state
+      setInvestmentData(prev => prev.filter(item => item.id !== categoryToDelete.id));
+      
+      // Show success message
+      setSuccess(`Category "${categoryToDelete.title}" deleted successfully!`);
+      setTimeout(() => setSuccess(''), 3000);
+      
+    } catch (err) {
+      setError('Failed to delete category');
+      console.error('Error deleting category:', err);
+    } finally {
+      // Close dialog and reset
+      setShowDeleteDialog(false);
+      setCategoryToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteDialog(false);
+    setCategoryToDelete(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement API call to save changes
-    setIsEditing(false);
-    setEditingId(null);
-    setFormData({
-      title: '',
-      rate_rebate: '',
-      minimum: '',
-      maximum: '',
-      description: ''
-    });
+    
+    try {
+      setError(''); // Clear any previous errors
+      
+      if (editingId) {
+        // Update existing category
+        await updateInvestmentCategory(editingId, formData);
+        
+        // Update the local state
+        setInvestmentData(prev => prev.map(item => 
+          item.id === editingId 
+            ? { ...item, ...formData, rate_rebate: parseFloat(formData.rate_rebate) }
+            : item
+        ));
+      } else {
+        // Add new category
+        const newCategory = await addInvestmentCategory(formData);
+        
+        // Add to local state
+        setInvestmentData(prev => [...prev, newCategory]);
+        window.location.reload();
+      }
+      
+      // Reset form
+      setIsEditing(false);
+      setEditingId(null);
+      setFormData({
+        title: '',
+        rate_rebate: '',
+        minimum: '',
+        maximum: '',
+        description: ''
+      });
+      
+      // Show success message
+      setSuccess(editingId ? 'Category updated successfully!' : 'Category added successfully!');
+      setTimeout(() => setSuccess(''), 3000); // Clear success message after 3 seconds
+      
+    } catch (err) {
+      setError(editingId ? 'Failed to update category' : 'Failed to add category');
+      console.error('Error saving category:', err);
+    }
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -91,10 +157,13 @@ const InvestmentRule = () => {
       <div className="admin-header">
         <h1>Investment Categories</h1>
         {/* <p>Welcome back, <b>{userInfo?.name}</b></p> */}
+        {error && <div className="error-message" style={{color: 'red', marginTop: '10px'}}>{error}</div>}
+        {success && <div className="success-message" style={{color: 'green', marginTop: '10px'}}>{success}</div>}
       </div>
 
       {isEditing && (
         <div className="form-container">
+          <h2>{editingId ? 'Edit Investment Category' : 'Add New Investment Category'}</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Title:</label>
@@ -150,8 +219,20 @@ const InvestmentRule = () => {
               />
             </div>
             <div className="form-buttons">
-              <button type="submit" className="submit-btn">Save</button>
-              <button type="button" className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+              <button type="submit" className="form-submit-btn">
+                {editingId ? 'Update Category' : 'Add Category'}
+              </button>
+              <button 
+                type="button" 
+                className="form-cancel-btn" 
+                onClick={() => {
+                  setIsEditing(false);
+                  setError('');
+                  setSuccess('');
+                }}
+              >
+                Cancel
+              </button>
             </div>
           </form>
         </div>
@@ -175,13 +256,13 @@ const InvestmentRule = () => {
                 <tr key={investment.id}>
                   <td>{investment.title}</td>
                   <td>{investment.rate_rebate}%</td>
-                  <td>{investment.minimum === 2147483647 ? 'N/A' : investment.minimum.toLocaleString()}</td>
-                  <td>{investment.maximum === 2147483647 ? 'N/A' : investment.maximum.toLocaleString()}</td>
+                  <td>{investment.minimum === 2147483647 ? 'N/A' : investment.minimum}</td>
+                  <td>{investment.maximum === 2147483647 ? 'N/A' : investment.maximum}</td>
                   <td>{investment.description}</td>
                   <td>
                     <div className="action-buttons">
                       <button className="edit-btn" onClick={() => handleEdit(investment)}>Edit</button>
-                      <button className="delete-btn" onClick={() => handleDelete(investment.id)}>Delete</button>
+                      <button className="delete-btn" onClick={() => handleDelete(investment)}>Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -206,12 +287,42 @@ const InvestmentRule = () => {
                 maximum: '',
                 description: ''
               });
+              setError(''); // Clear any error messages
+              setSuccess(''); // Clear any success messages
             }}
           >
             Add New Category
           </button>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteDialog && (
+        <div className="dialog-overlay">
+          <div className="dialog-box">
+            <div className="dialog-header">
+              <h3>Confirm Delete</h3>
+            </div>
+            <div className="dialog-content">
+              <p>Are you sure you want to delete this investment category?</p>
+              <div className="category-details">
+                <strong>{categoryToDelete?.title}</strong>
+                <br />
+                <span className="category-description">{categoryToDelete?.description}</span>
+              </div>
+              <p className="warning-text">This action cannot be undone.</p>
+            </div>
+            <div className="dialog-actions">
+              <button className="dialog-cancel-btn" onClick={cancelDelete}>
+                Cancel
+              </button>
+              <button className="dialog-delete-btn" onClick={confirmDelete}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

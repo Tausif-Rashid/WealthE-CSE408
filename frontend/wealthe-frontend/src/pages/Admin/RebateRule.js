@@ -20,8 +20,8 @@ const RebateRule = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await getUserInfo();
-        setUserInfo(userData?.[0] || null);
+        // const userData = await getUserInfo();
+        // setUserInfo(userData?.[0] || null);
 
         const rebateRules = await getRebateRules();
         if (rebateRules?.length > 0) {
@@ -175,8 +175,8 @@ const RebateRule = () => {
                       autoFocus
                     />
                     <div className="input-actions">
-                      <button className="save-btn" onClick={() => handleSave('max_of_income')}>✓</button>
-                      <button className="cancel-btn" onClick={handleCancel}>✕</button>
+                      <button className="icon-save-btn" onClick={() => handleSave('max_of_income')}>✓</button>
+                      <button className="icon-cancel-btn" onClick={handleCancel}>✕</button>
                     </div>
                   </div>
                 ) : (
