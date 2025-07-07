@@ -175,5 +175,71 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/edit-expense")
+    public ResponseEntity<?> editExpense(@RequestBody Map<String, Object> request) {
+        try {
+            // Extract data from request
+            Integer id = (Integer) request.get("id");
+            String type = (String) request.get("type");
+            Double amount = Double.valueOf(request.get("amount").toString());
+            String description = (String) request.get("description");
+//            String date = (String) request.get("date");
+            Boolean isRecurring = (Boolean) request.get("isRecurring");
+            String recurrenceType = null;
+
+            // In your backend controller
+            String dateString = (String) request.get("date");
+            java.sql.Date date = java.sql.Date.valueOf(dateString); // Converts "2025-07-07" to SQL Date
+
+            // Only extract recurrenceType if isRecurring is true
+            if (isRecurring != null && isRecurring) {
+                recurrenceType = (String) request.get("recurrenceType");
+            }
+
+            System.out.println(id + type + amount + description + date + isRecurring + recurrenceType);
+            // Special handling when changing from recurring to non-recurring
+            if (isRecurring != null && !isRecurring) {
+                // Check the current recurrence_parent before updating
+                String checkParentQuery = "SELECT recurrence_parent FROM expense WHERE id = ?";
+                try {
+                    Integer currentRecurrenceParent = jdbcTemplate.queryForObject(checkParentQuery, Integer.class, id);
+
+                    if (currentRecurrenceParent != null) {
+                        // Set recurrence to null for the parent record
+                        String updateParentQuery = "UPDATE expense SET recurrence = NULL WHERE id = ?";
+                        jdbcTemplate.update(updateParentQuery, currentRecurrenceParent);
+                    }
+                } catch (Exception e) {
+                    // Handle case where query returns null
+                    logger.debug("No recurrence_parent found for expense id: " + id);
+                }
+            }
+
+
+
+            // Update expense in database
+            String updateQuery = "UPDATE expense SET type = ?, amount = ?, description = ?, date = ?, recurrence = ?, recurrence_parent = ? WHERE id = ?";
+
+            // Set recurrence_parent to the expense ID itself if it's recurring, otherwise null
+            Integer recurrenceParent = (isRecurring != null && isRecurring && recurrenceType != null) ? id : null;
+
+            System.out.println(id + type + amount + description + date + isRecurring + recurrenceType + recurrenceParent);
+            int rowsUpdated = jdbcTemplate.update(updateQuery, type, amount, description, date, recurrenceType, recurrenceParent, id);
+
+            if (rowsUpdated > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Expense updated successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Expense not found or no changes made"));
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to update expense: " + e.getMessage()));
+        }
+    }
+
 
 }
