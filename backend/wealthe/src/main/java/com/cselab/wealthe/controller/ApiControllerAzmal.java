@@ -78,7 +78,11 @@ public class ApiControllerAzmal {
                 isRecurring = Boolean.parseBoolean(expenseData.get("isRecurring").toString());
             }
 
-            String recurrenceType = expenseData.get("recurrenceType") != null ? expenseData.get("recurrenceType").toString() : null;
+            String recurrenceType = null;
+            // Only extract recurrenceType if isRecurring is true
+            if (isRecurring) {
+                recurrenceType = expenseData.get("recurrenceType") != null ? expenseData.get("recurrenceType").toString() : null;
+            }
 
             // Parse date string to SQL Date
             java.sql.Date sqlDate = null;
@@ -105,13 +109,15 @@ public class ApiControllerAzmal {
                 return ResponseEntity.badRequest().body(errorResponse);
             }
 
-            // Insert into expense table
-            String insertExpenseSql = "INSERT INTO expense (user_id, type, amount, description, date) VALUES (?, ?, ?, ?, ?)";
+            // Insert into expense table with recurrence column
+            String insertExpenseSql = "INSERT INTO expense (user_id, type, amount, description, date, recurrence) VALUES (?, ?, ?, ?, ?, ?)";
 
             KeyHolder keyHolder = new GeneratedKeyHolder();
 
             Double finalAmount = amount;
             java.sql.Date finalSqlDate = sqlDate;
+            String finalRecurrenceType = recurrenceType;
+
             int rowsAffected = jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(insertExpenseSql, Statement.RETURN_GENERATED_KEYS);
                 ps.setInt(1, userId);
@@ -119,6 +125,7 @@ public class ApiControllerAzmal {
                 ps.setDouble(3, finalAmount);
                 ps.setString(4, description);
                 ps.setDate(5, finalSqlDate);
+                ps.setString(6, finalRecurrenceType);
                 return ps;
             }, keyHolder);
 
@@ -139,10 +146,10 @@ public class ApiControllerAzmal {
 
                 int expenseId = generatedId.intValue();
 
-                // If it's a recurring expense, insert into recurring_expense table
+                // If it's a recurring expense, update recurrence_parent with its own ID
                 if (isRecurring && recurrenceType != null && !recurrenceType.isEmpty()) {
-                    String insertRecurringSql = "INSERT INTO recurring_expense (expense_id, date, type) VALUES (?, ?, ?)";
-                    jdbcTemplate.update(insertRecurringSql, expenseId, sqlDate, recurrenceType);
+                    String updateRecurrenceParentSql = "UPDATE expense SET recurrence_parent = ? WHERE id = ?";
+                    jdbcTemplate.update(updateRecurrenceParentSql, expenseId, expenseId);
                 }
 
                 // Return success response with expense_id
@@ -168,46 +175,5 @@ public class ApiControllerAzmal {
         }
     }
 
-    @PostMapping("/user/edit-expense")
-    public ResponseEntity<?> editExpense(@RequestBody Map<String, Object> request) {
-        try {
-            // Extract data from request
-            Integer id = (Integer) request.get("id");
-            String type = (String) request.get("type");
-            Double amount = Double.valueOf(request.get("amount").toString());
-            String description = (String) request.get("description");
-            String date = (String) request.get("date");
-            Boolean isRecurring = (Boolean) request.get("isRecurring");
-            String recurrenceType = null;
-
-            // Only extract recurrenceType if isRecurring is true
-            if (isRecurring != null && isRecurring) {
-                recurrenceType = (String) request.get("recurrenceType");
-            }
-
-            // Validate required fields
-            if (id == null || type == null || amount == null || description == null || date == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Missing required fields"));
-            }
-
-            // Update expense in database
-            String updateQuery = "UPDATE expense SET type = ?, amount = ?, description = ?, date = ?, is_recurring = ?, recurrence_type = ? WHERE id = ?";
-
-            int rowsUpdated = jdbcTemplate.update(updateQuery, type, amount, description, date, isRecurring, recurrenceType, id);
-
-            if (rowsUpdated > 0) {
-                return ResponseEntity.ok(Map.of(
-                        "success", true,
-                        "message", "Expense updated successfully"
-                ));
-            } else {
-                return ResponseEntity.badRequest().body(Map.of("error", "Expense not found or no changes made"));
-            }
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Failed to update expense: " + e.getMessage()));
-        }
-    }
 
 }
