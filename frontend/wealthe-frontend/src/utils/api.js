@@ -2,6 +2,7 @@
 const API_BASE_URL = 'http://localhost:8081';
 //const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
 
+//const API_BASE_URL = process.env.API_BASE_URL_ENV ; // Use environment variable or default to localhost
 
 export const apiCall = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;

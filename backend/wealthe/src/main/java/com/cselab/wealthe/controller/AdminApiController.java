@@ -62,8 +62,6 @@ public class AdminApiController {
             System.out.println("Error occured: " + e);
             return null;
         }
-
-
     }
 
     @GetMapping("/admin/income-categories")
