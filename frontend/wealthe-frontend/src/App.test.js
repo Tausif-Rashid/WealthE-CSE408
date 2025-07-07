@@ -7,14 +7,14 @@ import { mockAuthUtils, setupAuthMocks, resetUtilMocks } from './__tests__/mocks
 // Mock all the page components
 jest.mock('./pages/Login', () => () => <div>Login Page</div>);
 jest.mock('./pages/Register', () => () => <div>Register Page</div>);
-jest.mock('./pages/Dashboard', () => () => <div>Dashboard Page</div>);
-jest.mock('./pages/Expenses', () => () => <div>Expenses Page</div>);
-jest.mock('./pages/AddExpense', () => () => <div>Add Expense Page</div>);
-jest.mock('./pages/Admin/AdminDashboard', () => () => <div>Admin Dashboard</div>);
-jest.mock('./pages/Admin/IncomeRule', () => () => <div>Income Rule Page</div>);
-jest.mock('./pages/Admin/InvestmentRule', () => () => <div>Investment Rule Page</div>);
-jest.mock('./pages/Admin/RebateRule', () => () => <div>Rebate Rule Page</div>);
-jest.mock('./pages/Admin/TaxZoneRule', () => () => <div>Tax Zone Rule Page</div>);
+jest.mock('./pages/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
+jest.mock('./pages/Expenses', () => () => <div data-testid="expenses-page">Expenses Page</div>);
+jest.mock('./pages/AddExpense', () => () => <div data-testid="add-expense-page">Add Expense Page</div>);
+jest.mock('./pages/Admin/AdminDashboard', () => () => <div data-testid="admin-dashboard">Admin Dashboard</div>);
+jest.mock('./pages/Admin/IncomeRule', () => () => <div data-testid="income-rule-page">Income Rule Page</div>);
+jest.mock('./pages/Admin/InvestmentRule', () => () => <div data-testid="investment-rule-page">Investment Rule Page</div>);
+jest.mock('./pages/Admin/RebateRule', () => () => <div data-testid="rebate-rule-page">Rebate Rule Page</div>);
+jest.mock('./pages/Admin/TaxZoneRule', () => () => <div data-testid="tax-zone-rule-page">Tax Zone Rule Page</div>);
 
 // Mock components
 jest.mock('./components/Layout', () => ({ children }) => (
@@ -178,9 +178,9 @@ describe('App Component', () => {
     render(<App />);
 
     // Check if all main pages are rendered in the route structure
-    expect(screen.getByText('Dashboard Page')).toBeInTheDocument();
-    expect(screen.getByText('Expenses Page')).toBeInTheDocument();
-    expect(screen.getByText('Add Expense Page')).toBeInTheDocument();
+    expect(screen.getByTestId('dashboard-page')).toBeInTheDocument();
+    expect(screen.getByTestId('expenses-page')).toBeInTheDocument();
+    expect(screen.getByTestId('add-expense-page')).toBeInTheDocument();
   });
 
   it('renders admin pages when authenticated as admin', () => {
@@ -196,11 +196,11 @@ describe('App Component', () => {
     render(<App />);
 
     // Check if admin pages are rendered
-    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Income Rule Page')).toBeInTheDocument();
-    expect(screen.getByText('Investment Rule Page')).toBeInTheDocument();
-    expect(screen.getByText('Rebate Rule Page')).toBeInTheDocument();
-    expect(screen.getByText('Tax Zone Rule Page')).toBeInTheDocument();
+    expect(screen.getByTestId('admin-dashboard')).toBeInTheDocument();
+    expect(screen.getByTestId('income-rule-page')).toBeInTheDocument();
+    expect(screen.getByTestId('investment-rule-page')).toBeInTheDocument();
+    expect(screen.getByTestId('rebate-rule-page')).toBeInTheDocument();
+    expect(screen.getByTestId('tax-zone-rule-page')).toBeInTheDocument();
   });
 
   it('renders register page', () => {
