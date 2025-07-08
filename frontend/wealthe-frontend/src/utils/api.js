@@ -437,3 +437,18 @@ export const chatbotUserQuery = async (question) => {
   });
 };
 
+export const getTaxEstimation = async (taxData) => {
+  return apiCall('/user/tax-estimation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bonusAmount: taxData.bonusAmount,
+      numberOfBonus: taxData.numberOfBonus,
+      expectedNonRecurringIncome: taxData.expectedNonRecurringIncome,
+      makeMoreInvestment: taxData.makeMoreInvestment
+    }),
+  });
+};
+

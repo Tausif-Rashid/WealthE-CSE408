@@ -17,6 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -739,6 +741,238 @@ public class ApiControllerAzmal {
             errorResponse.put("message", "Internal server error: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
+    }
+
+    @PostMapping("/user/tax-estimation")
+    public ResponseEntity<Map<String, Object>> calculateTaxEstimation(@RequestBody Map<String, Object> requestData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/tax-estimation");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Unauthorized user");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
+
+            // Log the incoming data for debugging
+            logger.debug("Received tax estimation request: " + requestData.toString());
+
+            // Extract inputs from payload
+            Double expectedNonRecurringIncome = 0.0;
+            if (requestData.get("expectedNonRecurringIncome") != null) {
+                try {
+                    expectedNonRecurringIncome = Double.parseDouble(requestData.get("expectedNonRecurringIncome").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid expectedNonRecurringIncome format: " + requestData.get("expectedNonRecurringIncome"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid expected non-recurring income format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            Double bonusAmount = 0.0;
+            if (requestData.get("bonusAmount") != null) {
+                try {
+                    bonusAmount = Double.parseDouble(requestData.get("bonusAmount").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid bonusAmount format: " + requestData.get("bonusAmount"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid bonus amount format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            Integer numberOfBonus = 0;
+            if (requestData.get("numberOfBonus") != null) {
+                try {
+                    numberOfBonus = Integer.parseInt(requestData.get("numberOfBonus").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid numberOfBonus format: " + requestData.get("numberOfBonus"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid number of bonus format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            Double makeMoreInvestment = 0.0;
+            if (requestData.get("makeMoreInvestment") != null) {
+                try {
+                    makeMoreInvestment = Double.parseDouble(requestData.get("makeMoreInvestment").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid makeMoreInvestment format: " + requestData.get("makeMoreInvestment"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid investment amount format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // 1. Calculate dates - tax year starts from July 1
+            LocalDate currentDate = LocalDate.now();
+            LocalDate taxYearStart;
+            LocalDate taxYearEnd;
+
+            if (currentDate.getMonthValue() >= 7) {
+                // Current tax year: July 1 this year to June 30 next year
+                taxYearStart = LocalDate.of(currentDate.getYear(), 7, 1);
+                taxYearEnd = LocalDate.of(currentDate.getYear() + 1, 6, 30);
+            } else {
+                // Current tax year: July 1 last year to June 30 this year
+                taxYearStart = LocalDate.of(currentDate.getYear() - 1, 7, 1);
+                taxYearEnd = LocalDate.of(currentDate.getYear(), 6, 30);
+            }
+
+            // 2. Calculate total income where recurrence = null from July 1
+            String nonRecurringIncomeSql = "SELECT COALESCE(SUM(amount), 0) FROM income WHERE user_id = ? AND recurrence IS NULL AND date >= ?";
+            Double totalNonRecurringIncome = jdbcTemplate.queryForObject(nonRecurringIncomeSql, Double.class, userId, java.sql.Date.valueOf(taxYearStart));
+            if (totalNonRecurringIncome == null) {
+                totalNonRecurringIncome = 0.0;
+            }
+
+            // 4. Add expectedNonRecurringIncome to get total non-recurring income
+            Double nonRecurringIncome = totalNonRecurringIncome + expectedNonRecurringIncome;
+
+            // 5. Calculate total income where recurrence != null from July 1
+            String recurringIncomeSql = "SELECT amount, recurrence FROM income WHERE user_id = ? AND recurrence IS NOT NULL AND date >= ?";
+            List<Map<String, Object>> recurringIncomes = jdbcTemplate.queryForList(recurringIncomeSql, userId, java.sql.Date.valueOf(taxYearStart));
+
+            Double totalRecurringIncome = 0.0;
+
+            // 6. Calculate recurring income based on recurrence type
+            for (Map<String, Object> income : recurringIncomes) {
+                Double amount = income.get("amount") != null ? Double.parseDouble(income.get("amount").toString()) : 0.0;
+                String recurrence = income.get("recurrence") != null ? income.get("recurrence").toString() : "";
+
+                if ("daily".equalsIgnoreCase(recurrence)) {
+                    // Calculate days remaining until next June 30th
+                    long daysRemaining = ChronoUnit.DAYS.between(currentDate, taxYearEnd) + 1;
+                    totalRecurringIncome += amount * daysRemaining;
+                } else if ("monthly".equalsIgnoreCase(recurrence)) {
+                    // Calculate months remaining until next June 30th
+                    long monthsRemaining = ChronoUnit.MONTHS.between(currentDate.withDayOfMonth(1), taxYearEnd.withDayOfMonth(1)) + 1;
+                    totalRecurringIncome += amount * monthsRemaining;
+                } else if ("annual".equalsIgnoreCase(recurrence) || "yearly".equalsIgnoreCase(recurrence)) {
+                    // Annual income, add full amount
+                    totalRecurringIncome += amount;
+                }
+            }
+
+            // 7. Calculate total Income
+            Double totalBonusAmount = bonusAmount * numberOfBonus;
+            Double totalIncome = nonRecurringIncome + totalRecurringIncome + totalBonusAmount;
+
+            // 8. Set investment amount
+            Double investment = makeMoreInvestment;
+
+            // 9. Calculate tax and rebate
+            Map<String, Double> taxCalculation = calculateTaxAndRebate(totalIncome, investment);
+            Double totalTax = taxCalculation.get("totalTax");
+            Double rebateAmount = taxCalculation.get("rebateAmount");
+
+            // 10. Get user's tax area
+            String taxAreaSql = "SELECT area_name FROM user_tax_info WHERE id = ?";
+            String taxArea = null;
+            try {
+                taxArea = jdbcTemplate.queryForObject(taxAreaSql, String.class, userId);
+            } catch (Exception e) {
+                logger.debug("Tax area not found for user: " + userId);
+            }
+
+            if (taxArea == null || taxArea.trim().isEmpty()) {
+                taxArea = "Rest";
+            }
+
+            // Get minimum tax for the area
+            String minTaxSql = "SELECT min_amount FROM rule_tax_zone_min_tax WHERE area_name = ?";
+            Double minTax = 0.0;
+            try {
+                minTax = jdbcTemplate.queryForObject(minTaxSql, Double.class, taxArea);
+            } catch (Exception e) {
+                logger.debug("Minimum tax not found for area: " + taxArea);
+            }
+
+            if (minTax == null) {
+                minTax = 0.0;
+            }
+
+            // Calculate estimated tax
+            Double estimatedTax = Math.max(minTax, totalTax - rebateAmount);
+
+            // Prepare response
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", Map.of(
+                    "income", totalIncome,
+                    "investment", investment,
+                    "rebate", rebateAmount,
+                    "calculatedTax", totalTax,
+                    "minimumTaxForZone", minTax,
+                    "estimatedTax", estimatedTax
+            ));
+            response.put("message", "Tax estimation calculated successfully");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("Error calculating tax estimation: ", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Internal server error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    // Helper method to calculate tax and rebate
+    private Map<String, Double> calculateTaxAndRebate(Double income, Double investment) {
+        Map<String, Double> result = new HashMap<>();
+
+        // Calculate tax based on Bangladesh tax slabs (2024-25)
+        Double tax = calculateTax(income);
+
+        // Calculate rebate based on investment (assuming 15% rebate on investment up to certain limit)
+        Double rebate = 0.0;
+//        Double maxRebateableInvestment = Math.min(investment, income * 0.25); // Max 25% of income
+        rebate = Math.min (investment, income*0.03) * 0.15; // 15% rebate
+
+        result.put("totalTax", tax);
+        result.put("rebateAmount", rebate);
+
+        return result;
+    }
+
+    // Helper method to calculate tax based on Bangladesh tax slabs
+    private Double calculateTax(Double taxableIncome) {
+        Double tax = 0.0;
+
+        // Tax slabs for individual taxpayers in Bangladesh (2024-25)
+        // First 3,50,000 BDT - 0% tax
+        // Next 1,00,000 BDT (3,50,001 to 4,50,000) - 5% tax
+        // Next 3,00,000 BDT (4,50,001 to 7,50,000) - 10% tax
+        // Next 4,00,000 BDT (7,50,001 to 11,50,000) - 15% tax
+        // Next 3,00,000 BDT (11,50,001 to 14,50,000) - 20% tax
+        // Above 14,50,000 BDT - 25% tax
+
+        if (taxableIncome <= 350000) {
+            tax = 0.0;
+        } else if (taxableIncome <= 450000) {
+            tax = (taxableIncome - 350000) * 0.05;
+        } else if (taxableIncome <= 750000) {
+            tax = 100000 * 0.05 + (taxableIncome - 450000) * 0.10;
+        } else if (taxableIncome <= 1150000) {
+            tax = 100000 * 0.05 + 300000 * 0.10 + (taxableIncome - 750000) * 0.15;
+        } else if (taxableIncome <= 1450000) {
+            tax = 100000 * 0.05 + 300000 * 0.10 + 400000 * 0.15 + (taxableIncome - 1150000) * 0.20;
+        } else {
+            tax = 100000 * 0.05 + 300000 * 0.10 + 400000 * 0.15 + 300000 * 0.20 + (taxableIncome - 1450000) * 0.25;
+        }
+
+        return tax;
     }
 
 }
