@@ -218,12 +218,12 @@ const Expenses = () => {
                 <div className="expense-header">
                   <div className="expense-type">
                     <span className="type-icon">
-                      {expense.type === 'utilities' && '🔌'}
-                      {expense.type === 'food' && '🍽️'}
-                      {expense.type === 'transport' && '🚗'}
-                      {expense.type === 'entertainment' && '🎬'}
-                      {expense.type === 'healthcare' && '🏥'}
-                      {expense.type === 'shopping' && '🛍️'}
+                      {expense.type === 'Utilities' && '🔌'}
+                      {expense.type === 'Food' && '🍽️'}
+                      {expense.type === 'Transport' && '🚗'}
+                      {expense.type === 'Entertainment' && '🎬'}
+                      {expense.type === 'Healthcare' && '🏥'}
+                      {expense.type === 'Purchase' && '🛍️'}
                       {!['utilities', 'food', 'transport', 'entertainment', 'healthcare', 'shopping'].includes(expense.type) && '💳'}
                     </span>
                     <span className="type-text">{expense.type}</span>
@@ -239,6 +239,12 @@ const Expenses = () => {
                     <span className="date-icon">📅</span>
                     {formatDate(expense.date)}
                   </div>
+                  {expense.recurrence && (
+                    <div className="expense-recurrence">
+                      <span className="recurrence-icon">🔄</span>
+                      <span className="recurrence-label">Recurring: {expense.recurrence}</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="expense-actions">

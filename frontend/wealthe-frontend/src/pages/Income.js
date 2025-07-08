@@ -259,14 +259,14 @@ const Income = () => {
                   </div>
                   
                   {/* Show additional fields if they exist */}
-                  {income.profit && (
+                  {income.profit > 0  && (
                     <div className="income-profit">
                       <span className="profit-icon">💹</span>
                       <span className="profit-label">Profit: {formatAmount(income.profit)}</span>
                     </div>
                   )}
                   
-                  {income.exempted_amount && (
+                  {income.exempted_amount > 0 && (
                     <div className="income-exempted">
                       <span className="exempted-icon">🛡️</span>
                       <span className="exempted-label">Exempted: {formatAmount(income.exempted_amount)}</span>
