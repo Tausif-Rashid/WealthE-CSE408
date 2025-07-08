@@ -175,7 +175,7 @@ const TaxEstimation = () => {
                 <div className="result-icon">💼</div>
                 <div className="result-content">
                   <h3>Total Income</h3>
-                  <p className="result-amount">{formatAmount(results.Income)}</p>
+                  <p className="result-amount">{formatAmount(results.data.income)}</p>
                 </div>
               </div>
 
@@ -183,7 +183,7 @@ const TaxEstimation = () => {
                 <div className="result-icon">📈</div>
                 <div className="result-content">
                   <h3>Investment</h3>
-                  <p className="result-amount">{formatAmount(results.Investment)}</p>
+                  <p className="result-amount">{formatAmount(results.data.investment)}</p>
                 </div>
               </div>
 
@@ -191,7 +191,15 @@ const TaxEstimation = () => {
                 <div className="result-icon">🏷️</div>
                 <div className="result-content">
                   <h3>Rebate</h3>
-                  <p className="result-amount">{formatAmount(results.Rebate)}</p>
+                  <p className="result-amount">{formatAmount(results.data.rebate)}</p>
+                </div>
+              </div>
+
+              <div className="result-card min-tax-card">
+                <div className="result-icon">🧮</div>
+                <div className="result-content">
+                  <h3>Calculated Tax</h3>
+                  <p className="result-amount">{formatAmount(results.data.calculatedTax)}</p>
                 </div>
               </div>
 
@@ -199,15 +207,17 @@ const TaxEstimation = () => {
                 <div className="result-icon">🏠</div>
                 <div className="result-content">
                   <h3>Minimum Tax for Zone</h3>
-                  <p className="result-amount">{formatAmount(results['Minimum Tax for Zone'])}</p>
+                  <p className="result-amount">{formatAmount(results.data.minimumTaxForZone)}</p>
                 </div>
               </div>
+
+              
 
               <div className="result-card estimated-tax-card">
                 <div className="result-icon">🧮</div>
                 <div className="result-content">
                   <h3>Estimated Tax</h3>
-                  <p className="result-amount highlight">{formatAmount(results['Estimated Tax'])}</p>
+                  <p className="result-amount highlight">{formatAmount(results.data.estimatedTax)}</p>
                 </div>
               </div>
             </div>
