@@ -319,7 +319,7 @@ const Expenses = () => {
             )}
             
             <div className="dialog-buttons">
-              <button onClick={handleConfirmDelete} className="confirm-btn">Delete</button>
+              <button onClick={handleConfirmDelete} className="confirm-btn">Confirm Delete</button>
               <button onClick={handleCancelDelete} className="dialog-cancel-btn">Cancel</button>
             </div>
           </div>

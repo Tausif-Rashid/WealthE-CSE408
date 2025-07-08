@@ -84,7 +84,7 @@ services:
     container_name: wealthe-frontend
     restart: unless-stopped
     environment: #base url should be removed in production , 
-      - REACT_APP_API_BASE_URL=http://localhost:8081
+      - REACT_APP_API_BASE_URL: http://localhost:8081
     ports:
       - "80:80"
     networks:

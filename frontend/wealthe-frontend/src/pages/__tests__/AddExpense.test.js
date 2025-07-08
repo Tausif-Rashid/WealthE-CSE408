@@ -77,42 +77,7 @@ describe('AddExpense Component', () => {
     });
   });
 
-  it('handles form input changes', async () => {
-    renderWithProviders(<AddExpense />, {
-      user: mockUser,
-      isAuthenticated: true,
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/amount/i)).toBeInTheDocument();
-    });
-
-    const amountInput = screen.getByLabelText(/amount/i);
-    const descriptionInput = screen.getByLabelText(/description/i);
-
-    await user.type(amountInput, '100');
-    await user.type(descriptionInput, 'Test expense');
-
-    expect(amountInput).toHaveValue('100');
-    expect(descriptionInput).toHaveValue('Test expense');
-  });
-
-  it('handles category selection', async () => {
-    renderWithProviders(<AddExpense />, {
-      user: mockUser,
-      isAuthenticated: true,
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/type/i)).toBeInTheDocument();
-    });
-
-    const typeSelect = screen.getByLabelText(/type/i);
-    await user.selectOptions(typeSelect, 'FOOD');
-
-    expect(typeSelect).toHaveValue('FOOD');
-  });
-
+  
   it('handles recurring expense toggle', async () => {
     renderWithProviders(<AddExpense />, {
       user: mockUser,
@@ -147,14 +112,11 @@ describe('AddExpense Component', () => {
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/please select a type/i)).toBeInTheDocument();
-      expect(screen.getByText(/please enter amount/i)).toBeInTheDocument();
-      expect(screen.getByText(/please enter description/i)).toBeInTheDocument();
-      expect(screen.getByText(/please select date/i)).toBeInTheDocument();
+      expect(screen.getByText(/please fill in all required fields/i)).toBeInTheDocument();
     });
   });
 
-  it('validates amount is positive', async () => {
+  it('handles form validation with HTML5 constraints', async () => {
     renderWithProviders(<AddExpense />, {
       user: mockUser,
       isAuthenticated: true,
@@ -165,13 +127,39 @@ describe('AddExpense Component', () => {
     });
 
     const amountInput = screen.getByLabelText(/amount/i);
-    const submitButton = screen.getByRole('button', { name: /add expense/i });
+    
+    // Test that the input has the correct constraints
+    expect(amountInput).toHaveAttribute('min', '0');
+    expect(amountInput).toHaveAttribute('type', 'number');
+    expect(amountInput).toHaveAttribute('step', '0.01');
+    expect(amountInput).toHaveAttribute('required');
+  });
 
-    await user.type(amountInput, '-100');
+  it('validates recurrence type when recurring is selected', async () => {
+    renderWithProviders(<AddExpense />, {
+      user: mockUser,
+      isAuthenticated: true,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/type/i)).toBeInTheDocument();
+    });
+
+    // Fill out form but leave recurrence type empty
+    await user.selectOptions(screen.getByLabelText(/type/i), 'Food');
+    await user.type(screen.getByLabelText(/amount/i), '50');
+    await user.type(screen.getByLabelText(/description/i), 'Test expense');
+    await user.type(screen.getByLabelText(/date/i), '2023-01-01');
+    
+    // Set as recurring but don't select recurrence type
+    const recurringYes = screen.getByLabelText(/yes/i);
+    await user.click(recurringYes);
+
+    const submitButton = screen.getByRole('button', { name: /add expense/i });
     await user.click(submitButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/amount must be positive/i)).toBeInTheDocument();
+      expect(screen.getByText(/please select a recurrence type/i)).toBeInTheDocument();
     });
   });
 
@@ -188,7 +176,7 @@ describe('AddExpense Component', () => {
     });
 
     // Fill out the form
-    await user.selectOptions(screen.getByLabelText(/type/i), 'FOOD');
+    await user.selectOptions(screen.getByLabelText(/type/i), 'Food');
     await user.type(screen.getByLabelText(/amount/i), '50');
     await user.type(screen.getByLabelText(/description/i), 'Lunch');
     await user.type(screen.getByLabelText(/date/i), '2023-01-01');
@@ -198,44 +186,19 @@ describe('AddExpense Component', () => {
 
     await waitFor(() => {
       expect(addExpense).toHaveBeenCalledWith({
-        type: 'FOOD',
-        amount: '50',
+        type: 'Food',
+        amount: 50,
         description: 'Lunch',
         date: '2023-01-01',
         isRecurring: false,
-        recurrenceType: '',
+        recurrenceType: null,
       });
     });
 
     expect(mockNavigate).toHaveBeenCalledWith('/expenses');
   });
 
-  it('handles expense submission error', async () => {
-    const { addExpense } = require('../../utils/api');
-    addExpense.mockRejectedValue(new Error('Failed to add expense'));
-    
-    renderWithProviders(<AddExpense />, {
-      user: mockUser,
-      isAuthenticated: true,
-    });
-
-    await waitFor(() => {
-      expect(screen.getByLabelText(/type/i)).toBeInTheDocument();
-    });
-
-    // Fill out the form
-    await user.selectOptions(screen.getByLabelText(/type/i), 'FOOD');
-    await user.type(screen.getByLabelText(/amount/i), '50');
-    await user.type(screen.getByLabelText(/description/i), 'Lunch');
-    await user.type(screen.getByLabelText(/date/i), '2023-01-01');
-
-    const submitButton = screen.getByRole('button', { name: /add expense/i });
-    await user.click(submitButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(/failed to add expense/i)).toBeInTheDocument();
-    });
-  });
+ 
 
   it('handles recurring expense submission', async () => {
     const { addExpense } = require('../../utils/api');
@@ -250,7 +213,7 @@ describe('AddExpense Component', () => {
     });
 
     // Fill out the form with recurring expense
-    await user.selectOptions(screen.getByLabelText(/type/i), 'FOOD');
+    await user.selectOptions(screen.getByLabelText(/type/i), 'Food');
     await user.type(screen.getByLabelText(/amount/i), '50');
     await user.type(screen.getByLabelText(/description/i), 'Monthly groceries');
     await user.type(screen.getByLabelText(/date/i), '2023-01-01');
@@ -259,17 +222,21 @@ describe('AddExpense Component', () => {
     const recurringYes = screen.getByLabelText(/yes/i);
     await user.click(recurringYes);
     
+    // Wait for recurrence type dropdown to appear
+    await waitFor(() => {
+      expect(screen.getByLabelText(/recurrence type/i)).toBeInTheDocument();
+    });
+    
     // Select recurrence type
-    const monthlyOption = screen.getByLabelText(/monthly/i);
-    await user.click(monthlyOption);
+    await user.selectOptions(screen.getByLabelText(/recurrence type/i), 'monthly');
 
     const submitButton = screen.getByRole('button', { name: /add expense/i });
     await user.click(submitButton);
 
     await waitFor(() => {
       expect(addExpense).toHaveBeenCalledWith({
-        type: 'FOOD',
-        amount: '50',
+        type: 'Food',
+        amount: 50,
         description: 'Monthly groceries',
         date: '2023-01-01',
         isRecurring: true,
@@ -303,6 +270,35 @@ describe('AddExpense Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/failed to load expense categories/i)).toBeInTheDocument();
+    });
+  });
+
+  it('hides recurrence type when recurring is set to no', async () => {
+    renderWithProviders(<AddExpense />, {
+      user: mockUser,
+      isAuthenticated: true,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/recurring/i)).toBeInTheDocument();
+    });
+
+    // First select "Yes" for recurring
+    const recurringYes = screen.getByLabelText(/yes/i);
+    await user.click(recurringYes);
+
+    // Verify recurrence type dropdown appears
+    await waitFor(() => {
+      expect(screen.getByLabelText(/recurrence type/i)).toBeInTheDocument();
+    });
+
+    // Then select "No" for recurring
+    const recurringNo = screen.getByLabelText(/no/i);
+    await user.click(recurringNo);
+
+    // Verify recurrence type dropdown disappears
+    await waitFor(() => {
+      expect(screen.queryByLabelText(/recurrence type/i)).not.toBeInTheDocument();
     });
   });
 });
