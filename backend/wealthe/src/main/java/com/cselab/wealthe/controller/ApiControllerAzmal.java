@@ -175,6 +175,184 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/add-income")
+    public ResponseEntity<Map<String, Object>> addIncome(@RequestBody Map<String, Object> incomeData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/add-income");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Unauthorized user");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
+
+            // Log the incoming data for debugging
+            logger.debug("Received income data: " + incomeData.toString());
+
+            // Extract and validate income data from request body
+            String type = incomeData.get("type") != null ? incomeData.get("type").toString() : null;
+            String title = incomeData.get("title") != null ? incomeData.get("title").toString() : null;
+            String date = incomeData.get("date") != null ? incomeData.get("date").toString() : null;
+
+            // Parse amount safely
+            Double amount = null;
+            if (incomeData.get("amount") != null) {
+                try {
+                    amount = Double.parseDouble(incomeData.get("amount").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid amount format: " + incomeData.get("amount"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid amount format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Parse profit safely
+            Double profit = null;
+            if (incomeData.get("profit") != null) {
+                try {
+                    profit = Double.parseDouble(incomeData.get("profit").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid profit format: " + incomeData.get("profit"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid profit format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Parse exempted_amount safely
+            Double exemptedAmount = null;
+            if (incomeData.get("exempted_amount") != null) {
+                try {
+                    exemptedAmount = Double.parseDouble(incomeData.get("exempted_amount").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid exempted_amount format: " + incomeData.get("exempted_amount"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid exempted amount format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Parse boolean values safely
+            Boolean isRecurring = false;
+            if (incomeData.get("isRecurring") != null) {
+                isRecurring = Boolean.parseBoolean(incomeData.get("isRecurring").toString());
+            }
+
+            String recurrenceType = null;
+            // Only extract recurrenceType if isRecurring is true
+            if (isRecurring) {
+                recurrenceType = incomeData.get("recurrenceType") != null ? incomeData.get("recurrenceType").toString() : null;
+            }
+
+            // Determine if it's salary based on type
+            Boolean isSalary = type != null && type.equalsIgnoreCase("Salary");
+
+            // Parse date string to SQL Date
+            java.sql.Date sqlDate = null;
+            if (date != null) {
+                try {
+                    // Assuming date format is YYYY-MM-DD, adjust format if needed
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date utilDate = dateFormat.parse(date);
+                    sqlDate = new java.sql.Date(utilDate.getTime());
+                } catch (ParseException e) {
+                    logger.error("Invalid date format: " + date);
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid date format. Expected: YYYY-MM-DD");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Validate required fields
+            if (type == null || amount == null || title == null || sqlDate == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Missing required fields");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Insert into income table
+            String insertIncomeSql = "INSERT INTO income (user_id, is_salary, type, title, date, recurrence, amount, profit, exempted_amount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            Double finalAmount = amount;
+            Double finalProfit = profit;
+            Double finalExemptedAmount = exemptedAmount;
+            java.sql.Date finalSqlDate = sqlDate;
+            String finalRecurrenceType = recurrenceType;
+            Boolean finalIsSalary = isSalary;
+
+            int rowsAffected = jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(insertIncomeSql, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, userId);
+                ps.setBoolean(2, finalIsSalary);
+                ps.setString(3, type);
+                ps.setString(4, title);
+                ps.setDate(5, finalSqlDate);
+                ps.setString(6, finalRecurrenceType);
+                ps.setDouble(7, finalAmount);
+                if (finalProfit != null) {
+                    ps.setDouble(8, finalProfit);
+                } else {
+                    ps.setNull(8, java.sql.Types.DOUBLE);
+                }
+                if (finalExemptedAmount != null) {
+                    ps.setDouble(9, finalExemptedAmount);
+                } else {
+                    ps.setNull(9, java.sql.Types.DOUBLE);
+                }
+                return ps;
+            }, keyHolder);
+
+            if (rowsAffected > 0) {
+                // Get the generated income_id
+                Number generatedId = null;
+                Map<String, Object> keys = keyHolder.getKeys();
+                if (keys != null && keys.containsKey("id")) {
+                    generatedId = (Number) keys.get("id");
+                }
+
+                if (generatedId == null) {
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Failed to get generated income ID");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+                }
+
+                int incomeId = generatedId.intValue();
+
+                // Return success response with income_id
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("income_id", incomeId);
+                response.put("message", "Income added successfully");
+
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Failed to insert income");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error adding income: ", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Internal server error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
     @PostMapping("/user/edit-expense")
     public ResponseEntity<?> editExpense(@RequestBody Map<String, Object> request) {
         try {
@@ -299,6 +477,267 @@ public class ApiControllerAzmal {
             }
         } else {
             return null;
+        }
+    }
+
+    @PostMapping("/user/edit-income")
+    public ResponseEntity<Map<String, Object>> editIncome(@RequestBody Map<String, Object> incomeData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/edit-income");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Unauthorized user");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
+
+            // Log the incoming data for debugging
+            logger.debug("Received income data for edit: " + incomeData.toString());
+
+            // Extract and validate income ID (required for update)
+            Integer incomeId = null;
+            if (incomeData.get("id") != null) {
+                try {
+                    incomeId = Integer.parseInt(incomeData.get("id").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid income ID format: " + incomeData.get("id"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid income ID format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            if (incomeId == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Income ID is required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // Extract and validate income data from request body
+            String type = incomeData.get("type") != null ? incomeData.get("type").toString() : null;
+            String title = incomeData.get("title") != null ? incomeData.get("title").toString() : null;
+            String date = incomeData.get("date") != null ? incomeData.get("date").toString() : null;
+
+            // Parse amount safely
+            Double amount = null;
+            if (incomeData.get("amount") != null) {
+                try {
+                    amount = Double.parseDouble(incomeData.get("amount").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid amount format: " + incomeData.get("amount"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid amount format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Parse profit safely
+            Double profit = null;
+            if (incomeData.get("profit") != null) {
+                try {
+                    profit = Double.parseDouble(incomeData.get("profit").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid profit format: " + incomeData.get("profit"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid profit format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Parse exempted_amount safely
+            Double exemptedAmount = null;
+            if (incomeData.get("exempted_amount") != null) {
+                try {
+                    exemptedAmount = Double.parseDouble(incomeData.get("exempted_amount").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid exempted_amount format: " + incomeData.get("exempted_amount"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid exempted amount format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Parse boolean values safely
+            Boolean isRecurring = false;
+            if (incomeData.get("isRecurring") != null) {
+                isRecurring = Boolean.parseBoolean(incomeData.get("isRecurring").toString());
+            }
+
+            String recurrenceType = null;
+            // Only extract recurrenceType if isRecurring is true
+            if (isRecurring) {
+                recurrenceType = incomeData.get("recurrenceType") != null ? incomeData.get("recurrenceType").toString() : null;
+            }
+
+            // Determine if it's salary based on type
+            Boolean isSalary = type != null && type.equalsIgnoreCase("Salary");
+
+            // Parse date string to SQL Date
+            java.sql.Date sqlDate = null;
+            if (date != null) {
+                try {
+                    // Assuming date format is YYYY-MM-DD, adjust format if needed
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    java.util.Date utilDate = dateFormat.parse(date);
+                    sqlDate = new java.sql.Date(utilDate.getTime());
+                } catch (ParseException e) {
+                    logger.error("Invalid date format: " + date);
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid date format. Expected: YYYY-MM-DD");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            // Validate required fields
+            if (type == null || amount == null || title == null || sqlDate == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Missing required fields");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // First, check if the income exists and belongs to the user
+            String checkIncomeSql = "SELECT COUNT(*) FROM income WHERE id = ? AND user_id = ?";
+            int count = jdbcTemplate.queryForObject(checkIncomeSql, Integer.class, incomeId, userId);
+
+            if (count == 0) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Income not found or access denied");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+
+            // Update the income record
+            String updateIncomeSql = "UPDATE income SET is_salary = ?, type = ?, title = ?, date = ?, recurrence = ?, amount = ?, profit = ?, exempted_amount = ? WHERE id = ? AND user_id = ?";
+
+            Double finalAmount = amount;
+            Double finalProfit = profit;
+            Double finalExemptedAmount = exemptedAmount;
+            java.sql.Date finalSqlDate = sqlDate;
+            String finalRecurrenceType = recurrenceType;
+            Boolean finalIsSalary = isSalary;
+            Integer finalIncomeId = incomeId;
+
+            int rowsAffected = jdbcTemplate.update(updateIncomeSql,
+                    finalIsSalary,
+                    type,
+                    title,
+                    finalSqlDate,
+                    finalRecurrenceType,
+                    finalAmount,
+                    finalProfit,
+                    finalExemptedAmount,
+                    finalIncomeId,
+                    userId
+            );
+
+            if (rowsAffected > 0) {
+                // Return success response
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("income_id", incomeId);
+                response.put("message", "Income updated successfully");
+
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Failed to update income");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error editing income: ", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Internal server error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+    @PostMapping("/user/delete-income")
+    public ResponseEntity<Map<String, Object>> deleteIncome(@RequestBody Map<String, Object> requestData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/delete-income");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Unauthorized user");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+            }
+
+            // Log the incoming data for debugging
+            logger.debug("Received delete income request: " + requestData.toString());
+
+            // Extract and validate income ID (required for deletion)
+            Integer incomeId = null;
+            if (requestData.get("id") != null) {
+                try {
+                    incomeId = Integer.parseInt(requestData.get("id").toString());
+                } catch (NumberFormatException e) {
+                    logger.error("Invalid income ID format: " + requestData.get("id"));
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "Invalid income ID format");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+            }
+
+            if (incomeId == null) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Income ID is required");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+
+            // First, check if the income exists and belongs to the user
+            String checkIncomeSql = "SELECT COUNT(*) FROM income WHERE id = ? AND user_id = ?";
+            int count = jdbcTemplate.queryForObject(checkIncomeSql, Integer.class, incomeId, userId);
+
+            if (count == 0) {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Income not found or access denied");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            }
+
+            // Delete the income record
+            String deleteIncomeSql = "DELETE FROM income WHERE id = ? AND user_id = ?";
+            int rowsAffected = jdbcTemplate.update(deleteIncomeSql, incomeId, userId);
+
+            if (rowsAffected > 0) {
+                // Return success response
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("income_id", incomeId);
+                response.put("message", "Income deleted successfully");
+
+                return ResponseEntity.ok(response);
+            } else {
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "Failed to delete income");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            }
+
+        } catch (Exception e) {
+            logger.error("Error deleting income: ", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Internal server error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
