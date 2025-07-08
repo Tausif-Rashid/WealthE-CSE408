@@ -36,6 +36,7 @@ export const renderWithProviders = (ui, options = {}) => {
     isAuthenticated,
     login: jest.fn(),
     logout: jest.fn(),
+    setUser: jest.fn(),
   };
 
   const Wrapper = ({ children }) => (
