@@ -19,6 +19,7 @@ import RebateRule from './pages/Admin/RebateRule';
 import TaxZoneRule from './pages/Admin/TaxZoneRule';
 import UpdateProfile from './pages/UpdateProfile';
 import ChangePassword from './pages/ChangePassword';
+import ChatBot from './pages/ChatBot';
 import './App.css';
 import { getAuthRole } from './utils/auth';
 
@@ -188,6 +189,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <ChangePassword />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/chatbot" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <ChatBot />
             </Layout>
           </ProtectedRoute>
         } 

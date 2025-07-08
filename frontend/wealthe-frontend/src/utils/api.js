@@ -430,3 +430,10 @@ export const changeUserPassword = async (passwordData) => {
   });
 };
 
+export const chatbotUserQuery = async (question) => {
+  return apiCall('/user/chatbot', {
+    method: 'POST',
+    body: JSON.stringify({ question }),
+  });
+};
+

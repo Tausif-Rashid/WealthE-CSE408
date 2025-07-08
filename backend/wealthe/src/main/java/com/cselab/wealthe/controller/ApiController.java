@@ -3,6 +3,8 @@ package com.cselab.wealthe.controller;
 import com.cselab.wealthe.util.JwtUtil;
 
 // For EmptyResultDataAccessException
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 //import java.util.logging.Logger;
