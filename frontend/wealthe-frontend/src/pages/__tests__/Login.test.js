@@ -1,18 +1,18 @@
 import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithProviders, mockUser, mockApiResponses } from '../__tests__/setup/testUtils';
-import Login from './Login';
-import { mockNavigate, setupRouterMocks, resetUtilMocks } from '../__tests__/mocks/utilMocks';
+import { renderWithProviders, mockUser, mockApiResponses } from '../../__tests__/setup/testUtils';
+import Login from '../Login';
+import { mockNavigate, setupRouterMocks, resetUtilMocks } from '../../__tests__/mocks/utilMocks';
 
 // Mock the utils
-jest.mock('../utils/api', () => ({
+jest.mock('../../utils/api', () => ({
   login: jest.fn(),
 }));
 
 // Mock AuthContext
 // const mockAuthLogin = jest.fn();
-// jest.mock('../components/AuthContext', () => ({
+// jest.mock('../../components/AuthContext', () => ({
 //   useAuth: jest.fn(() => ({
 //     login: mockAuthLogin,
 //     user: null,
@@ -20,7 +20,7 @@ jest.mock('../utils/api', () => ({
 //   })),
 // }));
 
-jest.mock('../utils/auth', () => ({
+jest.mock('../../utils/auth', () => ({
   getAuthRole: jest.fn(),
   setAuthRole: jest.fn(),
   setAuthToken: jest.fn(),
@@ -49,7 +49,7 @@ describe('Login Component', () => {
     const { useNavigate } = require('react-router');
     useNavigate.mockReturnValue(mockNavigate);
     
-    const { validateEmail, getAuthToken } = require('../utils/auth');
+    const { validateEmail, getAuthToken } = require('../../utils/auth');
     validateEmail.mockImplementation(email => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
@@ -120,8 +120,8 @@ describe('Login Component', () => {
   });
 
   it('handles successful login for regular user', async () => {
-    const { login } = require('../utils/api');
-    const { setAuthToken, setAuthRole } = require('../utils/auth');
+    const { login } = require('../../utils/api');
+    const { setAuthToken, setAuthRole } = require('../../utils/auth');
     
     login.mockResolvedValue({
       token: 'test-token',
@@ -148,8 +148,8 @@ describe('Login Component', () => {
   });
 
   it('handles successful login for admin user', async () => {
-    const { login } = require('../utils/api');
-    const { setAuthToken, setAuthRole } = require('../utils/auth');
+    const { login } = require('../../utils/api');
+    const { setAuthToken, setAuthRole } = require('../../utils/auth');
 
     
     login.mockResolvedValue({
@@ -177,7 +177,7 @@ describe('Login Component', () => {
   });
 
   it('handles login failure', async () => {
-    const { login } = require('../utils/api');
+    const { login } = require('../../utils/api');
     
     login.mockRejectedValue(new Error('Invalid credentials'));
 
@@ -197,8 +197,8 @@ describe('Login Component', () => {
   });
 
 //   it('shows loading state during login', async () => {
-//     const { useAuth } = require('../components/AuthContext');
-//     jest.mock('../components/AuthContext');
+//     const { useAuth } = require('../../components/AuthContext');
+//     jest.mock('../../components/AuthContext');
 //     // Create a promise that we can control
 //     let resolveLogin;
 //     const loginPromise = new Promise(resolve => {
@@ -242,7 +242,7 @@ describe('Login Component', () => {
   });
 
   it('handles form submission with Enter key', async () => {
-    const { login } = require('../utils/api');
+    const { login } = require('../../utils/api');
     login.mockResolvedValue({
       token: 'test-token',
       user: mockUser,
