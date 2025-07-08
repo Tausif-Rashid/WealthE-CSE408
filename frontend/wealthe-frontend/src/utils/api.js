@@ -416,3 +416,17 @@ export const deleteIncome = async (incomeId) => {
   });
 };
 
+export const updateUserProfile = async (profileData) => {
+  return apiCall('/user/update-profile', {
+    method: 'POST',
+    body: JSON.stringify(profileData),
+  });
+};
+
+export const changeUserPassword = async (passwordData) => {
+  return apiCall('/user/change-password', {
+    method: 'POST',
+    body: JSON.stringify(passwordData),
+  });
+};
+

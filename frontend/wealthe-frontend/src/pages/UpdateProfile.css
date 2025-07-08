@@ -1,0 +1,133 @@
+.update-profile-container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+}
+
+.update-profile-container h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.update-profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row label {
+  font-weight: 600;
+  color: #333;
+}
+
+.form-row input {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #f8f9fa;
+  color: #333;
+  transition: border 0.2s;
+}
+
+.form-row input:focus {
+  border: 1.5px solid #667eea;
+  outline: none;
+}
+
+.submit-btn {
+  width: 40%;
+  margin-top: 10px;
+  padding: 12px 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s;
+  align-self: center;
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+}
+
+.form-error {
+  color: #e74c3c;
+  background: #fbeaea;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.form-success {
+  color: #27ae60;
+  background: #eafaf1;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.privileged-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+  margin-top: 1px;
+  background: #f6f7fb;
+  border-radius: 8px;
+  padding: 18px 16px 10px 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.privileged-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1px;
+  font-size: 1rem;
+  display: block;
+}
+
+.privileged-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.privileged-checkbox-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.privileged-checkboxes label {
+  font-weight: 500;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 0;
+}
+
+@media (max-width: 700px) {
+  .update-profile-container {
+    padding: 20px 8px;
+  }
+} 

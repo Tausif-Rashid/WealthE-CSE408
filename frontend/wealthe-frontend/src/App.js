@@ -17,6 +17,8 @@ import IncomeRule from './pages/Admin/IncomeRule';
 import InvestmentRule from './pages/Admin/InvestmentRule';
 import RebateRule from './pages/Admin/RebateRule';
 import TaxZoneRule from './pages/Admin/TaxZoneRule';
+import UpdateProfile from './pages/UpdateProfile';
+import ChangePassword from './pages/ChangePassword';
 import './App.css';
 import { getAuthRole } from './utils/auth';
 
@@ -164,6 +166,28 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <EditIncome />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/update-profile" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <UpdateProfile />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/change-password" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <ChangePassword />
             </Layout>
           </ProtectedRoute>
         } 
