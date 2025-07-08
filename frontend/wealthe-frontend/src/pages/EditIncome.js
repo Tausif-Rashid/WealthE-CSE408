@@ -201,7 +201,7 @@ const EditIncome = () => {
       <div className="add-income-form-container">
         <form onSubmit={handleSubmit} className="add-income-form">
           {/* Income Type Dropdown */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="type">Income Type *</label>
             <select
               id="type"
@@ -221,7 +221,7 @@ const EditIncome = () => {
           </div>
 
           {/* Title Input */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="title">Title *</label>
             <input
               type="text"
@@ -236,7 +236,7 @@ const EditIncome = () => {
           </div>
 
           {/* Amount Input */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="amount">Amount (৳) *</label>
             <input
               ref={amountInputRef}
@@ -257,7 +257,7 @@ const EditIncome = () => {
           </div>
 
           {/* Date Input */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="date">Date *</label>
             <input
               type="date"
@@ -272,7 +272,7 @@ const EditIncome = () => {
 
           {/* Profit Field - Only for Agriculture */}
           {shouldShowProfit && (
-            <div className="form-group">
+            <div className="expense-form-group">
               <label htmlFor="profit">Profit (৳)</label>
               <input
                 type="number"
@@ -293,7 +293,7 @@ const EditIncome = () => {
 
           {/* Exempted Amount Field - For Agriculture and Rent */}
           {shouldShowExempted && (
-            <div className="form-group">
+            <div className="expense-form-group">
               <label htmlFor="exempted_amount">Exempted Amount (৳)</label>
               <input
                 type="number"
@@ -313,7 +313,7 @@ const EditIncome = () => {
           )}
 
           {/* Recurring Radio Buttons */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label className="form-label">Recurring?</label>
             <div className="radio-group">
               <label className="radio-option">
@@ -343,7 +343,7 @@ const EditIncome = () => {
 
           {/* Recurrence Type - Only shown if recurring is selected */}
           {formData.isRecurring && (
-            <div className="form-group recurrence-group">
+            <div className="expense-form-group recurrence-group">
               <label htmlFor="recurrenceType">Recurrence Type *</label>
               <select
                 id="recurrenceType"

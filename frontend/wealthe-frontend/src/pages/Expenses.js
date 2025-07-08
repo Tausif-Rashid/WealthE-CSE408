@@ -122,8 +122,9 @@ const Expenses = () => {
   const formatAmount = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+      currency: 'BDT',
+      currencyDisplay: 'symbol'
+    }).format(amount).replace('BDT', '৳');
   };
 
   if (loading) {
