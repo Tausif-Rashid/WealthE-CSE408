@@ -22,6 +22,7 @@ const Sidebar = () => {
       { path: '/dashboard', icon: '🏠', label: 'Dashboard' },
       { path: '/expenses', icon: '💸', label: 'Expenses' },
       { path: '/income', icon: '💰', label: 'Income' },
+      { path: '/tax-estimation', icon: '📊', label: 'Tax Estimation' },
       { path: '/goals', icon: '🎯', label: 'Goals' }
     ];
   };
