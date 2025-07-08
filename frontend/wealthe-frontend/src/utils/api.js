@@ -155,6 +155,13 @@ export const getUserExpense = async () => {
   });
 };
 
+export const getUserIncome = async () => {
+  // Use actual backend API with JWT authentication
+  return apiCall('/user/income', {
+    method: 'GET',
+  });
+};
+
 export const getTotalUsers = async () => {
   return apiCall('/admin/total-users', {
     method: 'GET',
@@ -354,6 +361,57 @@ export const deleteExpense = async (expenseId) => {
     },
     body: JSON.stringify({
       id: expenseId
+    }),
+  });
+};
+
+export const addIncome = async (incomeData) => {
+  return apiCall('/user/add-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: incomeData.type,
+      title: incomeData.title,
+      amount: incomeData.amount,
+      date: incomeData.date,
+      isRecurring: incomeData.isRecurring,
+      recurrenceType: incomeData.recurrenceType,
+      profit: incomeData.profit,
+      exempted_amount: incomeData.exempted_amount
+    }),
+  });
+};
+
+export const editIncome = async (incomeId, incomeData) => {
+  return apiCall('/user/edit-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: incomeId,
+      type: incomeData.type,
+      title: incomeData.title,
+      amount: incomeData.amount,
+      date: incomeData.date,
+      isRecurring: incomeData.isRecurring,
+      recurrenceType: incomeData.recurrenceType,
+      profit: incomeData.profit,
+      exempted_amount: incomeData.exempted_amount
+    }),
+  });
+};
+
+export const deleteIncome = async (incomeId) => {
+  return apiCall('/user/delete-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: incomeId
     }),
   });
 };

@@ -1,0 +1,488 @@
+/* Income Page Styles */
+.income-container {
+  padding: 30px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.income-header {
+  margin-bottom: 30px;
+}
+
+.income-header h1 {
+  color: #333;
+  margin: 0 0 20px 0;
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Loading and Error States */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #28a745;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 60px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error-container h2 {
+  color: #dc3545;
+  margin-bottom: 15px;
+}
+
+.error-container p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Tab Navigation */
+.tabs-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.tabs {
+  display: flex;
+  background-color: white;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab {
+  padding: 12px 24px;
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  color: #28a745;
+  background-color: #f8f9fa;
+}
+
+.tab.active {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Category Filter */
+.category-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.category-filter label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.category-dropdown {
+  padding: 10px 15px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: #333;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  min-width: 200px;
+}
+
+.category-dropdown:hover,
+.category-dropdown:focus {
+  outline: none;
+  border-color: #28a745;
+}
+
+/* Income Content */
+.income-content {
+  margin-bottom: 80px; /* Space for floating button */
+}
+
+/* No Incomes State */
+.no-incomes {
+  text-align: center;
+  padding: 80px 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.no-incomes-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.no-incomes h3 {
+  color: #333;
+  margin: 0 0 15px 0;
+  font-size: 1.5rem;
+}
+
+.no-incomes p {
+  color: #666;
+  font-size: 1.1rem;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Income Grid */
+.income-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+/* Income Cards */
+.income-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-left: 4px solid #28a745;
+}
+
+.income-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.income-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.income-type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.type-icon {
+  font-size: 1.2rem;
+}
+
+.type-text {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.income-amount {
+  font-weight: bold;
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+.income-body {
+  margin-bottom: 20px;
+}
+
+.income-title {
+  color: #333;
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.income-date {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.date-icon {
+  font-size: 1rem;
+}
+
+.income-profit,
+.income-exempted,
+.income-recurrence {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.profit-icon,
+.exempted-icon,
+.recurrence-icon {
+  font-size: 1rem;
+}
+
+.profit-label,
+.exempted-label,
+.recurrence-label {
+  font-weight: 500;
+}
+
+/* Income Actions */
+.income-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.edit-btn,
+.delete-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
+}
+
+/* Floating Add Button */
+.floating-add-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.floating-add-btn:hover {
+  background-color: #218838;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+}
+
+/* Delete Dialog Styles */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog-container {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dialog-header {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dialog-content {
+  padding: 20px;
+}
+
+.dialog-content p {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.warning-text {
+  color: #dc3545 !important;
+  font-weight: 500;
+}
+
+.dialog-actions {
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cancel-button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.cancel-button:hover {
+  background: #5a6268;
+}
+
+.delete-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .income-container {
+    padding: 20px;
+  }
+  
+  .income-header h1 {
+    font-size: 2rem;
+  }
+  
+  .tabs {
+    width: 100%;
+  }
+  
+  .category-filter {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .category-dropdown {
+    width: 100%;
+  }
+  
+  .income-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .floating-add-btn {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 1.2rem;
+  }
+  
+  .dialog-container {
+    width: 95%;
+    margin: 0 10px;
+  }
+  
+  .income-actions {
+    flex-direction: column;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    width: 100%;
+  }
+}

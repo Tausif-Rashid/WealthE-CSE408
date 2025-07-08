@@ -1,0 +1,170 @@
+/* MessageDialog.css */
+.message-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.message-dialog-container {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.message-dialog-header {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 12px;
+}
+
+.message-dialog-icon {
+  font-size: 24px;
+}
+
+.message-dialog-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.message-dialog-content {
+  padding: 20px;
+}
+
+.message-dialog-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #666;
+}
+
+.message-dialog-actions {
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.message-dialog-ok-button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.message-dialog-ok-button:hover {
+  background: #0056b3;
+}
+
+.message-dialog-ok-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Type-specific styles */
+.message-dialog-container.success .message-dialog-header {
+  background-color: #f8f9fa;
+  border-bottom-color: #28a745;
+}
+
+.message-dialog-container.success .message-dialog-ok-button {
+  background: #28a745;
+}
+
+.message-dialog-container.success .message-dialog-ok-button:hover {
+  background: #218838;
+}
+
+.message-dialog-container.error .message-dialog-header {
+  background-color: #f8f9fa;
+  border-bottom-color: #dc3545;
+}
+
+.message-dialog-container.error .message-dialog-ok-button {
+  background: #dc3545;
+}
+
+.message-dialog-container.error .message-dialog-ok-button:hover {
+  background: #c82333;
+}
+
+.message-dialog-container.warning .message-dialog-header {
+  background-color: #f8f9fa;
+  border-bottom-color: #ffc107;
+}
+
+.message-dialog-container.warning .message-dialog-ok-button {
+  background: #ffc107;
+  color: #212529;
+}
+
+.message-dialog-container.warning .message-dialog-ok-button:hover {
+  background: #e0a800;
+}
+
+.message-dialog-container.info .message-dialog-header {
+  background-color: #f8f9fa;
+  border-bottom-color: #17a2b8;
+}
+
+.message-dialog-container.info .message-dialog-ok-button {
+  background: #17a2b8;
+}
+
+.message-dialog-container.info .message-dialog-ok-button:hover {
+  background: #138496;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .message-dialog-container {
+    width: 95%;
+    margin: 0 10px;
+  }
+  
+  .message-dialog-header,
+  .message-dialog-content,
+  .message-dialog-actions {
+    padding: 15px;
+  }
+  
+  .message-dialog-header h3 {
+    font-size: 16px;
+  }
+  
+  .message-dialog-content p {
+    font-size: 13px;
+  }
+}

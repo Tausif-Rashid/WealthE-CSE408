@@ -282,4 +282,24 @@ public class ApiControllerAzmal {
         }
     }
 
+    @GetMapping("/user/income")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserExpenseList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM income WHERE user_id=? ORDER BY date DESC";
+                return jdbcTemplate.queryForList(sql, id);
+            }catch(Exception e){
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 }

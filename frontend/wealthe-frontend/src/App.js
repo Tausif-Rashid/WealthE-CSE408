@@ -9,6 +9,9 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import AddExpense from './pages/AddExpense';
 import EditExpense from './pages/EditExpense';
+import Income from './pages/Income';
+import AddIncome from './pages/AddIncome';
+import EditIncome from './pages/EditIncome';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import IncomeRule from './pages/Admin/IncomeRule';
 import InvestmentRule from './pages/Admin/InvestmentRule';
@@ -128,6 +131,39 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <EditExpense />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/income" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Income />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-income" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddIncome />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-income" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditIncome />
             </Layout>
           </ProtectedRoute>
         } 
