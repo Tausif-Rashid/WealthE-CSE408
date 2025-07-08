@@ -82,10 +82,11 @@
 }
 
 /* Form Groups */
-.form-group {
+.form-group, .expense-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: none;
 }
 
 .form-group label {

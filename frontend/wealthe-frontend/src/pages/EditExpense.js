@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { getExpenseCategories, editExpense, getUserExpense } from '../utils/api';
 import './AddExpense.css';
+// import './EditExpense.css';
 
 const EditExpense = () => {
   const navigate = useNavigate();
@@ -252,7 +253,7 @@ const EditExpense = () => {
         <form onSubmit={handleSubmit} className="add-expense-form">
           
           {/* Type Dropdown */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="type">Type *</label>
             <select
               id="type"
@@ -272,7 +273,7 @@ const EditExpense = () => {
           </div>
 
           {/* Amount Input */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="amount">Amount (৳) *</label>
             <input
               ref={amountInputRef}
@@ -313,7 +314,7 @@ const EditExpense = () => {
           </div>
 
           {/* Description Input */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="description">Description</label>
             <textarea
               id="description"
@@ -327,7 +328,7 @@ const EditExpense = () => {
           </div>
 
           {/* Date Input */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label htmlFor="date">Date *</label>
             <input
               type="date"
@@ -341,7 +342,7 @@ const EditExpense = () => {
           </div>
 
           {/* Recurring Radio Buttons */}
-          <div className="form-group">
+          <div className="expense-form-group">
             <label className="form-label">Recurring?</label>
             <div className="radio-group">
               <label className="radio-option">
@@ -371,7 +372,7 @@ const EditExpense = () => {
 
           {/* Recurrence Type Dropdown (appears only if recurring is selected) */}
           {formData.isRecurring && (
-            <div className="form-group recurrence-group">
+            <div className="expense-form-group recurrence-group">
               <label htmlFor="recurrenceType">Recurrence Type *</label>
               <select
                 id="recurrenceType"
