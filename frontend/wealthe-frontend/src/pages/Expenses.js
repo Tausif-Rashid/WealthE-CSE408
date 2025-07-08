@@ -218,13 +218,16 @@ const Expenses = () => {
                 <div className="expense-header">
                   <div className="expense-type">
                     <span className="type-icon">
-                      {expense.type === 'Utilities' && '🔌'}
-                      {expense.type === 'Food' && '🍽️'}
-                      {expense.type === 'Transport' && '🚗'}
-                      {expense.type === 'Entertainment' && '🎬'}
-                      {expense.type === 'Healthcare' && '🏥'}
+                      {expense.type === 'Groceries' && '🛒'}
+                      {expense.type === 'Educational Expense' && '�'}
+                      {expense.type === 'Rent' && '🏠'}
+                      {expense.type === 'Utility' && '🔌'}
+                      {expense.type === 'Transportation' && '🚗'}
                       {expense.type === 'Purchase' && '🛍️'}
-                      {!['utilities', 'food', 'transport', 'entertainment', 'healthcare', 'shopping'].includes(expense.type) && '💳'}
+                      {expense.type === 'Entertainment' && '🎬'}
+                      {expense.type === 'Medical Expense' && '🏥'}
+                      {expense.type === 'Others' && '�'}
+                      {!['Groceries', 'Educational Expense', 'Rent', 'Utility', 'Transportation', 'Purchase', 'Entertainment', 'Medical Expense', 'Others'].includes(expense.type) && '�'}
                     </span>
                     <span className="type-text">{expense.type}</span>
                   </div>
