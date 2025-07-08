@@ -187,19 +187,21 @@ const TaxEstimation = () => {
                 </div>
               </div>
 
-              <div className="result-card rebate-card">
-                <div className="result-icon">🏷️</div>
-                <div className="result-content">
-                  <h3>Rebate</h3>
-                  <p className="result-amount">{formatAmount(results.data.rebate)}</p>
-                </div>
-              </div>
+              
 
               <div className="result-card min-tax-card">
                 <div className="result-icon">🧮</div>
                 <div className="result-content">
                   <h3>Calculated Tax</h3>
                   <p className="result-amount">{formatAmount(results.data.calculatedTax)}</p>
+                </div>
+              </div>
+
+              <div className="result-card rebate-card">
+                <div className="result-icon">🏷️</div>
+                <div className="result-content">
+                  <h3>Rebate</h3>
+                  <p className="result-amount">{formatAmount(results.data.rebate)}</p>
                 </div>
               </div>
 

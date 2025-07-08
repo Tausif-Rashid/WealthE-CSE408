@@ -876,7 +876,7 @@ public class ApiControllerAzmal {
             Double rebateAmount = taxCalculation.get("rebateAmount");
 
             // 10. Get user's tax area
-            String taxAreaSql = "SELECT tax_area FROM users WHERE id = ?";
+            String taxAreaSql = "SELECT area_name FROM user_tax_info WHERE id = ?";
             String taxArea = null;
             try {
                 taxArea = jdbcTemplate.queryForObject(taxAreaSql, String.class, userId);
