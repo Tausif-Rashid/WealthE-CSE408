@@ -1,23 +1,23 @@
-/* Add Expense Page Styles */
-.add-expense-container {
+/* Edit Expense Page Styles */
+.edit-expense-container {
   padding: 30px;
   min-height: 100vh;
   background-color: #f8f9fa;
 }
 
-.add-expense-header {
+.edit-expense-header {
   text-align: center;
   margin-bottom: 40px;
 }
 
-.add-expense-header h1 {
+.edit-expense-header h1 {
   color: #333;
   margin: 0 0 10px 0;
   font-size: 2.5rem;
   font-weight: bold;
 }
 
-.add-expense-header p {
+.edit-expense-header p {
   color: #666;
   margin: 0;
   font-size: 1.1rem;
@@ -51,14 +51,13 @@
 .error-message {
   background-color: #f8d7da;
   color: #721c24;
-  padding: 15px 20px;
-  border-radius: 10px;
-  margin: 0 auto 30px;
-  max-width: 600px;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  border: 1px solid #f5c6cb;
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid #f5c6cb;
 }
 
 .error-icon {
@@ -66,36 +65,29 @@
 }
 
 /* Form Container */
-.add-expense-form-container {
+.edit-expense-form-container {
   max-width: 600px;
   margin: 0 auto;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
   padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.add-expense-form {
+.edit-expense-form {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
 /* Form Groups */
-.form-group, .expense-form-group {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: none;
 }
 
 .form-group label {
-  font-weight: 600;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-.form-label {
   font-weight: 600;
   color: #333;
   font-size: 1.1rem;
@@ -129,10 +121,9 @@
 
 /* Prevent scroll wheel from changing number input values */
 .form-input[type="number"] {
-  appearance: textfield; /* Standard property */
-  -moz-appearance: textfield; /* Firefox */
-  -webkit-appearance: textfield; /* Safari/Chrome */
-  /* Additional protection against increment/decrement */
+  appearance: textfield;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -161,7 +152,6 @@
   outline: none;
   border-color: #007bff;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-  /* Ensure no spinner interaction */
   -webkit-appearance: textfield;
   -moz-appearance: textfield;
   appearance: textfield;
@@ -199,8 +189,8 @@ textarea.form-input {
 /* Radio Button Group */
 .radio-group {
   display: flex;
-  gap: 20px;
-  margin-top: 5px;
+  gap: 30px;
+  margin-top: 10px;
 }
 
 .radio-option {
@@ -210,88 +200,53 @@ textarea.form-input {
   cursor: pointer;
   font-size: 1rem;
   color: #333;
-  padding: 8px 0;
+  transition: color 0.3s ease;
+}
+
+.radio-option:hover {
+  color: #007bff;
 }
 
 .radio-option input[type="radio"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #007bff;
-  cursor: pointer;
+  display: none;
 }
 
 .radio-checkmark {
-  font-weight: 500;
-  margin: 3px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  position: relative;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
-/* Recurrence Group Animation */
+.radio-option input[type="radio"]:checked + .radio-checkmark {
+  border-color: #007bff;
+  background-color: #007bff;
+}
+
+.radio-option input[type="radio"]:checked + .radio-checkmark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+/* Recurrence Group */
 .recurrence-group {
-  animation: slideIn 0.3s ease-out;
-  border: 2px solid #e3f2fd;
+  margin-top: 10px;
   padding: 20px;
-  border-radius: 10px;
-  background-color: #f8f9ff;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.recurrence-group label {
-  color: #007bff;
-  font-weight: 600;
-}
-
-/* Recurring Controls for Edit Expense */
-.recurring-info {
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
-  margin-top: 10px;
-}
-
-.recurring-controls {
-  margin-top: 10px;
-}
-
-.current-recurrence {
-  padding: 15px;
   background-color: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
 }
 
-.recurrence-active {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 6px;
-}
-
-.recurrence-stopped {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
-}
-
-.stop-recurrence-btn:hover {
-  background-color: #c82333 !important;
-  transform: translateY(-1px);
-}
-
-/* Action Buttons */
+/* Form Actions */
 .form-actions {
   display: flex;
   gap: 15px;
@@ -301,91 +256,61 @@ textarea.form-input {
   border-top: 1px solid #e9ecef;
 }
 
-.add-cancel-btn,
-.add-add-btn {
-  padding: 12px 24px;
+.edit-cancel-btn, .edit-update-btn {
+  padding: 12px 30px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 120px;
-  height: 48px; /* Fixed height for both buttons */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.add-cancel-btn {
-  background-color: red;
+.edit-cancel-btn {
+  background-color: #6c757d;
   color: white;
 }
 
-.add-cancel-btn:hover {
-  background-color: #e31d5f;
-  transform: translateY(-1px);
+.edit-cancel-btn:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
 }
 
-.add-add-btn {
-  background-color: #007bff;
+.edit-update-btn {
+  background-color: #28a745;
   color: white;
 }
 
-.add-add-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-}
-
-.add-cancel-btn:active,
-.add-add-btn:active {
-  transform: translateY(0);
+.edit-update-btn:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .add-expense-container {
-    padding: 20px 15px;
+  .edit-expense-container {
+    padding: 20px;
   }
   
-  .add-expense-form-container {
+  .edit-expense-form-container {
     padding: 30px 20px;
   }
   
-  .add-expense-header h1 {
+  .edit-expense-header h1 {
     font-size: 2rem;
   }
   
   .form-actions {
     flex-direction: column;
-    gap: 10px;
   }
   
-  .cancel-btn,
-  .add-btn {
+  .edit-cancel-btn, .edit-update-btn {
     width: 100%;
   }
   
   .radio-group {
     flex-direction: column;
-    gap: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .add-expense-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .add-expense-header p {
-    font-size: 1rem;
-  }
-  
-  .add-expense-form-container {
-    padding: 20px 15px;
-  }
-  
-  .form-input {
-    padding: 10px 12px;
+    gap: 15px;
   }
 }

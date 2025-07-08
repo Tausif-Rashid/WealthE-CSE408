@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { getUserInfo, getTaxInfo } from '../utils/api';
 import './Dashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const { user, setUser } = useAuth(); // user in auth context, id and email
@@ -9,6 +10,7 @@ const Dashboard = () => {
   const [taxInfo, setTaxInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -162,11 +164,11 @@ const Dashboard = () => {
         <div className="quick-actions">
           <h3>Actions</h3>
           <div className="actions-grid">
-            <button className="action-btn">
+            <button className="action-btn" onClick={() => navigate('/update-profile', { state: { userInfo, taxInfo } })}>
               <span>✏️</span>
               Edit Profile
             </button>
-            <button className="action-btn">
+            <button className="action-btn" onClick={() => navigate('/change-password')}>
               <span>🔐</span>
               Change Password
             </button>

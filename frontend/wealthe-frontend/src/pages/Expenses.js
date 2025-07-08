@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { getUserExpense, getExpenseCategories } from '../utils/api';
+import { getUserExpense, getExpenseCategories, deleteExpense } from '../utils/api';
 import './Expenses.css';
 
 const Expenses = () => {
@@ -12,6 +12,11 @@ const Expenses = () => {
   const [activeTab, setActiveTab] = useState('viewAll'); // 'viewAll' or 'categories'
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [deleteDialog, setDeleteDialog] = useState({
+    show: false,
+    expenseId: null,
+    expense: null
+  });
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -63,13 +68,47 @@ const Expenses = () => {
   };
 
   const handleEditExpense = (expenseId) => {
-    // TODO: Implement edit expense functionality
-    console.log('Edit expense with ID:', expenseId);
+    navigate('/edit-expense', { state: { expenseId } });
   };
 
-  const handleDeleteExpense = (expenseId) => {
-    // TODO: Implement delete expense functionality
-    console.log('Delete expense with ID:', expenseId);
+  const handleDeleteExpense = async (expenseId) => {
+    // Find the expense to delete
+    const expense = expenses.find(exp => exp.id === expenseId);
+    
+    if (!expense) {
+      setError('Expense not found');
+      return;
+    }
+
+    // Set the expense to delete and show dialog
+    setDeleteDialog({
+      show: true,
+      expenseId: expenseId,
+      expense: expense
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteExpense(deleteDialog.expenseId);
+      
+      // Remove the deleted expense from the local state
+      setExpenses(prevExpenses => prevExpenses.filter(expense => expense.id !== deleteDialog.expenseId));
+      setFilteredExpenses(prevFiltered => prevFiltered.filter(expense => expense.id !== deleteDialog.expenseId));
+      
+      // Close dialog
+      setDeleteDialog({ show: false, expenseId: null, expense: null });
+      
+      console.log('Expense deleted successfully');
+    } catch (error) {
+      console.error('Error deleting expense:', error);
+      setError('Failed to delete expense. Please try again.');
+      setDeleteDialog({ show: false, expenseId: null, expense: null });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialog({ show: false, expenseId: null, expense: null });
   };
 
   const handleAddExpense = () => {
@@ -83,8 +122,9 @@ const Expenses = () => {
   const formatAmount = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+      currency: 'BDT',
+      currencyDisplay: 'symbol'
+    }).format(amount).replace('BDT', '৳');
   };
 
   if (loading) {
@@ -178,13 +218,16 @@ const Expenses = () => {
                 <div className="expense-header">
                   <div className="expense-type">
                     <span className="type-icon">
-                      {expense.type === 'utilities' && '🔌'}
-                      {expense.type === 'food' && '🍽️'}
-                      {expense.type === 'transport' && '🚗'}
-                      {expense.type === 'entertainment' && '🎬'}
-                      {expense.type === 'healthcare' && '🏥'}
-                      {expense.type === 'shopping' && '🛍️'}
-                      {!['utilities', 'food', 'transport', 'entertainment', 'healthcare', 'shopping'].includes(expense.type) && '💳'}
+                      {expense.type === 'Groceries' && '🛒'}
+                      {expense.type === 'Educational Expense' && '�'}
+                      {expense.type === 'Rent' && '🏠'}
+                      {expense.type === 'Utility' && '🔌'}
+                      {expense.type === 'Transportation' && '🚗'}
+                      {expense.type === 'Purchase' && '🛍️'}
+                      {expense.type === 'Entertainment' && '🎬'}
+                      {expense.type === 'Medical Expense' && '🏥'}
+                      {expense.type === 'Others' && '�'}
+                      {!['Groceries', 'Educational Expense', 'Rent', 'Utility', 'Transportation', 'Purchase', 'Entertainment', 'Medical Expense', 'Others'].includes(expense.type) && '�'}
                     </span>
                     <span className="type-text">{expense.type}</span>
                   </div>
@@ -199,6 +242,12 @@ const Expenses = () => {
                     <span className="date-icon">📅</span>
                     {formatDate(expense.date)}
                   </div>
+                  {expense.recurrence && (
+                    <div className="expense-recurrence">
+                      <span className="recurrence-icon">🔄</span>
+                      <span className="recurrence-label">Recurring: {expense.recurrence}</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="expense-actions">
@@ -231,6 +280,51 @@ const Expenses = () => {
       >
         +
       </button>
+
+      {/* Delete Confirmation Dialog */}
+      {deleteDialog.show && (
+        <div className="dialog-overlay">
+          <div className="dialog-content">
+            <h2>🗑️ Delete Expense</h2>
+            <p>Are you sure you want to delete this expense?</p>
+            
+            {deleteDialog.expense && (
+              <div className="expense-details">
+                <h3>📝 Expense Details:</h3>
+                <div className="detail-row">
+                  <span className="detail-label">Type:</span>
+                  <span className="detail-value">{deleteDialog.expense.type || deleteDialog.expense.category_name || 'N/A'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Amount:</span>
+                  <span className="detail-value">{formatAmount(deleteDialog.expense.amount)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Description:</span>
+                  <span className="detail-value">{deleteDialog.expense.description || 'No description'}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Date:</span>
+                  <span className="detail-value">{formatDate(deleteDialog.expense.date)}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-label">Recurring:</span>
+                  <span className="detail-value">{deleteDialog.expense.recurrence ? `Yes (${deleteDialog.expense.recurrence})` : 'No'}</span>
+                </div>
+                <div className="warning-note">
+                  <span className="warning-icon">⚠️</span>
+                  <span>This action cannot be undone!</span>
+                </div>
+              </div>
+            )}
+            
+            <div className="dialog-buttons">
+              <button onClick={handleConfirmDelete} className="confirm-btn">Delete</button>
+              <button onClick={handleCancelDelete} className="dialog-cancel-btn">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

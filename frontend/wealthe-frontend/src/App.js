@@ -8,11 +8,19 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import AddExpense from './pages/AddExpense';
+import EditExpense from './pages/EditExpense';
+import Income from './pages/Income';
+import AddIncome from './pages/AddIncome';
+import EditIncome from './pages/EditIncome';
+import TaxEstimation from './pages/TaxEstimation';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import IncomeRule from './pages/Admin/IncomeRule';
 import InvestmentRule from './pages/Admin/InvestmentRule';
 import RebateRule from './pages/Admin/RebateRule';
 import TaxZoneRule from './pages/Admin/TaxZoneRule';
+import UpdateProfile from './pages/UpdateProfile';
+import ChangePassword from './pages/ChangePassword';
+import ChatBot from './pages/ChatBot';
 import './App.css';
 import { getAuthRole } from './utils/auth';
 
@@ -116,6 +124,94 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <AddExpense />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-expense" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditExpense />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/income" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Income />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-income" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddIncome />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-income" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditIncome />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/tax-estimation" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <TaxEstimation />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/update-profile" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <UpdateProfile />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/change-password" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <ChangePassword />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/chatbot" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <ChatBot />
             </Layout>
           </ProtectedRoute>
         } 

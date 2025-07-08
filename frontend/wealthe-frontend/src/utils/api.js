@@ -155,6 +155,13 @@ export const getUserExpense = async () => {
   });
 };
 
+export const getUserIncome = async () => {
+  // Use actual backend API with JWT authentication
+  return apiCall('/user/income', {
+    method: 'GET',
+  });
+};
+
 export const getTotalUsers = async () => {
   return apiCall('/admin/total-users', {
     method: 'GET',
@@ -324,6 +331,123 @@ export const addExpense = async (expenseData) => {
       date: expenseData.date,
       isRecurring: expenseData.isRecurring,
       recurrenceType: expenseData.recurrenceType
+    }),
+  });
+};
+
+export const editExpense = async (expenseId, expenseData) => {
+  return apiCall('/user/edit-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: expenseId,
+      type: expenseData.type,
+      amount: expenseData.amount,
+      description: expenseData.description,
+      date: expenseData.date,
+      isRecurring: expenseData.isRecurring,
+      recurrenceType: expenseData.recurrenceType
+    }),
+  });
+};
+
+export const deleteExpense = async (expenseId) => {
+  return apiCall('/user/delete-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: expenseId
+    }),
+  });
+};
+
+export const addIncome = async (incomeData) => {
+  return apiCall('/user/add-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: incomeData.type,
+      title: incomeData.title,
+      amount: incomeData.amount,
+      date: incomeData.date,
+      isRecurring: incomeData.isRecurring,
+      recurrenceType: incomeData.recurrenceType,
+      profit: incomeData.profit,
+      exempted_amount: incomeData.exempted_amount
+    }),
+  });
+};
+
+export const editIncome = async (incomeId, incomeData) => {
+  return apiCall('/user/edit-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: incomeId,
+      type: incomeData.type,
+      title: incomeData.title,
+      amount: incomeData.amount,
+      date: incomeData.date,
+      isRecurring: incomeData.isRecurring,
+      recurrenceType: incomeData.recurrenceType,
+      profit: incomeData.profit,
+      exempted_amount: incomeData.exempted_amount
+    }),
+  });
+};
+
+export const deleteIncome = async (incomeId) => {
+  return apiCall('/user/delete-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: incomeId
+    }),
+  });
+};
+
+export const updateUserProfile = async (profileData) => {
+  return apiCall('/user/update-profile', {
+    method: 'POST',
+    body: JSON.stringify(profileData),
+  });
+};
+
+export const changeUserPassword = async (passwordData) => {
+  return apiCall('/user/change-password', {
+    method: 'POST',
+    body: JSON.stringify(passwordData),
+  });
+};
+
+export const chatbotUserQuery = async (question) => {
+  return apiCall('/user/chatbot', {
+    method: 'POST',
+    body: JSON.stringify({ question }),
+  });
+};
+
+export const getTaxEstimation = async (taxData) => {
+  return apiCall('/user/tax-estimation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bonusAmount: taxData.bonusAmount,
+      numberOfBonus: taxData.numberOfBonus,
+      expectedNonRecurringIncome: taxData.expectedNonRecurringIncome,
+      makeMoreInvestment: taxData.makeMoreInvestment
     }),
   });
 };

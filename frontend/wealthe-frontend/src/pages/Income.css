@@ -1,21 +1,23 @@
-/* Expenses Page Styles */
-.expenses-container {
+/* Income Page Styles */
+.income-container {
   padding: 30px;
   min-height: 100vh;
   background-color: #f8f9fa;
 }
 
-.expenses-header {
+
+.income-header {
   margin-bottom: 30px;
 }
 
-.expenses-header h1 {
+.income-header h1 {
   color: #333;
   margin: 0 0 20px 0;
   font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
 }
+
 
 /* Loading and Error States */
 .loading-spinner {
@@ -30,7 +32,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
+  border-top: 4px solid #28a745;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
@@ -44,9 +46,9 @@
 .error-container {
   text-align: center;
   padding: 60px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .error-container h2 {
@@ -130,52 +132,52 @@
 .category-dropdown:hover,
 .category-dropdown:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #28a745;
 }
 
-/* Expenses Content */
-.expenses-content {
+/* Income Content */
+.income-content {
   margin-bottom: 80px; /* Space for floating button */
 }
 
-/* No Expenses State */
-.no-expenses {
+/* No Incomes State */
+.no-incomes {
   text-align: center;
-  padding: 80px 40px;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  border: 2px dashed #e1e5e9;
+  padding: 80px 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.no-expenses-icon {
+.no-incomes-icon {
   font-size: 4rem;
   margin-bottom: 20px;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
-.no-expenses h3 {
+.no-incomes h3 {
   color: #333;
-  margin-bottom: 15px;
+  margin: 0 0 15px 0;
   font-size: 1.5rem;
 }
 
-.no-expenses p {
+.no-incomes p {
   color: #666;
   font-size: 1.1rem;
-  line-height: 1.5;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-/* Expenses Grid */
-.expenses-grid {
+/* Income Grid */
+.income-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 25px;
-  padding: 20px 0;
+  margin-bottom: 30px;
 }
 
-/* Expense Card */
-.expense-card {
+/* Income Cards */
+.income-card {
   background-color: white;
   border-radius: 12px;
   padding: 20px;
@@ -184,13 +186,12 @@
   border-left: 4px solid #28a745;
 }
 
-.expense-card:hover {
+.income-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.expense-header {
-  display: flex;
+.income-header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
@@ -198,52 +199,40 @@
   border-bottom: 1px solid #e9ecef;
 }
 
-/* Expense Header */
-.expense-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f8f9fa;
-}
-
-.expense-type {
+.income-type {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .type-icon {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .type-text {
   font-weight: 600;
   color: #333;
-  text-transform: capitalize;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
-.expense-amount {
+.income-amount {
   font-weight: bold;
   color: #28a745;
   font-size: 1.2rem;
 }
 
-/* Expense Body */
-.expense-body {
+.income-body {
   margin-bottom: 20px;
 }
 
-.expense-title {
+.income-title {
   color: #333;
   margin: 0 0 10px 0;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-.expense-date {
+.income-date {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -256,8 +245,9 @@
   font-size: 1rem;
 }
 
-
-.expense-recurrence {
+.income-profit,
+.income-exempted,
+.income-recurrence {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -266,18 +256,20 @@
   margin-bottom: 5px;
 }
 
-
+.profit-icon,
+.exempted-icon,
 .recurrence-icon {
   font-size: 1rem;
 }
 
-
+.profit-label,
+.exempted-label,
 .recurrence-label {
   font-weight: 500;
 }
 
-/* Expense Actions */
-.expense-actions {
+/* Income Actions */
+.income-actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
@@ -287,63 +279,56 @@
 .delete-btn {
   padding: 8px 16px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 500;
+  cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .edit-btn {
-  background: #667eea;
+  background-color: #007bff;
   color: white;
 }
 
 .edit-btn:hover {
-  background: #138496;
+  background-color: #0056b3;
+  transform: translateY(-2px);
 }
 
 .delete-btn {
-  background: #dc3545;
+  background-color: #dc3545;
   color: white;
 }
 
 .delete-btn:hover {
-  background: #ff5959;
+  background-color: #c82333;
+  transform: translateY(-2px);
 }
 
 /* Floating Add Button */
 .floating-add-btn {
   position: fixed;
-  bottom: 50px;
-  right: 40px;
-  width: 70px;
-  height: 70px;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: #28a745;
   color: white;
   border: none;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
   transition: all 0.3s ease;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 100;
 }
 
 .floating-add-btn:hover {
-  transform: scale(1.1) translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6);
-}
-
-.floating-add-btn:active {
-  transform: scale(0.95);
+  background-color: #218838;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
 }
 
 /* Delete Dialog Styles */
@@ -454,11 +439,11 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .expenses-container {
+  .income-container {
     padding: 20px;
   }
   
-  .expenses-header h1 {
+  .income-header h1 {
     font-size: 2rem;
   }
   
@@ -475,7 +460,7 @@
     width: 100%;
   }
   
-  .expenses-grid {
+  .income-grid {
     grid-template-columns: 1fr;
     gap: 20px;
   }
@@ -493,7 +478,7 @@
     margin: 0 10px;
   }
   
-  .expense-actions {
+  .income-actions {
     flex-direction: column;
   }
   

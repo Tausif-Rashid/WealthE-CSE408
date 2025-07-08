@@ -1,23 +1,23 @@
-/* Add Expense Page Styles */
-.add-expense-container {
+/* Add Income Page Styles */
+.add-income-container {
   padding: 30px;
   min-height: 100vh;
   background-color: #f8f9fa;
 }
 
-.add-expense-header {
+.add-income-header {
   text-align: center;
   margin-bottom: 40px;
 }
 
-.add-expense-header h1 {
+.add-income-header h1 {
   color: #333;
   margin: 0 0 10px 0;
   font-size: 2.5rem;
   font-weight: bold;
 }
 
-.add-expense-header p {
+.add-income-header p {
   color: #666;
   margin: 0;
   font-size: 1.1rem;
@@ -36,7 +36,7 @@
   width: 50px;
   height: 50px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
+  border-top: 4px solid #28a745;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
@@ -47,52 +47,35 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Error Message */
-.error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 15px 20px;
-  border-radius: 10px;
-  margin: 0 auto 30px;
-  max-width: 600px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid #f5c6cb;
-}
-
-.error-icon {
-  font-size: 1.2rem;
-}
-
 /* Form Container */
-.add-expense-form-container {
+.add-income-form-container {
   max-width: 600px;
   margin: 0 auto;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
   padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.add-expense-form {
+.add-income-form {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
 /* Form Groups */
-.form-group, .expense-form-group {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: none;
+  margin-bottom: none
 }
 
 .form-group label {
   font-weight: 600;
   color: #333;
   font-size: 1.1rem;
+  margin-bottom: 10px;
 }
 
 .form-label {
@@ -114,13 +97,13 @@
 }
 
 .form-input:hover {
-  border-color: #007bff;
+  border-color: #28a745;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
 }
 
 .form-input::placeholder {
@@ -129,10 +112,9 @@
 
 /* Prevent scroll wheel from changing number input values */
 .form-input[type="number"] {
-  appearance: textfield; /* Standard property */
-  -moz-appearance: textfield; /* Firefox */
-  -webkit-appearance: textfield; /* Safari/Chrome */
-  /* Additional protection against increment/decrement */
+  appearance: textfield;
+  -moz-appearance: textfield;
+  -webkit-appearance: textfield;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -159,9 +141,8 @@
 /* Prevent any pointer events on the right side of number inputs */
 .form-input[type="number"]:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-  /* Ensure no spinner interaction */
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
   -webkit-appearance: textfield;
   -moz-appearance: textfield;
   appearance: textfield;
@@ -178,24 +159,6 @@
   height: 0;
 }
 
-/* Prevent text selection in number inputs to avoid accidental changes */
-.form-input[type="number"] {
-  -webkit-touch-callout: none;
-  -webkit-user-select: text;
-  -khtml-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  user-select: text;
-}
-
-/* Textarea specific */
-textarea.form-input {
-  resize: vertical;
-  min-height: 80px;
-  font-family: inherit;
-  line-height: 1.5;
-}
-
 /* Radio Button Group */
 .radio-group {
   display: flex;
@@ -206,7 +169,7 @@ textarea.form-input {
 .radio-option {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 3px;
   cursor: pointer;
   font-size: 1rem;
   color: #333;
@@ -234,64 +197,16 @@ textarea.form-input {
   background-color: #f8f9ff;
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.recurrence-group label {
-  color: #007bff;
-  font-weight: 600;
-}
-
-/* Recurring Controls for Edit Expense */
-.recurring-info {
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #e9ecef;
+/* Recurrence Group */
+.recurrence-group {
   margin-top: 10px;
-}
-
-.recurring-controls {
-  margin-top: 10px;
-}
-
-.current-recurrence {
-  padding: 15px;
+  padding: 20px;
   background-color: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
 }
 
-.recurrence-active {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 6px;
-}
-
-.recurrence-stopped {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
-}
-
-.stop-recurrence-btn:hover {
-  background-color: #c82333 !important;
-  transform: translateY(-1px);
-}
-
-/* Action Buttons */
+/* Form Actions */
 .form-actions {
   display: flex;
   gap: 15px;
@@ -301,91 +216,61 @@ textarea.form-input {
   border-top: 1px solid #e9ecef;
 }
 
-.add-cancel-btn,
-.add-add-btn {
-  padding: 12px 24px;
+.add-cancel-btn, .add-add-btn {
+  padding: 12px 30px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 120px;
-  height: 48px; /* Fixed height for both buttons */
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .add-cancel-btn {
-  background-color: red;
+  background-color: #6c757d;
   color: white;
 }
 
 .add-cancel-btn:hover {
-  background-color: #e31d5f;
-  transform: translateY(-1px);
+  background-color: #5a6268;
+  transform: translateY(-2px);
 }
 
 .add-add-btn {
-  background-color: #007bff;
+  background-color: #28a745;
   color: white;
 }
 
 .add-add-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
-}
-
-.add-cancel-btn:active,
-.add-add-btn:active {
-  transform: translateY(0);
+  background-color: #218838;
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .add-expense-container {
-    padding: 20px 15px;
+  .add-income-container {
+    padding: 20px;
   }
   
-  .add-expense-form-container {
+  .add-income-form-container {
     padding: 30px 20px;
   }
   
-  .add-expense-header h1 {
+  .add-income-header h1 {
     font-size: 2rem;
   }
   
   .form-actions {
     flex-direction: column;
-    gap: 10px;
   }
   
-  .cancel-btn,
-  .add-btn {
+  .add-cancel-btn, .add-add-btn {
     width: 100%;
   }
   
   .radio-group {
     flex-direction: column;
-    gap: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .add-expense-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .add-expense-header p {
-    font-size: 1rem;
-  }
-  
-  .add-expense-form-container {
-    padding: 20px 15px;
-  }
-  
-  .form-input {
-    padding: 10px 12px;
+    gap: 15px;
   }
 }
