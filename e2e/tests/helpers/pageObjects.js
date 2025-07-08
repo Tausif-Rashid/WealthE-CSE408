@@ -187,7 +187,7 @@ export class AuthHelpers {
     this.page = page;
   }
 
-  async loginAsUser(email = 'user1@test.com', password = '123') {
+  async loginAsUser(email = 'abc@yahoo.com', password = '1234') {
     const loginPage = new LoginPage(this.page);
     await loginPage.navigate();
     await loginPage.login(email, password);

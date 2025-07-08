@@ -108,8 +108,8 @@ test.describe('Login → Expenses → Edit Expense Flow', () => {
 
   test('should handle edit expense error gracefully', async ({ page }) => {
     // Login first
-    await page.fill('input[name="email"]', 'user1@test.com');
-    await page.fill('input[name="password"]', '123');
+    await page.fill('input[name="email"]', 'abc@yahoo.com');
+    await page.fill('input[name="password"]', '1234');
     await page.click('button[type="submit"]');
     await page.waitForURL('/dashboard');
     
@@ -144,8 +144,8 @@ test.describe('Login → Expenses → Edit Expense Flow', () => {
     // Test the complete navigation flow
     await test.step('Complete navigation flow', async () => {
       // Login
-      await page.fill('input[name="email"]', 'user1@test.com');
-      await page.fill('input[name="password"]', '123');
+      await page.fill('input[name="email"]', 'abc@yahoo.com');
+      await page.fill('input[name="password"]', '1234');
       await page.click('button[type="submit"]');
       await page.waitForURL('/dashboard');
       
@@ -173,7 +173,7 @@ test.describe('Login → Expenses → Edit Expense Flow', () => {
     await page.click('button[type="submit"]');
     
     // Should stay on login page and show error
-    await expect(page).toHaveURL('/');
+    await expect(page).toHaveURL('/login');
     
     // Look for error message (this depends on the actual error handling in the component)
     const errorMessage = page.locator('.error, .alert, [role="alert"]');
