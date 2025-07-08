@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { getUserInfo, getTaxInfo } from '../utils/api';
 import './Dashboard.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const Dashboard = () => {
   const { user, setUser } = useAuth(); // user in auth context, id and email

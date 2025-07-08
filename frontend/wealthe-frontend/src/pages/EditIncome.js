@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router';
 import { getIncomeCategories, editIncome, getUserIncome } from '../utils/api';
 import MessageDialog from '../components/MessageDialog';
 import './AddIncome.css';

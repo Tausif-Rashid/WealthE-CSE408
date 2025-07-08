@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatBot.css';
 import { chatbotUserQuery } from '../utils/api';
+import ReactMarkdown from 'react-markdown';
 
 const ChatBot = () => {
   const [input, setInput] = useState('');
@@ -29,8 +30,9 @@ const ChatBot = () => {
     setLoading(true);
     try {
       const res = await chatbotUserQuery(input);
+      console.log('Gemini response:', res);
       // Assume backend returns { response: '...' }
-      setMessages((prev) => [...prev, { sender: 'gemini', text: res.response || String(res) }]);
+      setMessages((prev) => [...prev, { sender: 'gemini', text: res?.reply || String(res) }]);
     } catch (err) {
       setMessages((prev) => [...prev, { sender: 'gemini', text: 'Failed to get response.' }]);
     } finally {
@@ -51,7 +53,7 @@ const ChatBot = () => {
                 : 'chatbot-message chatbot-message-gemini'
             }
           >
-            {msg.text}
+            {<ReactMarkdown>{msg.text}</ReactMarkdown>}
           </div>
         ))}
         {loading && (

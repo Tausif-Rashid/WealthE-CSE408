@@ -62,7 +62,7 @@ public class ChatBotController {
             }
 
             // Append Bangladesh tax rule context
-            String enhancedQuestion = question + " - reply this question in terms of bangladeshi tax rule";
+            String enhancedQuestion = question + " - reply this question in terms of bangladeshi tax rule. Be brief";
 
             // Prepare request for Gemini API
             Map<String, Object> geminiRequest = new HashMap<>();

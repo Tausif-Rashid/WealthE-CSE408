@@ -219,14 +219,14 @@ const Expenses = () => {
                   <div className="expense-type">
                     <span className="type-icon">
                       {expense.type === 'Groceries' && '🛒'}
-                      {expense.type === 'Educational Expense' && '�'}
+                      {expense.type === 'Educational Expense' && '🏫'}
                       {expense.type === 'Rent' && '🏠'}
                       {expense.type === 'Utility' && '🔌'}
                       {expense.type === 'Transportation' && '🚗'}
                       {expense.type === 'Purchase' && '🛍️'}
                       {expense.type === 'Entertainment' && '🎬'}
                       {expense.type === 'Medical Expense' && '🏥'}
-                      {expense.type === 'Others' && '�'}
+                      {expense.type === 'Others' && '💵'}
                       {!['Groceries', 'Educational Expense', 'Rent', 'Utility', 'Transportation', 'Purchase', 'Entertainment', 'Medical Expense', 'Others'].includes(expense.type) && '�'}
                     </span>
                     <span className="type-text">{expense.type}</span>
