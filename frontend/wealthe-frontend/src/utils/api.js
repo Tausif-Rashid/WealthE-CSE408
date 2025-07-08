@@ -328,3 +328,10 @@ export const addExpense = async (expenseData) => {
   });
 };
 
+export const updateUserProfile = async (profileData) => {
+  return apiCall('/user/update-profile', {
+    method: 'POST',
+    body: JSON.stringify(profileData),
+  });
+};
+
