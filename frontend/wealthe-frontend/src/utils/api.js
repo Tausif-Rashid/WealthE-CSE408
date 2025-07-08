@@ -335,3 +335,10 @@ export const updateUserProfile = async (profileData) => {
   });
 };
 
+export const changeUserPassword = async (passwordData) => {
+  return apiCall('/user/change-password', {
+    method: 'POST',
+    body: JSON.stringify(passwordData),
+  });
+};
+

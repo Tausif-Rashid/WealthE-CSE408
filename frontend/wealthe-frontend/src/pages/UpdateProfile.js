@@ -112,24 +112,31 @@ const UpdateProfile = () => {
           <input name="email" value={form.email} onChange={handleChange} required />
         </div>
         <div className="form-row">
-          <label>
-            <input type="checkbox" name="is_ff" checked={form.is_ff} onChange={handleCheckbox} /> Freedom Fighter
-          </label>
+          <label className="privileged-label">Privileged</label>
         </div>
-        <div className="form-row">
-          <label>
-            <input type="checkbox" name="is_disabled" checked={form.is_disabled} onChange={handleCheckbox} /> Disabled
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <input type="checkbox" name="is_female" checked={form.is_female} onChange={handleCheckbox} /> Female
-          </label>
-        </div>
-        <div className="form-row">
-          <label>
-            <input type="checkbox" name="is_resident" checked={form.is_resident} onChange={handleCheckbox} /> Resident
-          </label>
+        <div className="form-row privileged-row">
+          <div className="privileged-checkboxes">
+            <div className="privileged-checkbox-row">
+              <label>
+                <input type="checkbox" name="is_ff" checked={form.is_ff} onChange={handleCheckbox} /> Freedom Fighter
+              </label>
+            </div>
+            <div className="privileged-checkbox-row">
+              <label>
+                <input type="checkbox" name="is_disabled" checked={form.is_disabled} onChange={handleCheckbox} /> Disabled
+              </label>
+            </div>
+            <div className="privileged-checkbox-row">
+              <label>
+                <input type="checkbox" name="is_female" checked={form.is_female} onChange={handleCheckbox} /> Female
+              </label>
+            </div>
+            <div className="privileged-checkbox-row">
+              <label>
+                <input type="checkbox" name="is_resident" checked={form.is_resident} onChange={handleCheckbox} /> Resident
+              </label>
+            </div>
+          </div>
         </div>
         {error && <div className="form-error">{error}</div>}
         {success && <div className="form-success">{success}</div>}

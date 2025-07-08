@@ -168,7 +168,7 @@ const Dashboard = () => {
               <span>✏️</span>
               Edit Profile
             </button>
-            <button className="action-btn">
+            <button className="action-btn" onClick={() => navigate('/change-password')}>
               <span>🔐</span>
               Change Password
             </button>
