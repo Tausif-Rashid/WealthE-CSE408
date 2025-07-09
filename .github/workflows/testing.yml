@@ -47,4 +47,6 @@ jobs:
 
     - name: Run Backend Tests
       working-directory: ./backend/wealthe
-      run: ./mvnw clean test
+      run: |
+        chmod +x ./mvnw
+        ./mvnw clean test
