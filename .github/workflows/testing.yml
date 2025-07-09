@@ -1,0 +1,50 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ tausif ]
+  pull_request:
+    branches: [ tausif ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run Tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Frontend Tests
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: frontend/wealthe-frontend/package-lock.json
+
+    - name: Run Frontend Tests
+      working-directory: ./frontend/wealthe-frontend
+      run: |
+        npm ci
+        npm test -- --watchAll=false --passWithNoTests
+      env:
+        CI: true
+
+    # Backend Tests  
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Cache Maven Dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Run Backend Tests
+      working-directory: ./backend/wealthe
+      run: ./mvnw clean test
