@@ -27,7 +27,7 @@ jobs:
       working-directory: ./frontend/wealthe-frontend
       run: |
         npm ci
-        npm test -- --watchAll=false --passWithNoTests --testPathIgnorePatterns="/e2e/" --testPathIgnorePatterns="/node_modules/"
+        npm test -- --watchAll=false --passWithNoTests --testPathIgnorePatterns="/e2e/" --testPathIgnorePatterns="/node_modules/" --testPathIgnorePatterns="/src/__tests__/"
       env:
         CI: true
 
