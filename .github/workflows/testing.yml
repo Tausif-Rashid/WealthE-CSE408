@@ -27,7 +27,7 @@ jobs:
       working-directory: ./frontend/wealthe-frontend
       run: |
         npm ci
-        npm test -- --watchAll=false --passWithNoTests
+        npm test -- --watchAll=false --passWithNoTests src/ src/pages/__tests__/
       env:
         CI: true
 
