@@ -10,6 +10,14 @@ jest.mock('./pages/Register', () => () => <div>Register Page</div>);
 jest.mock('./pages/Dashboard', () => () => <div data-testid="dashboard-page">Dashboard Page</div>);
 jest.mock('./pages/Expenses', () => () => <div data-testid="expenses-page">Expenses Page</div>);
 jest.mock('./pages/AddExpense', () => () => <div data-testid="add-expense-page">Add Expense Page</div>);
+jest.mock('./pages/EditExpense', () => () => <div data-testid="edit-expense-page">Edit Expense Page</div>);
+jest.mock('./pages/Income', () => () => <div data-testid="income-page">Income Page</div>);
+jest.mock('./pages/AddIncome', () => () => <div data-testid="add-income-page">Add Income Page</div>);
+jest.mock('./pages/EditIncome', () => () => <div data-testid="edit-income-page">Edit Income Page</div>);
+jest.mock('./pages/TaxEstimation', () => () => <div data-testid="tax-estimation-page">Tax Estimation Page</div>);
+jest.mock('./pages/UpdateProfile', () => () => <div data-testid="update-profile-page">Update Profile Page</div>);
+jest.mock('./pages/ChangePassword', () => () => <div data-testid="change-password-page">Change Password Page</div>);
+jest.mock('./pages/ChatBot', () => () => <div data-testid="chatbot-page">ChatBot Page</div>);
 jest.mock('./pages/Admin/AdminDashboard', () => () => <div data-testid="admin-dashboard">Admin Dashboard</div>);
 jest.mock('./pages/Admin/IncomeRule', () => () => <div data-testid="income-rule-page">Income Rule Page</div>);
 jest.mock('./pages/Admin/InvestmentRule', () => () => <div data-testid="investment-rule-page">Investment Rule Page</div>);
@@ -35,8 +43,9 @@ jest.mock('./utils/auth', () => ({
   getAuthRole: jest.fn(),
 }));
 
-// Mock react-router to control navigation
+// Mock react-router to control navigation and provide proper context
 const mockNavigate = jest.fn();
+const mockUseLocation = jest.fn();
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   BrowserRouter: ({ children }) => <div data-testid="router">{children}</div>,
@@ -52,12 +61,22 @@ jest.mock('react-router', () => ({
     </div>
   ),
   useNavigate: () => mockNavigate,
+  useLocation: () => mockUseLocation(),
 }));
 
 describe('App Component', () => {
   beforeEach(() => {
     setupAuthMocks();
     jest.clearAllMocks();
+    
+    // Setup default useLocation mock
+    mockUseLocation.mockReturnValue({
+      pathname: '/login',
+      search: '',
+      hash: '',
+      state: null,
+      key: 'default'
+    });
   });
 
   afterEach(() => {

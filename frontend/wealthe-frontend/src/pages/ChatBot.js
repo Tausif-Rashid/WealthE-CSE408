@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatBot.css';
 import { chatbotUserQuery } from '../utils/api';
-import ReactMarkdown from 'react-markdown';
+
 
 const ChatBot = () => {
   const [input, setInput] = useState('');
@@ -53,7 +53,7 @@ const ChatBot = () => {
                 : 'chatbot-message chatbot-message-gemini'
             }
           >
-            {<ReactMarkdown>{msg.text}</ReactMarkdown>}
+            {msg.text}
           </div>
         ))}
         {loading && (
