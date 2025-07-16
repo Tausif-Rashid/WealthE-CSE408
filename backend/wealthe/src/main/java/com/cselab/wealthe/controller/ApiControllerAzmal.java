@@ -1002,45 +1002,42 @@ public class ApiControllerAzmal {
 
     // Helper method to calculate tax based on Bangladesh tax slabs
     private Double calculateTax(Double taxableIncome, String category) {
-        Double tax = 0.0;
+
 
         List<Map<String, Object>> slabs;
 //        List<Map<String, Object>> taxes = new ArrayList<>();
 
         String sql = "select * from rule_income where category = ? order by slab_no;";
         System.out.println("api called for admin list user");
-        slabs= jdbcTemplate.queryForList(sql);
+        slabs= jdbcTemplate.queryForList(sql, category);
+        int count=0;
+        double[] slab = {0,0,0,0,0,0};
+        double [] rates = {0,0,0,0,0,0};
 
         for (Map<String, Object> i : slabs){
             //need to work no slab id and rate.....
             //System.out.println(i);
             //System.out.println(i.get("user_id"));
-            int userId = Integer.parseInt(i.get("user_id").toString());
-            System.out.println(userId);}
-
-        // Tax slabs for individual taxpayers in Bangladesh (2024-25)
-        // First 3,50,000 BDT - 0% tax
-        // Next 1,00,000 BDT (3,50,001 to 4,50,000) - 5% tax
-        // Next 3,00,000 BDT (4,50,001 to 7,50,000) - 10% tax
-        // Next 4,00,000 BDT (7,50,001 to 11,50,000) - 15% tax
-        // Next 3,00,000 BDT (11,50,001 to 14,50,000) - 20% tax
-        // Above 14,50,000 BDT - 25% tax
-
-        if (taxableIncome <= 350000) {
-            tax = 0.0;
-        } else if (taxableIncome <= 450000) {
-            tax = (taxableIncome - 350000) * 0.05;
-        } else if (taxableIncome <= 750000) {
-            tax = 100000 * 0.05 + (taxableIncome - 450000) * 0.10;
-        } else if (taxableIncome <= 1150000) {
-            tax = 100000 * 0.05 + 300000 * 0.10 + (taxableIncome - 750000) * 0.15;
-        } else if (taxableIncome <= 1450000) {
-            tax = 100000 * 0.05 + 300000 * 0.10 + 400000 * 0.15 + (taxableIncome - 1150000) * 0.20;
-        } else {
-            tax = 100000 * 0.05 + 300000 * 0.10 + 400000 * 0.15 + 300000 * 0.20 + (taxableIncome - 1450000) * 0.25;
+            count = Integer.parseInt(i.get("slab_no").toString()) -1 ;
+            slab[count] = Double.parseDouble(i.get("slab_length").toString());
+            rates[count] = Double.parseDouble(i.get("tax_rate").toString());
+            System.out.println(slab[count]);
         }
 
-        return tax;
+        double remaining_income = taxableIncome;
+        System.out.println("Total Income: " + remaining_income);
+        double total_tax=0;
+
+        for (int i=0; i<count; i++){
+            double current = Double.min (remaining_income, slab[i]);
+            total_tax+= current*rates[i]/100;
+            System.out.println("Tax on " + current + " amount: " + current*rates[i]/100);
+            remaining_income -= Double.min(remaining_income, slab[i]);
+            if (remaining_income==0) break;
+        }
+
+
+        return total_tax;
     }
 
 }
