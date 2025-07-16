@@ -204,6 +204,13 @@ export const getTaxAreaList = async () => {
   });
 };
 
+export const getAllTaxAreaList = async () => {
+  return apiCall('/user/tax-area-list', {
+    method: 'GET',
+  });
+};
+
+
 export const getMinimumTaxList = async () => {
   return apiCall('/admin/minimum-tax-list', {
     method: 'GET',

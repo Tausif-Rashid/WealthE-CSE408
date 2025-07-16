@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { updateUserProfile } from '../utils/api';
+import { updateUserProfile, getAllTaxAreaList } from '../utils/api';
 import './UpdateProfile.css';
 
 const UpdateProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [taxAreaOptions, setTaxAreaOptions] = useState([]);
   const { userInfo = {}, taxInfo = {} } = location.state || {};
 
   const [form, setForm] = useState({
@@ -29,10 +30,30 @@ const UpdateProfile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const taxAreas = await getAllTaxAreaList();
+          
+          // Sort the tax zones before setting state
+          setTaxAreaOptions(taxAreas);
+        } catch (err) {
+          setError('Failed to load tax zone data');
+          console.error('Error fetching data:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+
+  
 
   const handleCheckbox = (e) => {
     const { name, checked } = e.target;
@@ -96,9 +117,19 @@ const UpdateProfile = () => {
           <input name="tin" value={form.tin} onChange={handleChange} required />
         </div>
         <div className="form-row">
-          <label>Area</label>
-          <input name="area_name" value={form.area_name} onChange={handleChange} required />
-        </div>
+          <select
+                  name="area_name"
+                  value={form.area_name}
+                  onChange={handleChange}
+                  
+                >
+                  <option value="">Select an area</option>
+                  {taxAreaOptions.map((area, index) => (
+                    <option key={index} value={area.area_name}>
+                      {area.area_name}
+                    </option>
+                  ))}
+                </select></div>
         <div className="form-row">
           <label>Tax Zone</label>
           <input name="tax_zone" value={form.tax_zone} onChange={handleChange} required />
