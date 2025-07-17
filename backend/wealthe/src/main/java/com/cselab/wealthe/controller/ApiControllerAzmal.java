@@ -1040,4 +1040,40 @@ public class ApiControllerAzmal {
         return total_tax;
     }
 
+
+
+    @PostMapping("/user/tax-zones-by-area")
+    public List<Map<String, Object>> getTaxArea(@RequestBody Map<String, Object> request) {
+
+        String area = request.get("area_name")!= null ? request.get("area_name").toString() : null ;
+        String sql;
+        try{
+            sql = "select distinct zone_no from rule_tax_area_list where area_name = ? order by zone_no;";
+
+            return jdbcTemplate.queryForList(sql, area);
+            // Return success response with expense_id
+
+        } catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    @PostMapping("/user/tax-circle-by-zone")
+    public List<Map<String, Object>> getTaxCircle(@RequestBody Map<String, Object> request) {
+
+        int zone = request.get("tax_zone")!= null ? Integer.parseInt(request.get("tax_zone").toString()): null ;
+        String sql;
+        try{
+            sql = "select distinct circle_no from rule_tax_area_list where zone_no = ? order by circle_no;";
+
+            return jdbcTemplate.queryForList(sql, zone);
+            // Return success response with expense_id
+
+        } catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
+
 }
