@@ -9,6 +9,13 @@ const LandingPage = () => {
         {/* Header with Logo */}
         <header className="landing-header">
           <div className="logo">
+            <img 
+              src="/trending-up-svgrepo-com.svg" 
+              alt="Trending Up" 
+              className="logo-icon"
+              width="40" 
+              height="40"
+            />
             <h1>WealthE</h1>
           </div>
         </header>
@@ -28,12 +35,12 @@ const LandingPage = () => {
             {/* Key Features */}
             <div className="features-grid">
               <div className="feature-item">
-                <div className="feature-icon">📊</div>
+                <div className="feature-icon">🪙</div>
                 <h3>Fincance Tracking</h3>
                 <p>Get insights into your spending patterns</p>
               </div>
               <div className="feature-item">
-                <div className="feature-icon">🎯</div>
+                <div className="feature-icon">💵</div>
                 <h3>Tax Estimation</h3>
                 <p>Estimate your tax liabilities with ease</p>
               </div>
