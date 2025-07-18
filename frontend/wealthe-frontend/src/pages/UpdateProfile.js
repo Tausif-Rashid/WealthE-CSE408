@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { updateUserProfile, getAllTaxAreaList, getTaxZonesByArea, getTaxCirclesByZone } from '../utils/api';
 import './UpdateProfile.css';
 
