@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router';
 import { AuthProvider, useAuth } from './components/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -223,7 +224,7 @@ const AppRoutes = () => {
         element={
           isAuthenticated ? 
             <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : 
-            <Navigate to="/login" replace />
+            <LandingPage />
         } 
       />
       
@@ -233,7 +234,7 @@ const AppRoutes = () => {
         element={
           isAuthenticated ? 
             <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/dashboard'} replace /> : 
-            <Navigate to="/login" replace />
+            <Navigate to="/" replace />
         } 
       />
     </Routes>
