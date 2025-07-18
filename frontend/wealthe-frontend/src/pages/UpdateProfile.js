@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
-import { updateUserProfile } from '../utils/api';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { updateUserProfile, getAllTaxAreaList, getTaxZonesByArea, getTaxCirclesByZone } from '../utils/api';
 import './UpdateProfile.css';
 
 const UpdateProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [taxAreaOptions, setTaxAreaOptions] = useState([]);
+  const [taxZoneOptions, setTaxZoneOptions] = useState([]);
+  const [taxCircleOptions, setTaxCircleOptions] = useState([]);
   const { userInfo = {}, taxInfo = {} } = location.state || {};
 
   const [form, setForm] = useState({
@@ -29,9 +32,97 @@ const UpdateProfile = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const taxAreas = await getAllTaxAreaList();
+          
+          // Sort the tax zones before setting state
+          setTaxAreaOptions(taxAreas);
+        } catch (err) {
+          setError('Failed to load tax zone data');
+          console.error('Error fetching data:', err);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Add this new function to handle area change and fetch tax zones
+  const handleAreaChange = async (e) => {
+    const { name, value } = e.target;
+    
+    // Update the form state with the new area_name
+    setForm(prev => ({ 
+      ...prev, 
+      [name]: value,
+      tax_zone: '', // Reset tax zone when area changes
+      tax_circle: '' // Reset tax circle when area changes
+    }));
+    
+    // Reset tax zone and circle options
+    // setTaxZoneOptions([]);
+    // setTaxCircleOptions([]);
+    
+    // If an area is selected, fetch the tax zones for that area
+    if (value) {
+      try {
+        setLoading(true);
+        setError(''); // Clear any previous errors
+        
+        // Call the API to get tax zones by area
+        const taxZones = await getTaxZonesByArea(value);
+        setTaxZoneOptions(taxZones || []);
+        
+        console.log('Tax zones fetched for area:', value, taxZones);
+      } catch (err) {
+        setError('Failed to fetch tax zones for the selected area');
+        console.error('Error fetching tax zones:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Add this new function to handle tax zone change and fetch tax circles
+  const handleTaxZoneChange = async (e) => {
+    const { name, value } = e.target;
+    
+    // Update the form state with the new tax_zone
+    setForm(prev => ({ 
+      ...prev, 
+      [name]: value,
+      tax_circle: '' // Reset tax circle when zone changes
+    }));
+    
+    // Reset tax circle options
+    setTaxCircleOptions([]);
+    
+    // If a tax zone is selected, fetch the tax circles for that zone
+    if (value) {
+      try {
+        setLoading(true);
+        setError(''); // Clear any previous errors
+        
+        // Call the API to get tax circles by zone
+        const taxCircles = await getTaxCirclesByZone(value);
+        setTaxCircleOptions(taxCircles || []);
+        
+        console.log('Tax circles fetched for zone:', value, taxCircles);
+      } catch (err) {
+        setError('Failed to fetch tax circles for the selected zone');
+        console.error('Error fetching tax circles:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const handleCheckbox = (e) => {
@@ -96,16 +187,59 @@ const UpdateProfile = () => {
           <input name="tin" value={form.tin} onChange={handleChange} required />
         </div>
         <div className="form-row">
-          <label>Area</label>
-          <input name="area_name" value={form.area_name} onChange={handleChange} required />
-        </div>
+          <div className= "form-group">
+          <label>Area Name</label>
+          <select
+                  name="area_name"
+                  value={form.area_name}
+                  onChange={handleAreaChange}
+                  
+                >
+                  <option value="">Select an area</option>
+                  {taxAreaOptions.map((area, index) => (
+                    <option key={index} value={area.area_name}>
+                      {area.area_name}
+                    </option>
+                  ))}
+                </select></div>
+                </div>
         <div className="form-row">
+          <div className="form-group">
           <label>Tax Zone</label>
-          <input name="tax_zone" value={form.tax_zone} onChange={handleChange} required />
+          <select
+            name="tax_zone"
+            value={form.tax_zone}
+            onChange={handleTaxZoneChange}
+            required
+            disabled={!form.area_name || taxZoneOptions.length === 0}
+          >
+            <option value="">Select a tax zone</option>
+            {taxZoneOptions.map((zone, index) => (
+              <option key={index} value={zone.tax_zone}>
+                {zone.zone_no}
+              </option>
+            ))}
+          </select>
+        </div>
         </div>
         <div className="form-row">
+          <div className="form-group">
           <label>Tax Circle</label>
-          <input name="tax_circle" value={form.tax_circle} onChange={handleChange} required />
+          <select
+            name="tax_circle"
+            value={form.tax_circle}
+            onChange={handleChange}
+            
+            disabled={!form.tax_zone || taxCircleOptions.length === 0}
+          >
+            <option value="">Select a tax circle</option>
+            {taxCircleOptions.map((circle, index) => (
+              <option key={index} value={circle.tax_circle}>
+                {circle.circle_no}
+              </option>
+            ))}
+          </select>
+        </div>
         </div>
         <div className="form-row">
           <label>Email</label>

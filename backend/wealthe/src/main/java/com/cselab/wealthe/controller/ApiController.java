@@ -337,4 +337,22 @@ public class ApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
+
+    @GetMapping("/user/tax-area-list")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getTaxAreaListUser() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        try{
+            sql = "SELECT DISTINCT area_name from rule_tax_area_list \n;";
+            return jdbcTemplate.queryForList(sql);
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+    }
+
 }

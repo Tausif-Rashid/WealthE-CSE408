@@ -18,6 +18,8 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -870,8 +872,37 @@ public class ApiControllerAzmal {
             // 8. Set investment amount
             Double investment = makeMoreInvestment;
 
+            //ff, female, disabled
+            Boolean priviledged[] = {false, false, false, false};
+
+            String sqlPriv = " select is_ff, is_female, is_disabled from user_tax_info where id = ?";
+
+            List<Map<String, Object>> temp;
+            List<Map<String, Object>> privs = List.of();
+
+
+            temp= jdbcTemplate.queryForList(sqlPriv, userId);
+
+            for (Map<String, Object> i : temp){
+                //System.out.println(i);
+                //System.out.println(i.get("user_id"));
+                priviledged[0] = i.get("is_ff").toString() == "true";
+                priviledged[1] = i.get("is_female").toString() == "true";
+                priviledged[2] = i.get("is_disabled").toString() == "true";
+//                if ()
+//                System.out.println(priviledged[0].toString() + priviledged[1].toString() + priviledged[2].toString());
+            }
+
+            String category = "regular";
+
+            if (priviledged[0]) category = "ff";
+            else if (priviledged[2]) category= "disabled";
+            else if (priviledged[3]) category = "female";
+            else if (isElderly(userId)) category = "elderly";
+
+
             // 9. Calculate tax and rebate
-            Map<String, Double> taxCalculation = calculateTaxAndRebate(totalIncome, investment);
+            Map<String, Double> taxCalculation = calculateTaxAndRebate(totalIncome, investment, category);
             Double totalTax = taxCalculation.get("totalTax");
             Double rebateAmount = taxCalculation.get("rebateAmount");
 
@@ -901,6 +932,7 @@ public class ApiControllerAzmal {
                 minTax = 0.0;
             }
 
+
             // Calculate estimated tax
             Double estimatedTax = Math.max(minTax, totalTax - rebateAmount);
 
@@ -928,12 +960,34 @@ public class ApiControllerAzmal {
         }
     }
 
+    private Boolean isElderly(int userID){
+        String sqlPriv = " select dob from user_info where id = ?";
+
+        List<Map<String, Object>> temp;
+
+
+        temp= jdbcTemplate.queryForList(sqlPriv, userID);
+        String dob = null;
+        for (Map<String, Object> i : temp){
+            dob = i.get("dob").toString();
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate date = LocalDate.parse(dob, formatter);
+        LocalDate today = LocalDate.now();
+        int age = Period.between(date, today).getYears();
+
+
+        return age>65;
+
+
+    }
     // Helper method to calculate tax and rebate
-    private Map<String, Double> calculateTaxAndRebate(Double income, Double investment) {
+    private Map<String, Double> calculateTaxAndRebate(Double income, Double investment, String category) {
         Map<String, Double> result = new HashMap<>();
 
         // Calculate tax based on Bangladesh tax slabs (2024-25)
-        Double tax = calculateTax(income);
+        Double tax = calculateTax(income, category);
 
         // Calculate rebate based on investment (assuming 15% rebate on investment up to certain limit)
         Double rebate = 0.0;
@@ -947,32 +1001,79 @@ public class ApiControllerAzmal {
     }
 
     // Helper method to calculate tax based on Bangladesh tax slabs
-    private Double calculateTax(Double taxableIncome) {
-        Double tax = 0.0;
+    private Double calculateTax(Double taxableIncome, String category) {
 
-        // Tax slabs for individual taxpayers in Bangladesh (2024-25)
-        // First 3,50,000 BDT - 0% tax
-        // Next 1,00,000 BDT (3,50,001 to 4,50,000) - 5% tax
-        // Next 3,00,000 BDT (4,50,001 to 7,50,000) - 10% tax
-        // Next 4,00,000 BDT (7,50,001 to 11,50,000) - 15% tax
-        // Next 3,00,000 BDT (11,50,001 to 14,50,000) - 20% tax
-        // Above 14,50,000 BDT - 25% tax
 
-        if (taxableIncome <= 350000) {
-            tax = 0.0;
-        } else if (taxableIncome <= 450000) {
-            tax = (taxableIncome - 350000) * 0.05;
-        } else if (taxableIncome <= 750000) {
-            tax = 100000 * 0.05 + (taxableIncome - 450000) * 0.10;
-        } else if (taxableIncome <= 1150000) {
-            tax = 100000 * 0.05 + 300000 * 0.10 + (taxableIncome - 750000) * 0.15;
-        } else if (taxableIncome <= 1450000) {
-            tax = 100000 * 0.05 + 300000 * 0.10 + 400000 * 0.15 + (taxableIncome - 1150000) * 0.20;
-        } else {
-            tax = 100000 * 0.05 + 300000 * 0.10 + 400000 * 0.15 + 300000 * 0.20 + (taxableIncome - 1450000) * 0.25;
+        List<Map<String, Object>> slabs;
+//        List<Map<String, Object>> taxes = new ArrayList<>();
+
+        String sql = "select * from rule_income where category = ? order by slab_no;";
+        System.out.println("api called for admin list user");
+        slabs= jdbcTemplate.queryForList(sql, category);
+        int count=0;
+        double[] slab = {0,0,0,0,0,0};
+        double [] rates = {0,0,0,0,0,0};
+
+        for (Map<String, Object> i : slabs){
+            //need to work no slab id and rate.....
+            //System.out.println(i);
+            //System.out.println(i.get("user_id"));
+            count = Integer.parseInt(i.get("slab_no").toString()) -1 ;
+            slab[count] = Double.parseDouble(i.get("slab_length").toString());
+            rates[count] = Double.parseDouble(i.get("tax_rate").toString());
+            System.out.println(slab[count]);
         }
 
-        return tax;
+        double remaining_income = taxableIncome;
+        System.out.println("Total Income: " + remaining_income);
+        double total_tax=0;
+
+        for (int i=0; i<count; i++){
+            double current = Double.min (remaining_income, slab[i]);
+            total_tax+= current*rates[i]/100;
+            System.out.println("Tax on " + current + " amount: " + current*rates[i]/100);
+            remaining_income -= Double.min(remaining_income, slab[i]);
+            if (remaining_income==0) break;
+        }
+
+
+        return total_tax;
+    }
+
+
+
+    @PostMapping("/user/tax-zones-by-area")
+    public List<Map<String, Object>> getTaxArea(@RequestBody Map<String, Object> request) {
+
+        String area = request.get("area_name")!= null ? request.get("area_name").toString() : null ;
+        String sql;
+        try{
+            sql = "select distinct zone_no from rule_tax_area_list where area_name = ? order by zone_no;";
+
+            return jdbcTemplate.queryForList(sql, area);
+            // Return success response with expense_id
+
+        } catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    @PostMapping("/user/tax-circle-by-zone")
+    public List<Map<String, Object>> getTaxCircle(@RequestBody Map<String, Object> request) {
+
+        int zone = request.get("tax_zone")!= null ? Integer.parseInt(request.get("tax_zone").toString()): null ;
+        String sql;
+        try{
+            sql = "select distinct circle_no from rule_tax_area_list where zone_no = ? order by circle_no;";
+
+            return jdbcTemplate.queryForList(sql, zone);
+            // Return success response with expense_id
+
+        } catch(Exception e){
+            System.out.println(e);
+            return null;
+        }
     }
 
 }

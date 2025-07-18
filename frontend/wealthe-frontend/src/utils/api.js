@@ -204,6 +204,13 @@ export const getTaxAreaList = async () => {
   });
 };
 
+export const getAllTaxAreaList = async () => {
+  return apiCall('/user/tax-area-list', {
+    method: 'GET',
+  });
+};
+
+
 export const getMinimumTaxList = async () => {
   return apiCall('/admin/minimum-tax-list', {
     method: 'GET',
@@ -449,6 +456,28 @@ export const getTaxEstimation = async (taxData) => {
       expectedNonRecurringIncome: taxData.expectedNonRecurringIncome,
       makeMoreInvestment: taxData.makeMoreInvestment
     }),
+  });
+};
+
+// Get tax zones by area
+export const getTaxZonesByArea = async (areaName) => {
+  return apiCall('/user/tax-zones-by-area', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ area_name: areaName }),
+  });
+};
+
+// Get tax circles by zone
+export const getTaxCirclesByZone = async (zoneName) => {
+  return apiCall('/user/tax-circle-by-zone', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ tax_zone: zoneName }),
   });
 };
 
