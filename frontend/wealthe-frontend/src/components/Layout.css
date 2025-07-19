@@ -5,9 +5,10 @@
 
 .content {
   flex: 1;
-  padding: 2rem;
+  /* padding: 2rem; */
   margin-left: 250px; /* Match sidebar width */
   background-color: #f5f6fa;
+  /* background: linear-gradient(135deg, #2e4fa9 0%, #3b82f6 40%, #93c5fd 70%, #8298b8 100%); */
   min-height: 100vh;
   box-sizing: border-box;
 }
