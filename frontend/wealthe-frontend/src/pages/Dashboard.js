@@ -94,7 +94,7 @@ const Dashboard = () => {
             <div className="user-stat-icon">👤</div>
             <div className="stat-info">
               <h3>Profile</h3>
-              <p className="stat-value">{userInfo?.name || 'N/A'}</p>
+              <p className="stat-value-user">{userInfo?.name || 'N/A'}</p>
               <small>Your name</small>
             </div>
           </div>
@@ -103,7 +103,7 @@ const Dashboard = () => {
             <div className="user-stat-icon">📧</div>
             <div className="stat-info">
               <h3>Email</h3>
-              <p className="stat-value">{taxInfo?.email || 'N/A'}</p> 
+              <p className="stat-value-user">{taxInfo?.email || 'N/A'}</p> 
               {/* //id and email is stored in user from authContext.js */}
               <small>Your email address</small>
             </div>

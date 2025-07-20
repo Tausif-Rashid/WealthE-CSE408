@@ -1,18 +1,25 @@
+/* Update Profile Page Styles - WealthE Themed */
 .update-profile-container {
   max-width: 600px;
   margin: 40px auto;
-  background: #fff;
+  background: rgba(29, 38, 69, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+  position: relative;
+  z-index: 1;
+  color: white;
 }
 
 .update-profile-container h1 {
   text-align: center;
-  color: #333;
+  color: #1e3a8a;
   margin-bottom: 30px;
   font-size: 2rem;
   font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
 }
 
 .update-profile-form {
@@ -29,58 +36,75 @@
 
 .form-row label {
   font-weight: 600;
-  color: #333;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .form-row input {
   padding: 10px 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
   font-size: 1rem;
-  background: #f8f9fa;
-  color: #333;
-  transition: border 0.2s;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.form-row input:hover {
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .form-row input:focus {
-  border: 1.5px solid #667eea;
+  border-color: #3b82f6;
   outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.form-row input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .submit-btn {
   width: 40%;
   margin-top: 10px;
   padding: 12px 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s, box-shadow 0.3s;
+  transition: all 0.3s ease;
   align-self: center;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .submit-btn:hover {
-  background: linear-gradient(135deg, #5a67d8 0%, #6b47b6 100%);
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 .form-error {
-  color: #e74c3c;
-  background: #fbeaea;
+  color: #ff6b6b;
+  background: rgba(220, 53, 69, 0.2);
+  border: 1px solid rgba(220, 53, 69, 0.4);
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 12px;
   margin-bottom: 8px;
   text-align: center;
 }
 
 .form-success {
-  color: #27ae60;
-  background: #eafaf1;
+  color: #28a745;
+  background: rgba(40, 167, 69, 0.2);
+  border: 1px solid rgba(40, 167, 69, 0.4);
   padding: 10px;
-  border-radius: 6px;
+  border-radius: 12px;
   margin-bottom: 8px;
   text-align: center;
 }
@@ -91,18 +115,19 @@
   gap: 8px;
   margin-bottom: 18px;
   margin-top: 1px;
-  background: #f6f7fb;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 18px 16px 10px 16px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .privileged-label {
   font-weight: 600;
-  color: #333;
+  color: white;
   margin-bottom: 1px;
   font-size: 1rem;
   display: block;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .privileged-checkboxes {
@@ -119,15 +144,31 @@
 
 .privileged-checkboxes label {
   font-weight: 500;
-  color: #444;
+  color: rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
   gap: 6px;
   margin-right: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.privileged-checkboxes input[type="checkbox"] {
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.privileged-checkboxes input[type="checkbox"]:checked {
+  accent-color: #3b82f6;
 }
 
 @media (max-width: 700px) {
   .update-profile-container {
     padding: 20px 8px;
+    margin: 20px auto;
+  }
+  
+  .submit-btn {
+    width: 100%;
   }
 } 

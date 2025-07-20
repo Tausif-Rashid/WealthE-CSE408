@@ -189,7 +189,7 @@ const TaxEstimation = () => {
 
               
 
-              <div className="result-card min-tax-card">
+              <div className="result-card calculated-tax-card">
                 <div className="result-icon">🧮</div>
                 <div className="result-content">
                   <h3>Calculated Tax</h3>
@@ -219,7 +219,7 @@ const TaxEstimation = () => {
                 <div className="result-icon">🧮</div>
                 <div className="result-content">
                   <h3>Estimated Tax</h3>
-                  <p className="result-amount highlight">{formatAmount(results.data.estimatedTax)}</p>
+                  <p className="result-amount">{formatAmount(results.data.estimatedTax)}</p>
                 </div>
               </div>
             </div>
