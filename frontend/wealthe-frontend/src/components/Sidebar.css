@@ -44,8 +44,19 @@
   letter-spacing: 1px;
 }
 
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #00000032;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 5px;
+}
+
 .user-info p {
-  margin: 0 0 5px 0;
+  margin: 0 0 3px 0;
   font-size: 0.9rem;
   opacity: 0.9;
   word-break: break-word;
@@ -118,7 +129,7 @@
 .logout-btn {
   width: 100%;
   padding: 12px;
-  background: rgba(231, 76, 60, 0.2);
+  background: #e73c3c58;
   color: white;
   border: 1px solid rgba(231, 76, 60, 0.4);
   border-radius: 10px;
@@ -130,8 +141,8 @@
 }
 
 .logout-btn:hover {
-  background: rgba(231, 76, 60, 0.3);
-  border-color: rgba(231, 76, 60, 0.6);
+  background: rgba(231, 77, 60, 0.607);
+  border-color: rgb(231, 77, 60);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
 }

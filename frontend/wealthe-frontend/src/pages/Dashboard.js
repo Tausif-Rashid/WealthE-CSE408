@@ -90,8 +90,8 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-content">        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="stat-icon">👤</div>
+          <div className="user-stat-card">
+            <div className="user-stat-icon">👤</div>
             <div className="stat-info">
               <h3>Profile</h3>
               <p className="stat-value">{userInfo?.name || 'N/A'}</p>
@@ -99,8 +99,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="stat-card">
-            <div className="stat-icon">📧</div>
+          <div className="user-stat-card">
+            <div className="user-stat-icon">📧</div>
             <div className="stat-info">
               <h3>Email</h3>
               <p className="stat-value">{taxInfo?.email || 'N/A'}</p> 
@@ -108,9 +108,10 @@ const Dashboard = () => {
               <small>Your email address</small>
             </div>
           </div>
-        </div>        <div className="user-details-section">
+        </div>        
+        <div className="user-details-section">
           <div className="details-card">
-            <h2>👤 User Information</h2>
+            <h2> User Information</h2>
             <div className="details-grid">
               <div className="detail-item">
                 <label>ID:</label>

@@ -7,8 +7,9 @@
   flex: 1;
   /* padding: 2rem; */
   margin-left: 250px; /* Match sidebar width */
-  background-color: #f5f6fa;
-  /* background: linear-gradient(135deg, #2e4fa9 0%, #3b82f6 40%, #93c5fd 70%, #8298b8 100%); */
+  /* background-color: #dce4ff2f; */
+  /* background: linear-gradient(135deg, #9da8b6 0%, #bfd8ff 40%, #93c5fd 70%, #9eb8df 100%); */
+  background: linear-gradient(135deg, #ffffff 0%, #78b9ff 50%, #fcecec 100%);
   min-height: 100vh;
   box-sizing: border-box;
 }

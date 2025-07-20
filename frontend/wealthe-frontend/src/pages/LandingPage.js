@@ -53,7 +53,7 @@ const LandingPage = () => {
 
             {/* Call to Action */}
             <div className="cta-section">
-              <h3>Ready to Start Your Financial Journey?</h3>
+              <h3>Get started Today!</h3>
               <div className="cta-buttons">
                 <Link to="/register" className="cta-button primary">
                   Sign Up
