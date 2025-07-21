@@ -22,6 +22,12 @@ import TaxZoneRule from './pages/Admin/TaxZoneRule';
 import UpdateProfile from './pages/UpdateProfile';
 import ChangePassword from './pages/ChangePassword';
 import ChatBot from './pages/ChatBot';
+import Assets from './pages/Assets';
+import AddAssetBankAccount from './pages/AddAssetBankAccount';
+import AddAssetCar from './pages/AddAssetCar';
+import AddAssetFlat from './pages/AddAssetFlat';
+import AddAssetJewellery from './pages/AddAssetJewellery';
+import AddAssetPlot from './pages/AddAssetPlot';
 import './App.css';
 import { getAuthRole } from './utils/auth';
 
@@ -180,6 +186,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <TaxEstimation />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/assets" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Assets />
             </Layout>
           </ProtectedRoute>
         } 

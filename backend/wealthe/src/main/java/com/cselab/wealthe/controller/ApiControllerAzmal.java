@@ -1076,4 +1076,104 @@ public class ApiControllerAzmal {
         }
     }
 
+    @GetMapping("/user/cars")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserCarList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM asset_car WHERE user_id=? ";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/user/flats")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserFlats() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM asset_flat WHERE user_id=?";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/user/jewellery")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserJewelleryList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM asset_jewelery WHERE user_id=?";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/user/plots")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserPlotList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM asset_plot WHERE user_id=?";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/user/bank-accounts")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserBankList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM asset_bank_account WHERE user_id=?";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 }
