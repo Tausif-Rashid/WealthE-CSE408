@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { 
   getBankAccounts, 
   getCars, 
@@ -147,103 +147,107 @@ const Assets = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
-  const AssetCard = ({ asset, assetType, icon, onEdit, onDelete }) => (
-    <div className="asset-card">
-      <div className="asset-card-header">
-        <div className="asset-icon">{icon}</div>
-        <div className="asset-details">
-          <h3 className="asset-title">{asset.title}</h3>
-          {assetType === 'bank-account' && (
-            <>
-              <p className="asset-subtitle">{asset.bank_name}</p>
-              <p className="asset-amount">{formatAmount(asset.amount)}</p>
-              <p className="asset-info">Account: {asset.account}</p>
-            </>
-          )}
-          {assetType === 'car' && (
-            <>
-              <p className="asset-subtitle">{asset.model}</p>
-              <p className="asset-amount">{formatAmount(asset.cost)}</p>
-              <p className="asset-info">Reg: {asset.reg_number}</p>
-              <p className="asset-info">Engine: {asset.engine}</p>
-            </>
-          )}
-          {assetType === 'flat' && (
-            <>
-              <p className="asset-subtitle">{asset.location}</p>
-              <p className="asset-amount">{formatAmount(asset.cost)}</p>
-              <p className="asset-info">Date: {formatDate(asset.date)}</p>
-              <p className="asset-info">Acquisition: {asset.acquisition}</p>
-            </>
-          )}
-          {assetType === 'jewellery' && (
-            <>
-              <p className="asset-amount">{formatAmount(asset.cost)}</p>
-              <p className="asset-info">Weight: {asset.weight}g</p>
-              <p className="asset-info">Acquisition: {asset.acquisition}</p>
-            </>
-          )}
-          {assetType === 'plot' && (
-            <>
-              <p className="asset-subtitle">{asset.type}</p>
-              <p className="asset-amount">{formatAmount(asset.cost)}</p>
-              <p className="asset-info">Location: {asset.location}</p>
-              <p className="asset-info">Date: {formatDate(asset.date)}</p>
-            </>
+  const AssetCard = ({ asset, assetType, icon, onEdit, onDelete }) => {
+    return (
+      <div className="asset-card">
+        <div className="asset-card-header">
+          <div className="asset-icon">{icon}</div>
+          <div className="asset-details">
+            <h3 className="asset-title">{asset.title}</h3>
+            {assetType === 'bank-account' && (
+              <React.Fragment>
+                <p className="asset-subtitle">{asset.bank_name}</p>
+                <p className="asset-amount">{formatAmount(asset.amount)}</p>
+                <p className="asset-info">Account: {asset.account}</p>
+              </React.Fragment>
+            )}
+            {assetType === 'car' && (
+              <React.Fragment>
+                <p className="asset-subtitle">{asset.model}</p>
+                <p className="asset-amount">{formatAmount(asset.cost)}</p>
+                <p className="asset-info">Reg: {asset.reg_number}</p>
+                <p className="asset-info">Engine: {asset.engine}</p>
+              </React.Fragment>
+            )}
+            {assetType === 'flat' && (
+              <React.Fragment>
+                <p className="asset-subtitle">{asset.location}</p>
+                <p className="asset-amount">{formatAmount(asset.cost)}</p>
+                <p className="asset-info">Date: {formatDate(asset.date)}</p>
+                <p className="asset-info">Acquisition: {asset.acquisition}</p>
+              </React.Fragment>
+            )}
+            {assetType === 'jewellery' && (
+              <React.Fragment>
+                <p className="asset-amount">{formatAmount(asset.cost)}</p>
+                <p className="asset-info">Weight: {asset.weight}g</p>
+                <p className="asset-info">Acquisition: {asset.acquisition}</p>
+              </React.Fragment>
+            )}
+            {assetType === 'plot' && (
+              <React.Fragment>
+                <p className="asset-subtitle">{asset.type}</p>
+                <p className="asset-amount">{formatAmount(asset.cost)}</p>
+                <p className="asset-info">Location: {asset.location}</p>
+                <p className="asset-info">Date: {formatDate(asset.date)}</p>
+              </React.Fragment>
+            )}
+          </div>
+        </div>
+        {asset.description && (
+          <p className="asset-description">{asset.description}</p>
+        )}
+        <div className="asset-actions">
+          <button 
+            onClick={() => onEdit(assetType, asset.id)}
+            className="asset-edit-btn"
+          >
+            ✏️ Edit
+          </button>
+          <button 
+            onClick={() => onDelete(assetType, asset.id, asset.title)}
+            className="asset-delete-btn"
+          >
+            🗑️ Delete
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const AssetSection = ({ title, assets, assetType, icon, onAdd }) => {
+    return (
+      <div className="asset-section">
+        <div className="asset-section-header">
+          <h2 className="asset-section-title">
+            <span className="asset-section-icon">{icon}</span>
+            {title}
+          </h2>
+          <button onClick={() => onAdd(assetType)} className="add-asset-btn">
+            ➕ Add {title.slice(0, -1)}
+          </button>
+        </div>
+        <div className="asset-grid">
+          {assets.length > 0 ? (
+            assets.map((asset) => (
+              <AssetCard
+                key={asset.id}
+                asset={asset}
+                assetType={assetType}
+                icon={icon}
+                onEdit={handleEditAsset}
+                onDelete={handleDeleteAsset}
+              />
+            ))
+          ) : (
+            <div className="no-assets">
+              <p>No {title.toLowerCase()} found. Click "Add {title.slice(0, -1)}" to get started!</p>
+            </div>
           )}
         </div>
       </div>
-      {asset.description && (
-        <p className="asset-description">{asset.description}</p>
-      )}
-      <div className="asset-actions">
-        <button 
-          onClick={() => onEdit(assetType, asset.id)}
-          className="asset-edit-btn"
-        >
-          ✏️ Edit
-        </button>
-        <button 
-          onClick={() => onDelete(assetType, asset.id, asset.title)}
-          className="asset-delete-btn"
-        >
-          🗑️ Delete
-        </button>
-      </div>
-    </div>
-  );
-
-  const AssetSection = ({ title, assets, assetType, icon, onAdd }) => (
-    <div className="asset-section">
-      <div className="asset-section-header">
-        <h2 className="asset-section-title">
-          <span className="asset-section-icon">{icon}</span>
-          {title}
-        </h2>
-        <button onClick={() => onAdd(assetType)} className="add-asset-btn">
-          ➕ Add {title.slice(0, -1)}
-        </button>
-      </div>
-      <div className="asset-grid">
-        {assets.length > 0 ? (
-          assets.map((asset) => (
-            <AssetCard
-              key={asset.id}
-              asset={asset}
-              assetType={assetType}
-              icon={icon}
-              onEdit={handleEditAsset}
-              onDelete={handleDeleteAsset}
-            />
-          ))
-        ) : (
-          <div className="no-assets">
-            <p>No {title.toLowerCase()} found. Click "Add {title.slice(0, -1)}" to get started!</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+    );
+  };
 
   if (loading) {
     return (
