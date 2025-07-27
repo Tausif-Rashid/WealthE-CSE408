@@ -423,6 +423,52 @@ export const deleteIncome = async (incomeId) => {
   });
 };
 
+// Investment API functions
+export const getUserInvestment = async () => {
+  return apiCall('/user/investment');
+};
+
+export const addInvestment = async (investmentData) => {
+  return apiCall('/user/add-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      amount: investmentData.amount,
+      date: investmentData.date,
+      category: investmentData.category
+    }),
+  });
+};
+
+export const editInvestment = async (investmentId, investmentData) => {
+  return apiCall('/user/edit-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: investmentId,
+      amount: investmentData.amount,
+      date: investmentData.date,
+      category: investmentData.category
+    }),
+  });
+};
+
+export const deleteInvestment = async (investmentId) => {
+  return apiCall('/user/delete-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: investmentId
+    }),
+  });
+};
+
 export const updateUserProfile = async (profileData) => {
   return apiCall('/user/update-profile', {
     method: 'POST',

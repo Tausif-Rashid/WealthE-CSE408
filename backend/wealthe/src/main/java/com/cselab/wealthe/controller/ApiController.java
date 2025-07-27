@@ -102,6 +102,26 @@ public class ApiController {
         }
     }
 
+    @GetMapping("/user/investment")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserInvestmentList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM investment WHERE user_id=? ORDER BY date DESC";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     @GetMapping("/areas")
     @CrossOrigin(origins = "*")
     public List<Map<String, Object>> getAreas(@RequestParam(required = false) String type) {

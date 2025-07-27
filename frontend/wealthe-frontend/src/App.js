@@ -10,6 +10,9 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import AddExpense from './pages/AddExpense';
 import EditExpense from './pages/EditExpense';
+import Investment from './pages/Investment';
+import AddInvestment from './pages/AddInvestment';
+import EditInvestment from './pages/EditInvestment';
 import Income from './pages/Income';
 import AddIncome from './pages/AddIncome';
 import EditIncome from './pages/EditIncome';
@@ -142,6 +145,39 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <EditExpense />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/investment" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Investment />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-investment" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddInvestment />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-investment/:investmentId" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditInvestment />
             </Layout>
           </ProtectedRoute>
         } 

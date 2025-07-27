@@ -464,6 +464,235 @@ public class ApiControllerAzmal {
         }
     }
 
+    // Investment endpoints
+    @PostMapping("/user/add-investment")
+    public ResponseEntity<Map<String, Object>> addInvestment(@RequestBody Map<String, Object> investmentData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/add-investment");
+                return ResponseEntity.badRequest().body(Map.of("error", "User not authenticated"));
+            }
+
+            // Extract investment data
+            String category = (String) investmentData.get("category");
+            Double amount = null;
+            
+            // Handle amount conversion
+            Object amountObj = investmentData.get("amount");
+            if (amountObj instanceof Number) {
+                amount = ((Number) amountObj).doubleValue();
+            } else if (amountObj instanceof String) {
+                try {
+                    amount = Double.parseDouble((String) amountObj);
+                } catch (NumberFormatException e) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Invalid amount format"));
+                }
+            }
+
+            String dateStr = (String) investmentData.get("date");
+
+            // Validate required fields
+            if (category == null || category.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Category is required"));
+            }
+            if (amount == null || amount <= 0) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Valid amount is required"));
+            }
+            if (dateStr == null || dateStr.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Date is required"));
+            }
+
+            // Parse date
+            java.sql.Date sqlDate;
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date utilDate = sdf.parse(dateStr);
+                sqlDate = new java.sql.Date(utilDate.getTime());
+            } catch (ParseException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid date format. Use YYYY-MM-DD"));
+            }
+
+            String sql = "INSERT INTO investment (user_id, title, amount, date) VALUES (?, ?, ?, ?)";
+            
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            Double finalAmount = amount;
+            int rowsAffected = jdbcTemplate.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                ps.setInt(1, userId);
+                ps.setString(2, category);
+                ps.setDouble(3, finalAmount);
+                ps.setDate(4, sqlDate);
+                return ps;
+            }, keyHolder);
+
+            if (rowsAffected > 0) {
+                Number generatedId = keyHolder.getKey();
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Investment added successfully",
+                        "investmentId", generatedId != null ? generatedId.intValue() : null
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Failed to add investment"));
+            }
+
+        } catch (Exception e) {
+            logger.error("Error adding investment: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to add investment: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/user/edit-investment")
+    public ResponseEntity<Map<String, Object>> editInvestment(@RequestBody Map<String, Object> investmentData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/edit-investment");
+                return ResponseEntity.badRequest().body(Map.of("error", "User not authenticated"));
+            }
+
+            // Extract investment data
+            Integer investmentId = null;
+            Object idObj = investmentData.get("id");
+            if (idObj instanceof Number) {
+                investmentId = ((Number) idObj).intValue();
+            } else if (idObj instanceof String) {
+                try {
+                    investmentId = Integer.parseInt((String) idObj);
+                } catch (NumberFormatException e) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Invalid investment ID"));
+                }
+            }
+
+            String category = (String) investmentData.get("category");
+            Double amount = null;
+            
+            // Handle amount conversion
+            Object amountObj = investmentData.get("amount");
+            if (amountObj instanceof Number) {
+                amount = ((Number) amountObj).doubleValue();
+            } else if (amountObj instanceof String) {
+                try {
+                    amount = Double.parseDouble((String) amountObj);
+                } catch (NumberFormatException e) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Invalid amount format"));
+                }
+            }
+
+            String dateStr = (String) investmentData.get("date");
+
+            // Validate required fields
+            if (investmentId == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Investment ID is required"));
+            }
+            if (category == null || category.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Category is required"));
+            }
+            if (amount == null || amount <= 0) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Valid amount is required"));
+            }
+            if (dateStr == null || dateStr.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Date is required"));
+            }
+
+            // Parse date
+            java.sql.Date sqlDate;
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date utilDate = sdf.parse(dateStr);
+                sqlDate = new java.sql.Date(utilDate.getTime());
+            } catch (ParseException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Invalid date format. Use YYYY-MM-DD"));
+            }
+
+            // Verify investment belongs to user
+            String checkSql = "SELECT COUNT(*) FROM investment WHERE id = ? AND user_id = ?";
+            int count = jdbcTemplate.queryForObject(checkSql, Integer.class, investmentId, userId);
+            
+            if (count == 0) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Investment not found or access denied"));
+            }
+
+            String sql = "UPDATE investment SET title = ?, amount = ?, date = ? WHERE id = ? AND user_id = ?";
+            int rowsUpdated = jdbcTemplate.update(sql, category, amount, sqlDate, investmentId, userId);
+
+            if (rowsUpdated > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Investment updated successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Failed to update investment"));
+            }
+
+        } catch (Exception e) {
+            logger.error("Error updating investment: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to update investment: " + e.getMessage()));
+        }
+    }
+
+    @PostMapping("/user/delete-investment")
+    public ResponseEntity<Map<String, Object>> deleteInvestment(@RequestBody Map<String, Object> requestData) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/delete-investment");
+                return ResponseEntity.badRequest().body(Map.of("error", "User not authenticated"));
+            }
+
+            // Extract investment ID
+            Integer investmentId = null;
+            Object idObj = requestData.get("id");
+            if (idObj instanceof Number) {
+                investmentId = ((Number) idObj).intValue();
+            } else if (idObj instanceof String) {
+                try {
+                    investmentId = Integer.parseInt((String) idObj);
+                } catch (NumberFormatException e) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "Invalid investment ID"));
+                }
+            }
+
+            if (investmentId == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Investment ID is required"));
+            }
+
+            // Verify investment belongs to user before deletion
+            String checkSql = "SELECT COUNT(*) FROM investment WHERE id = ? AND user_id = ?";
+            int count = jdbcTemplate.queryForObject(checkSql, Integer.class, investmentId, userId);
+            
+            if (count == 0) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Investment not found or access denied"));
+            }
+
+            String sql = "DELETE FROM investment WHERE id = ? AND user_id = ?";
+            int rowsDeleted = jdbcTemplate.update(sql, investmentId, userId);
+
+            if (rowsDeleted > 0) {
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "message", "Investment deleted successfully"
+                ));
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Failed to delete investment"));
+            }
+
+        } catch (Exception e) {
+            logger.error("Error deleting investment: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to delete investment: " + e.getMessage()));
+        }
+    }
+
     @GetMapping("/user/income")
     @CrossOrigin(origins = "*")
     public List<Map<String, Object>> getUserExpenseList() {
