@@ -3,7 +3,7 @@
   max-width: 1200px;
   width: 95%;
   margin: 20px auto;
-  background: rgba(191, 191, 191, 0.414);
+  background: rgba(45, 74, 163, 0.162);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
@@ -42,7 +42,7 @@
   border: 2px solid rgba(40, 63, 195, 0.444);
   border-radius: 12px;
   font-size: 1.1rem;
-  background: rgba(119, 161, 238, 0.215);
+  background: rgba(255, 255, 255, 0.215);
   color: rgb(39, 38, 38);
   transition: all 0.3s ease;
 }
@@ -99,7 +99,7 @@
   height: 100%;
   flex: 1;
   overflow-y: auto;
-  background: rgba(255, 129, 129, 0.093);
+  background: rgba(229, 231, 234, 0.569);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 20px;
