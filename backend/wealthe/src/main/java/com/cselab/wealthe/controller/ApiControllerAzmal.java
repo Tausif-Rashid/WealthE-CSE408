@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -1251,6 +1252,41 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/flat")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getFlat(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "SELECT * FROM asset_flat WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> flat = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+            response.put("data", flat);
+            response.put("message", "Flat retrieved successfully");
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to retrieve flat: " + e.getMessage());
+            return response;
+        }
+    }
+
     @PostMapping("/user/delete-bank-account")
     @CrossOrigin(origins = "*")
     public Map<String, Object> deleteBankAccount(@RequestBody Map<String, Object> request) {
@@ -1687,6 +1723,242 @@ public class ApiControllerAzmal {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "Failed to update car: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/add-flat")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> addFlat(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract data from request with proper type handling
+            Object titleObj = request.get("title");
+            Object descriptionObj = request.get("description");
+            Object costObj = request.get("cost");
+            Object dateObj = request.get("date");
+            Object locationObj = request.get("location");
+            Object acquisitionObj = request.get("acquisition");
+
+            // Convert to appropriate types
+            String title = titleObj != null ? titleObj.toString() : null;
+            String description = descriptionObj != null ? descriptionObj.toString() : null;
+            String location = locationObj != null ? locationObj.toString() : null;
+            String date = dateObj != null ? dateObj.toString() : null;
+            String acquisition = acquisitionObj != null ? acquisitionObj.toString() : null;
+
+            LocalDate purchaseDate = null;
+
+            if (date != null){
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                purchaseDate = LocalDate.parse(date, formatter);
+            }
+
+            // Validate required fields
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (location == null || location.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Location is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query
+            String sql = "INSERT INTO asset_flat(user_id, title, description, cost, date, location, acquisition) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            // Execute the insert
+            int rowsAffected = jdbcTemplate.update(sql, userId, title, description, cost, purchaseDate, location, acquisition);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Flat added successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to add flat");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid cost format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to add flat: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/edit-flat")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> editFlat(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            // Extract data from request with proper type handling
+            Object titleObj = request.get("title");
+            Object descriptionObj = request.get("description");
+            Object costObj = request.get("cost");
+            Object dateObj = request.get("date");
+            Object locationObj = request.get("location");
+            Object acquisitionObj = request.get("acquisition");
+
+            // Convert to appropriate types
+            String title = titleObj != null ? titleObj.toString() : null;
+            String description = descriptionObj != null ? descriptionObj.toString() : null;
+            String location = locationObj != null ? locationObj.toString() : null;
+            String date = dateObj != null ? dateObj.toString() : null;
+            String acquisition = acquisitionObj != null ? acquisitionObj.toString() : null;
+
+            LocalDate purchaseDate = null;
+
+            if (date != null && !date.trim().isEmpty()) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                purchaseDate = LocalDate.parse(date, formatter);
+            }
+
+            // Validate required fields
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "Flat ID is required");
+                return response;
+            }
+
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (location == null || location.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Location is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Update only records belonging to the authenticated user
+            String sql = "UPDATE asset_flat SET title = ?, description = ?, cost = ?, date = ?, location = ?, acquisition = ? WHERE id = ? AND user_id = ?";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, title, description, cost, purchaseDate, location, acquisition, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Flat updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Flat not found or you don't have permission to edit it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format: " + e.getMessage());
+            return response;
+        } catch (DateTimeParseException e) {
+            response.put("success", false);
+            response.put("message", "Invalid date format. Please use yyyy-MM-dd format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update flat: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/delete-flat")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deleteFlat(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "DELETE FROM asset_flat WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+//            response.put("data", bankAccount);
+            response.put("message", "Bank account deleted successfully");
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete flat: " + e.getMessage());
             return response;
         }
     }
