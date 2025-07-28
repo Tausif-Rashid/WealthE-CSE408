@@ -99,6 +99,11 @@ public class AuthController {
                     " \tVALUES (?,?,'0', '0', '2002-1-1', null, null)";
             jdbcTemplate.update(userInfoSql,userId, name);
 
+            String taxSql = "INSERT INTO public.user_tax_info(\n" +
+                    "\tid, tin, is_resident, is_ff, is_female, is_disabled, tax_zone, tax_circle, area_name)\n" +
+                    "\tVALUES (?, 0, false, false, false, false, 0, 0, 0);";
+            jdbcTemplate.update(taxSql,userId);
+
             //String roleAssign = "user";
 //            String credSQL = """
 //                    \tINSERT INTO public.credentials(

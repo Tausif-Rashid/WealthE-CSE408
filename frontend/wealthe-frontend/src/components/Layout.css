@@ -11,6 +11,7 @@
   /* background: linear-gradient(135deg, #9da8b6 0%, #bfd8ff 40%, #93c5fd 70%, #9eb8df 100%); */
   background: linear-gradient(135deg, #ffffff 0%, #78b9ff 50%, #fcecec 100%);
   min-height: 100vh;
+  box-shadow: inset 10px 0 10px -5px rgba(0, 0, 0, 0.3); /* Inner shadow on left */
   box-sizing: border-box;
 }
 

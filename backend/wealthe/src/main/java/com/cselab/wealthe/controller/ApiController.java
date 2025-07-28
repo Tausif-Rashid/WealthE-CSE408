@@ -1,6 +1,7 @@
 package com.cselab.wealthe.controller;
 
 import com.cselab.wealthe.util.JwtUtil;
+import com.cselab.wealthe.service.PdfService;
 
 // For EmptyResultDataAccessException
 import org.springframework.context.annotation.Bean;
@@ -20,10 +21,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import java.util.HashMap;
 
 import java.util.List;
 import java.util.Map;
+import java.io.File;
 
 @RestController
 public class ApiController {
@@ -37,6 +43,9 @@ public class ApiController {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PdfService pdfService;
 
     @Autowired
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
@@ -83,6 +92,26 @@ public class ApiController {
         if (id != 0) {
             try{
                 sql = "SELECT * FROM expense WHERE user_id=? ORDER BY date DESC";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/user/investment")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserInvestmentList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try{
+                sql = "SELECT * FROM investment WHERE user_id=? ORDER BY date DESC";
                 return jdbcTemplate.queryForList(sql, id);
             } catch (Exception e) {
                 System.out.println(e);
@@ -351,8 +380,65 @@ public class ApiController {
             System.out.println("Error occured: " + e);
             return null;
         }
+    }
 
+    @GetMapping("/user/generate-pdf")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> generateUserInfoPdf() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            String filePath = pdfService.generateUserInfoPdf();
+            
+            response.put("success", true);
+            response.put("message", "PDF generated successfully");
+            response.put("filePath", filePath);
+            response.put("fileName", filePath.substring(filePath.lastIndexOf(System.getProperty("file.separator")) + 1));
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error generating PDF: {}", e.getMessage());
+            response.put("success", false);
+            response.put("message", "Failed to generate PDF: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
+    @GetMapping("/user/download-pdf/{fileName}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Resource> downloadPdf(@PathVariable String fileName) {
+        try {
+            // Security check: ensure the user can only access their own files
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+            
+            // Validate filename contains user ID for security
+            if (!fileName.contains("user_info_" + userId + "_")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            
+            File file = new File("generated_pdfs" + System.getProperty("file.separator") + fileName);
+            
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            Resource resource = new FileSystemResource(file);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+            headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(file.length())
+                    .body(resource);
+                    
+        } catch (Exception e) {
+            logger.error("Error downloading PDF: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }

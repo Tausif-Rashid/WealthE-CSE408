@@ -13,6 +13,7 @@ const Sidebar = () => {
       { path: '/dashboard', icon: '🏠', label: 'Dashboard' },
       { path: '/expenses', icon: '💸', label: 'Expenses' },
       { path: '/income', icon: '💰', label: 'Income' },
+      { path: '/investment', icon: '📈', label: 'Investment' },
       { path: '/tax-estimation', icon: '📊', label: 'Tax Estimation' },
       { path: '/assets', icon: '🏦', label: 'Assets'},
       { path: '/chatbot', icon: '💬', label: 'Ask question' },

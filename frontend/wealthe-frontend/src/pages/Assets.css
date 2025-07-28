@@ -2,7 +2,7 @@
 .assets-container {
   padding: 30px;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  /* background-color: #f8f9fa; */
 }
 
 .assets-header {
@@ -76,7 +76,7 @@
 
 /* Asset Section */
 .asset-section {
-  background: white;
+  background: rgba(255, 255, 255, 0.427);
   border-radius: 15px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 30px;

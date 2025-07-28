@@ -18,7 +18,7 @@ const UpdateProfile = () => {
     dob: userInfo.dob ? userInfo.dob.substring(0, 10) : '',
     spouse_name: userInfo.spouse_name || '',
     spouse_tin: userInfo.spouse_tin || '',
-    tin: taxInfo.tin || '',
+    tin: taxInfo?.tin || '',
     area_name: taxInfo.area_name || '',
     tax_zone: taxInfo.tax_zone || '',
     tax_circle: taxInfo.tax_circle || '',

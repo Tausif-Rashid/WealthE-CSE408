@@ -103,7 +103,7 @@ const TaxEstimation = () => {
                 placeholder="Enter bonus amount"
                 min="0"
                 step="0.01"
-                className="form-input"
+                className="form-input-est"
               />
             </div>
 
@@ -118,7 +118,7 @@ const TaxEstimation = () => {
                 placeholder="Enter number of bonus payments"
                 min="0"
                 step="1"
-                className="form-input"
+                className="form-input-est"
               />
             </div>
 
@@ -133,7 +133,7 @@ const TaxEstimation = () => {
                 placeholder="Enter expected non-recurring income"
                 min="0"
                 step="0.01"
-                className="form-input"
+                className="form-input-est"
               />
             </div>
 
@@ -148,7 +148,7 @@ const TaxEstimation = () => {
                 placeholder="Enter additional investment amount"
                 min="0"
                 step="0.01"
-                className="form-input"
+                className="form-input-est"
               />
             </div>
 
