@@ -137,6 +137,61 @@ const AppRoutes = () => {
       />
 
       <Route 
+        path="/add-asset-bank-account" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddAssetBankAccount />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-asset-car" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddAssetCar />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="//add-asset-flat" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddAssetFlat />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="//add-asset-plot" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddAssetPlot />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="//add-asset-jewellery" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddAssetJewellery />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
         path="/edit-expense" 
         element={
           <ProtectedRoute>
