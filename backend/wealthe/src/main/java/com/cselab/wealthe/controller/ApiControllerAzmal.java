@@ -4,6 +4,7 @@ import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -1173,6 +1174,45 @@ public class ApiControllerAzmal {
             }
         } else {
             return null;
+        }
+    }
+
+    @PostMapping("/user/bank-account")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getBankAccount(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "SELECT * FROM asset_bank_account WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+            response.put("data", bankAccount);
+            response.put("message", "Bank account retrieved successfully");
+
+            return response;
+
+        } catch (EmptyResultDataAccessException e) {
+            response.put("success", false);
+            response.put("message", "No bank account found with ID: " + request.get("id"));
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to retrieve bank account: " + e.getMessage());
+            return response;
         }
     }
 

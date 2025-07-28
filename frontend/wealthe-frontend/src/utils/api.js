@@ -490,6 +490,16 @@ export const getBankAccounts = async () => {
   });
 };
 
+export const getBankAccount = async (bankAccountId) => {
+  return apiCall('/user/bank-account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: bankAccountId }),
+  });
+};
+
 export const addBankAccount = async (bankAccountData) => {
   return apiCall('/user/add-bank-account', {
     method: 'POST',

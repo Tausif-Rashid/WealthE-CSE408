@@ -30,7 +30,9 @@ const EditAssetBankAccount = () => {
 
     const fetchAsset = async () => {
       try {
-        const asset = await getBankAccount(assetId);
+        const bankAccount = await getBankAccount(assetId);
+        const asset = bankAccount.data
+        console.log (asset);
         setFormData({
           title: asset.title || '',
           account: asset.account || '',
