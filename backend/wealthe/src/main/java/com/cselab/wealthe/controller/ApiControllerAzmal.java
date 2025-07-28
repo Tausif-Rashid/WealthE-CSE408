@@ -1287,9 +1287,9 @@ public class ApiControllerAzmal {
         }
     }
 
-    @PostMapping("/user/delete-bank-account")
+    @PostMapping("/user/jewellery-item")
     @CrossOrigin(origins = "*")
-    public Map<String, Object> deleteBankAccount(@RequestBody Map<String, Object> request) {
+    public Map<String, Object> getJewellery(@RequestBody Map<String, Object> request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         Map<String, Object> response = new HashMap<>();
 
@@ -1302,14 +1302,14 @@ public class ApiControllerAzmal {
                 return response;
             }
 
-            String sql = "DELETE FROM asset_bank_account WHERE id = ?";
+            String sql = "SELECT * FROM asset_jewelery WHERE id = ?";
 
             // Execute query and get result
-            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+            Map<String, Object> car = jdbcTemplate.queryForMap(sql, id);
 
             response.put("success", true);
-//            response.put("data", bankAccount);
-            response.put("message", "Bank account deleted successfully");
+            response.put("data", car);
+            response.put("message", "jewellery item retrieved successfully");
 
             return response;
 
@@ -1317,7 +1317,67 @@ public class ApiControllerAzmal {
             System.out.println("Error occurred: " + e);
             e.printStackTrace();
             response.put("success", false);
-            response.put("message", "Failed to delete bank account: " + e.getMessage());
+            response.put("message", "Failed to retrieve jewellery: " + e.getMessage());
+            return response;
+        }
+    }
+
+
+    @PostMapping("/user/delete-bank-account")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deleteBankAccount(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", " ID is required");
+                return response;
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Delete only records belonging to the authenticated user
+            String sql = "DELETE FROM asset_bank_account WHERE id = ? AND user_id = ?";
+
+            // Execute the delete
+            int rowsAffected = jdbcTemplate.update(sql, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Asset deleted successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Asset not found or you don't have permission to delete it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid ID format: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete Asset: " + e.getMessage());
             return response;
         }
     }
@@ -1329,34 +1389,57 @@ public class ApiControllerAzmal {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            Integer id = (Integer) request.get("id");
-
-            if (id == null) {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
                 response.put("success", false);
-                response.put("message", "ID is required");
+                response.put("message", "Invalid ID format");
                 return response;
             }
 
-            String sql = "DELETE FROM asset_car WHERE id = ?";
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", " ID is required");
+                return response;
+            }
 
-            // Execute query and get result
-            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
 
-            response.put("success", true);
-//            response.put("data", bankAccount);
-            response.put("message", "Bank account deleted successfully");
+            // SQL query - Delete only records belonging to the authenticated user
+            String sql = "DELETE FROM asset_car WHERE id = ? AND user_id = ?";
+
+            // Execute the delete
+            int rowsAffected = jdbcTemplate.update(sql, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Asset deleted successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Asset not found or you don't have permission to delete it");
+            }
 
             return response;
 
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid ID format: " + e.getMessage());
+            return response;
         } catch (Exception e) {
             System.out.println("Error occurred: " + e);
             e.printStackTrace();
             response.put("success", false);
-            response.put("message", "Failed to delete bank account: " + e.getMessage());
+            response.put("message", "Failed to delete Asset: " + e.getMessage());
             return response;
         }
     }
-
     @PostMapping("/user/add-bank-account")
     @CrossOrigin(origins = "*")
     public Map<String, Object> addBankAccount(@RequestBody Map<String, Object> request) {
@@ -1751,9 +1834,15 @@ public class ApiControllerAzmal {
 
             LocalDate purchaseDate = null;
 
-            if (date != null){
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                purchaseDate = LocalDate.parse(date, formatter);
+            if (date != null && !date.trim().isEmpty()) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    purchaseDate = LocalDate.parse(date, formatter);
+                } catch (DateTimeParseException e) {
+                    response.put("success", false);
+                    response.put("message", "Invalid date format. Please use yyyy-MM-dd format");
+                    return response;
+                }
             }
 
             // Validate required fields
@@ -1935,30 +2024,365 @@ public class ApiControllerAzmal {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            Integer id = (Integer) request.get("id");
-
-            if (id == null) {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
                 response.put("success", false);
-                response.put("message", "ID is required");
+                response.put("message", "Invalid ID format");
                 return response;
             }
 
-            String sql = "DELETE FROM asset_flat WHERE id = ?";
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", " ID is required");
+                return response;
+            }
 
-            // Execute query and get result
-            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
 
-            response.put("success", true);
-//            response.put("data", bankAccount);
-            response.put("message", "Bank account deleted successfully");
+            // SQL query - Delete only records belonging to the authenticated user
+            String sql = "DELETE FROM asset_flat WHERE id = ? AND user_id = ?";
+
+            // Execute the delete
+            int rowsAffected = jdbcTemplate.update(sql, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Asset deleted successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Asset not found or you don't have permission to delete it");
+            }
 
             return response;
 
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid ID format: " + e.getMessage());
+            return response;
         } catch (Exception e) {
             System.out.println("Error occurred: " + e);
             e.printStackTrace();
             response.put("success", false);
-            response.put("message", "Failed to delete flat: " + e.getMessage());
+            response.put("message", "Failed to delete Asset: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/add-jewellery")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> addJewellery(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract data from request with proper type handling
+            Object titleObj = request.get("title");
+            Object descriptionObj = request.get("description");
+            Object costObj = request.get("cost");
+            Object acquisitionObj = request.get("acquisition");
+            Object weightObj = request.get("weight");
+
+            // Convert to appropriate types
+            String title = titleObj != null ? titleObj.toString() : null;
+            String description = descriptionObj != null ? descriptionObj.toString() : null;
+            String acquisition = acquisitionObj != null ? acquisitionObj.toString() : null;
+
+            // Validate required fields
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (weightObj == null) {
+                response.put("success", false);
+                response.put("message", "Weight is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Convert weight to appropriate type
+            Double weight;
+            if (weightObj instanceof Number) {
+                weight = ((Number) weightObj).doubleValue();
+            } else {
+                weight = Double.parseDouble(weightObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query (note: table name is asset_jewelery as specified)
+            String sql = "INSERT INTO asset_jewelery(user_id, title, description, cost, acquisition, weight) VALUES (?, ?, ?, ?, ?, ?)";
+
+            // Execute the insert
+            int rowsAffected = jdbcTemplate.update(sql, userId, title, description, cost, acquisition, weight);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Jewellery added successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to add jewellery");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format for cost or weight: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to add jewellery: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/edit-jewellery")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> editJewellery(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            // Extract data from request with proper type handling
+            Object titleObj = request.get("title");
+            Object descriptionObj = request.get("description");
+            Object costObj = request.get("cost");
+            Object acquisitionObj = request.get("acquisition");
+            Object weightObj = request.get("weight");
+
+            // Convert to appropriate types
+            String title = titleObj != null ? titleObj.toString() : null;
+            String description = descriptionObj != null ? descriptionObj.toString() : null;
+            String acquisition = acquisitionObj != null ? acquisitionObj.toString() : null;
+
+            // Validate required fields
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "Jewellery ID is required");
+                return response;
+            }
+
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (weightObj == null) {
+                response.put("success", false);
+                response.put("message", "Weight is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Convert weight to appropriate type
+            Double weight;
+            if (weightObj instanceof Number) {
+                weight = ((Number) weightObj).doubleValue();
+            } else {
+                weight = Double.parseDouble(weightObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Update only records belonging to the authenticated user
+            String sql = "UPDATE asset_jewelery SET title = ?, description = ?, cost = ?, acquisition = ?, weight = ? WHERE id = ? AND user_id = ?";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, title, description, cost, acquisition, weight, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Jewellery updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Jewellery not found or you don't have permission to edit it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format for cost or weight: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update jewellery: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/delete-jewellery")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deleteJewellery(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "Jewellery ID is required");
+                return response;
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Delete only records belonging to the authenticated user
+            String sql = "DELETE FROM asset_jewelery WHERE id = ? AND user_id = ?";
+
+            // Execute the delete
+            int rowsAffected = jdbcTemplate.update(sql, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Jewellery deleted successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Jewellery not found or you don't have permission to delete it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid ID format: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete jewellery: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/delete-plot")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deletePlot(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", " ID is required");
+                return response;
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Delete only records belonging to the authenticated user
+            String sql = "DELETE FROM asset_plot WHERE id = ? AND user_id = ?";
+
+            // Execute the delete
+            int rowsAffected = jdbcTemplate.update(sql, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Asset deleted successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Asset not found or you don't have permission to delete it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid ID format: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete Asset: " + e.getMessage());
             return response;
         }
     }

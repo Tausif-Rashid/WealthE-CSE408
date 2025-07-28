@@ -129,6 +129,7 @@ const AddAssetJewellery = () => {
               value={formData.weight}
               onChange={handleInputChange}
               placeholder="Enter weight in grams"
+              required
               min="0"
               step="0.01"
               className="form-input"

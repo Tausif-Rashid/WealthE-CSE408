@@ -138,7 +138,7 @@ const AddAssetFlat = () => {
 
           {/* Date Input */}
           <div className="form-group">
-            <label htmlFor="date">Acquisition Date</label>
+            <label htmlFor="date">Acquisition Date </label>
             <input
               type="date"
               id="date"
