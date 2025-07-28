@@ -166,7 +166,7 @@ const Assets = () => {
                 <p className="asset-subtitle">{asset.model}</p>
                 <p className="asset-amount">{formatAmount(asset.cost)}</p>
                 <p className="asset-info">Reg: {asset.reg_number}</p>
-                <p className="asset-info">Engine: {asset.engine}</p>
+                <p className="asset-info">Engine: {asset.engine} cc</p>
               </React.Fragment>
             )}
             {assetType === 'flat' && (

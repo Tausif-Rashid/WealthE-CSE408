@@ -169,7 +169,7 @@ const EditAssetCar = () => {
 
           {/* Engine Input */}
           <div className="form-group">
-            <label htmlFor="engine">Engine size (in cc)</label>
+            <label htmlFor="engine">Engine size (in cc)*</label>
             <input
               type="text"
               id="engine"
@@ -178,6 +178,7 @@ const EditAssetCar = () => {
               onChange={handleInputChange}
               placeholder="Enter engine details"
               className="form-input"
+              required
             />
           </div>
 

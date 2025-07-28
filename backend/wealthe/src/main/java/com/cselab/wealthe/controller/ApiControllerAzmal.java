@@ -1642,11 +1642,7 @@ public class ApiControllerAzmal {
                 return response;
             }
 
-            if (acquisition == null || acquisition.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Acquisition is required");
-                return response;
-            }
+            
 
             if (regNumber == null || regNumber.trim().isEmpty()) {
                 response.put("success", false);
