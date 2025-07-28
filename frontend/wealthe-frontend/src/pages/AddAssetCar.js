@@ -123,7 +123,7 @@ const AddAssetCar = () => {
 
           {/* Engine Input */}
           <div className="form-group">
-            <label htmlFor="engine">Engine</label>
+            <label htmlFor="engine">Engine size (in cc)</label>
             <input
               type="text"
               id="engine"

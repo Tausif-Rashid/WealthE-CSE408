@@ -1251,6 +1251,41 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/delete-car")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deleteCar(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "DELETE FROM asset_car WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+//            response.put("data", bankAccount);
+            response.put("message", "Bank account deleted successfully");
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete bank account: " + e.getMessage());
+            return response;
+        }
+    }
+
     @PostMapping("/user/add-bank-account")
     @CrossOrigin(origins = "*")
     public Map<String, Object> addBankAccount(@RequestBody Map<String, Object> request) {
@@ -1412,6 +1447,199 @@ public class ApiControllerAzmal {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "Failed to update bank account: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/add-car")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> addCar(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        System.out.println("Entered Add car...");
+
+        try {
+            // Extract data from request
+            String model = request.get("model").toString();
+            String engine = (String) request.get("engine");
+            String description = (String) request.get("description");
+            String title = (String) request.get("title");
+            Object costObj = request.get("cost");
+            String acquisition = (String) request.get("acquisition");
+            String regNumber = (String) request.get("reg_number");
+
+
+
+            if (engine == null || engine.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Engine is required");
+                return response;
+            }
+
+            Double eng = Double.parseDouble(engine);
+
+
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+
+
+            if (regNumber == null || regNumber.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Registration number is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query
+            String sql = "INSERT INTO asset_car(user_id, model, engine, description, title, cost, acquisition, reg_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+            // Execute the insert
+            int rowsAffected = jdbcTemplate.update(sql, userId, model, eng, description, title, cost, acquisition, regNumber);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Car added successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to add car");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid cost format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to add car: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/edit-car")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> editCar(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract data from request
+            Integer id = (Integer) request.get("id");
+            String model = (String) request.get("model");
+            String eng = (String) request.get("engine");
+            String description = (String) request.get("description");
+            String title = (String) request.get("title");
+            Object costObj = request.get("cost");
+            String acquisition = (String) request.get("acquisition");
+            String regNumber = (String) request.get("reg_number");
+
+            // Validate required fields
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "Car ID is required");
+                return response;
+            }
+
+            if (model == null || model.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Model is required");
+                return response;
+            }
+
+            if (eng == null || eng.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Engine is required");
+                return response;
+            }
+
+            double engine = Double.parseDouble(eng);
+
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (acquisition == null || acquisition.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Acquisition is required");
+                return response;
+            }
+
+            if (regNumber == null || regNumber.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Registration number is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Update only records belonging to the authenticated user
+            String sql = "UPDATE asset_car SET `model` = ?, `engine` = ?, `description` = ?, `title` = ?, `cost` = ?, `acquisition` = ?, `reg_number` = ? WHERE `id` = ? AND `user_id` = ?";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, model, engine, description, title, cost, acquisition, regNumber, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Car updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Car not found or you don't have permission to edit it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid cost format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update car: " + e.getMessage());
             return response;
         }
     }
