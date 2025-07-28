@@ -16,6 +16,7 @@ const Sidebar = () => {
       { path: '/investment', icon: '📈', label: 'Investment' },
       { path: '/tax-estimation', icon: '📊', label: 'Tax Estimation' },
       { path: '/assets', icon: '🏦', label: 'Assets'},
+      { path: '/liabilities', icon: '💳', label: 'Liabilities' },
       { path: '/chatbot', icon: '💬', label: 'Ask question' },
     ];
   };

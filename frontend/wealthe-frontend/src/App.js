@@ -26,11 +26,16 @@ import UpdateProfile from './pages/UpdateProfile';
 import ChangePassword from './pages/ChangePassword';
 import ChatBot from './pages/ChatBot';
 import Assets from './pages/Assets';
+import Liabilities from './pages/Liabilities';
 import AddAssetBankAccount from './pages/AddAssetBankAccount';
 import AddAssetCar from './pages/AddAssetCar';
 import AddAssetFlat from './pages/AddAssetFlat';
 import AddAssetJewellery from './pages/AddAssetJewellery';
 import AddAssetPlot from './pages/AddAssetPlot';
+import AddBankLoan from './pages/AddBankLoan';
+import AddPersonLoan from './pages/AddPersonLoan';
+import EditBankLoan from './pages/EditBankLoan';
+import EditPersonLoan from './pages/EditPersonLoan';
 import './App.css';
 import { getAuthRole } from './utils/auth';
 
@@ -239,6 +244,17 @@ const AppRoutes = () => {
       />
 
       <Route 
+        path="/liabilities" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <Liabilities />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
         path="/update-profile" 
         element={ 
           <ProtectedRoute>
@@ -266,6 +282,50 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <ChatBot />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-bank-loan" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddBankLoan />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/add-person-loan" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AddPersonLoan />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-bank-loan" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditBankLoan />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-person-loan" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditPersonLoan />
             </Layout>
           </ProtectedRoute>
         } 
