@@ -2,7 +2,7 @@ name: Test Suite
 
 on:
   push:
-    branches: [ tausif ]
+    # branches: [ tausif ]
   pull_request:
     branches: [ tausif ]
 
