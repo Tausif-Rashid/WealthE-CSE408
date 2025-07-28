@@ -1330,6 +1330,92 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/edit-bank-account")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> editBankAccount(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract data from request
+            Integer id = (Integer) request.get("id");
+            String account = (String) request.get("account");
+            Object amountObj = request.get("amount");
+            String bankName = (String) request.get("bank_name");
+            String title = (String) request.get("title");
+
+            // Validate required fields
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "Bank account ID is required");
+                return response;
+            }
+
+            if (account == null || account.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Account number is required");
+                return response;
+            }
+
+            if (amountObj == null) {
+                response.put("success", false);
+                response.put("message", "Amount is required");
+                return response;
+            }
+
+            if (bankName == null || bankName.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Bank name is required");
+                return response;
+            }
+
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            // Convert amount to appropriate type
+            Double amount;
+            if (amountObj instanceof Number) {
+                amount = ((Number) amountObj).doubleValue();
+            } else {
+                amount = Double.parseDouble(amountObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Update only records belonging to the authenticated user
+            String sql = "UPDATE asset_bank_account SET account = ?, amount = ?, bank_name = ?, title = ? WHERE id = ? AND user_id = ?";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, account, amount, bankName, title, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Bank account updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Bank account not found or you don't have permission to edit it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid amount format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update bank account: " + e.getMessage());
+            return response;
+        }
+    }
+
 
 
 }
