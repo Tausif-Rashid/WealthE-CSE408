@@ -1251,6 +1251,85 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/add-bank-account")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> addBankAccount(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract data from request
+            String account = (String) request.get("account");
+            Object amountObj = request.get("amount");
+            String bankName = (String) request.get("bank_name");
+            String title = (String) request.get("title");
+
+            // Validate required fields
+            if (account == null || account.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Account number is required");
+                return response;
+            }
+
+            if (amountObj == null) {
+                response.put("success", false);
+                response.put("message", "Amount is required");
+                return response;
+            }
+
+            if (bankName == null || bankName.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Bank name is required");
+                return response;
+            }
+
+            if (title == null || title.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Title is required");
+                return response;
+            }
+
+            // Convert amount to appropriate type (assuming it's a decimal/double)
+            Double amount;
+            if (amountObj instanceof Number) {
+                amount = ((Number) amountObj).doubleValue();
+            } else {
+                amount = Double.parseDouble(amountObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query
+            String sql = "INSERT INTO asset_bank_account(user_id, account, amount, bank_name, title) VALUES (?, ?, ?, ?, ?)";
+
+            // Execute the insert
+            int rowsAffected = jdbcTemplate.update(sql, userId, account, amount, bankName, title);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Bank account added successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to add bank account");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid amount format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to add bank account: " + e.getMessage());
+            return response;
+        }
+    }
+
 
 
 }
