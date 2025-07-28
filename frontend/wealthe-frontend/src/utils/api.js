@@ -548,6 +548,16 @@ export const getCars = async () => {
   });
 };
 
+export const getCar = async (carId) => {
+  return apiCall('/user/car', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: carId }),
+  });
+};
+
 export const addCar = async (carData) => {
   return apiCall('/user/add-car', {
     method: 'POST',
@@ -599,6 +609,16 @@ export const deleteCar = async (carId) => {
 export const getFlats = async () => {
   return apiCall('/user/flats', {
     method: 'GET',
+  });
+};
+
+export const getFlat = async (flatId) => {
+  return apiCall('/user/flat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: flatId }),
   });
 };
 
@@ -654,6 +674,16 @@ export const getJewellery = async () => {
   });
 };
 
+export const getJewelleryItem = async (jewelleryId) => {
+  return apiCall('/user/jewellery-item', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: jewelleryId }),
+  });
+};
+
 export const addJewellery = async (jewelleryData) => {
   return apiCall('/user/add-jewellery', {
     method: 'POST',
@@ -701,6 +731,16 @@ export const deleteJewellery = async (jewelleryId) => {
 export const getPlots = async () => {
   return apiCall('/user/plots', {
     method: 'GET',
+  });
+};
+
+export const getPlot = async (plotId) => {
+  return apiCall('/user/plot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: plotId }),
   });
 };
 

@@ -29,6 +29,11 @@ import AddAssetFlat from './pages/AddAssetFlat';
 import AddAssetJewellery from './pages/AddAssetJewellery';
 import AddAssetPlot from './pages/AddAssetPlot';
 import EditAssetBankAccount from './pages/EditAssetBankAccount';
+import EditAssetCar from './pages/EditAssetCar';
+import EditAssetFlat from './pages/EditAssetFlat';
+import EditAssetPlot from './pages/EditAssetPlot';
+import EditAssetJewellery from './pages/EditAssetJewellery';
+
 
 import './App.css';
 import { getAuthRole } from './utils/auth';
@@ -161,7 +166,7 @@ const AppRoutes = () => {
       />
 
       <Route 
-        path="//add-asset-flat" 
+        path="/add-asset-flat" 
         element={
           <ProtectedRoute>
             <Layout>
@@ -172,7 +177,7 @@ const AppRoutes = () => {
       />
 
       <Route 
-        path="//add-asset-plot" 
+        path="/add-asset-plot" 
         element={
           <ProtectedRoute>
             <Layout>
@@ -183,7 +188,7 @@ const AppRoutes = () => {
       />
 
       <Route 
-        path="//add-asset-jewellery" 
+        path="/add-asset-jewellery" 
         element={
           <ProtectedRoute>
             <Layout>
@@ -206,6 +211,61 @@ const AppRoutes = () => {
 
       <Route 
         path="/edit-asset-bank-account" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditAssetBankAccount />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-asset-car" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditAssetCar />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-asset-flat" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditAssetFlat />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-asset-plot" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditAssetPlot />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-asset-jewellery" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <EditAssetJewellery />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/edit-asset-car" 
         element={
           <ProtectedRoute>
             <Layout>

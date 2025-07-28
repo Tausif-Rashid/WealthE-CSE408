@@ -1216,6 +1216,41 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/car")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getCar(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "SELECT * FROM asset_car WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> car = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+            response.put("data", car);
+            response.put("message", "car retrieved successfully");
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to retrieve car: " + e.getMessage());
+            return response;
+        }
+    }
+
     @PostMapping("/user/delete-bank-account")
     @CrossOrigin(origins = "*")
     public Map<String, Object> deleteBankAccount(@RequestBody Map<String, Object> request) {
@@ -1549,9 +1584,32 @@ public class ApiControllerAzmal {
 
         try {
             // Extract data from request
-            Integer id = (Integer) request.get("id");
+            // Extract data from request - Safer approach
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            Double engine;
+            Object engObj = request.get("engine");
+            if (engObj instanceof Number) {
+                engine = ((Number) engObj).doubleValue();
+            } else if (engObj instanceof String) {
+                engine = Double.parseDouble((String) engObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid engine format");
+                return response;
+            }
+
             String model = (String) request.get("model");
-            String eng = (String) request.get("engine");
             String description = (String) request.get("description");
             String title = (String) request.get("title");
             Object costObj = request.get("cost");
@@ -1571,13 +1629,6 @@ public class ApiControllerAzmal {
                 return response;
             }
 
-            if (eng == null || eng.trim().isEmpty()) {
-                response.put("success", false);
-                response.put("message", "Engine is required");
-                return response;
-            }
-
-            double engine = Double.parseDouble(eng);
 
             if (title == null || title.trim().isEmpty()) {
                 response.put("success", false);
@@ -1615,7 +1666,7 @@ public class ApiControllerAzmal {
             int userId = Integer.parseInt(auth.getName());
 
             // SQL query - Update only records belonging to the authenticated user
-            String sql = "UPDATE asset_car SET `model` = ?, `engine` = ?, `description` = ?, `title` = ?, `cost` = ?, `acquisition` = ?, `reg_number` = ? WHERE `id` = ? AND `user_id` = ?";
+            String sql = "UPDATE asset_car SET model = ?, engine = ?,description = ?, title = ?, cost = ?, acquisition = ?, reg_number = ? WHERE id = ? AND user_id = ?";
 
             // Execute the update
             int rowsAffected = jdbcTemplate.update(sql, model, engine, description, title, cost, acquisition, regNumber, id, userId);
