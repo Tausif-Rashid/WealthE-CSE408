@@ -2387,6 +2387,262 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/plot")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getPlot(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "SELECT * FROM asset_plot WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> car = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+            response.put("data", car);
+            response.put("message", "plot retrieved successfully");
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to retrieve plot: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/add-plot")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> addPlot(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract data from request with proper type handling
+            Object typeObj = request.get("type");
+            Object descriptionObj = request.get("description");
+            Object costObj = request.get("cost");
+            Object dateObj = request.get("date");
+            Object acquisitionObj = request.get("acquisition");
+            Object locationObj = request.get("location");
+
+            // Convert to appropriate types
+            String type = typeObj != null ? typeObj.toString() : null;
+            String description = descriptionObj != null ? descriptionObj.toString() : null;
+            String acquisition = acquisitionObj != null ? acquisitionObj.toString() : null;
+            String location = locationObj != null ? locationObj.toString() : null;
+            String date = dateObj != null ? dateObj.toString() : null;
+
+            LocalDate purchaseDate = null;
+
+            // Parse date if provided and not empty
+            if (date != null && !date.trim().isEmpty()) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    purchaseDate = LocalDate.parse(date, formatter);
+                } catch (DateTimeParseException e) {
+                    response.put("success", false);
+                    response.put("message", "Invalid date format. Please use yyyy-MM-dd format");
+                    return response;
+                }
+            }
+
+            // Validate required fields
+            if (type == null || type.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Type is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (location == null || location.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Location is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query
+            String sql = "INSERT INTO asset_plot(user_id, type, description, cost, date, acquisition, location) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            // Execute the insert
+            int rowsAffected = jdbcTemplate.update(sql, userId, type, description, cost, purchaseDate, acquisition, location);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Plot added successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Failed to add plot");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid cost format: " + e.getMessage());
+            return response;
+        } catch (DateTimeParseException e) {
+            response.put("success", false);
+            response.put("message", "Invalid date format. Please use yyyy-MM-dd format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to add plot: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/edit-plot")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> editPlot(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Extract and validate ID
+            Integer id;
+            Object idObj = request.get("id");
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else if (idObj instanceof String) {
+                id = Integer.parseInt((String) idObj);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid ID format");
+                return response;
+            }
+
+            // Extract data from request with proper type handling
+            Object typeObj = request.get("type");
+            Object descriptionObj = request.get("description");
+            Object costObj = request.get("cost");
+            Object dateObj = request.get("date");
+            Object acquisitionObj = request.get("acquisition");
+            Object locationObj = request.get("location");
+
+            // Convert to appropriate types
+            String type = typeObj != null ? typeObj.toString() : null;
+            String description = descriptionObj != null ? descriptionObj.toString() : null;
+            String acquisition = acquisitionObj != null ? acquisitionObj.toString() : null;
+            String location = locationObj != null ? locationObj.toString() : null;
+            String date = dateObj != null ? dateObj.toString() : null;
+
+            LocalDate purchaseDate = null;
+
+            // Parse date if provided and not empty
+            if (date != null && !date.trim().isEmpty()) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                    purchaseDate = LocalDate.parse(date, formatter);
+                } catch (DateTimeParseException e) {
+                    response.put("success", false);
+                    response.put("message", "Invalid date format. Please use yyyy-MM-dd format");
+                    return response;
+                }
+            }
+
+            // Validate required fields
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "Plot ID is required");
+                return response;
+            }
+
+            if (type == null || type.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Type is required");
+                return response;
+            }
+
+            if (costObj == null) {
+                response.put("success", false);
+                response.put("message", "Cost is required");
+                return response;
+            }
+
+            if (location == null || location.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Location is required");
+                return response;
+            }
+
+            // Convert cost to appropriate type
+            Double cost;
+            if (costObj instanceof Number) {
+                cost = ((Number) costObj).doubleValue();
+            } else {
+                cost = Double.parseDouble(costObj.toString());
+            }
+
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL query - Update only records belonging to the authenticated user
+            String sql = "UPDATE asset_plot SET type = ?, description = ?, cost = ?, date = ?, acquisition = ?, location = ? WHERE id = ? AND user_id = ?";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, type, description, cost, purchaseDate, acquisition, location, id, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Plot updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "Plot not found or you don't have permission to edit it");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format for cost: " + e.getMessage());
+            return response;
+        } catch (DateTimeParseException e) {
+            response.put("success", false);
+            response.put("message", "Invalid date format. Please use yyyy-MM-dd format");
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update plot: " + e.getMessage());
+            return response;
+        }
+    }
+
+
+
 
 
 }
