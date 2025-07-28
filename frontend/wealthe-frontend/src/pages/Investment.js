@@ -28,6 +28,8 @@ const Investment = () => {
         ]);
         setInvestments(investmentData || []);
         setInvestmentCategories(categoryData || []);
+        console.log(investmentData);
+        console.log(categoryData);
         setFilteredInvestments(investmentData || []);
       } catch (err) {
         setError('Failed to load investments');
@@ -46,9 +48,7 @@ const Investment = () => {
       setFilteredInvestments(investments);
     } else if (activeTab === 'categories' && selectedCategory) {
       const filtered = investments.filter(investment => 
-        investment.type === selectedCategory || 
-        investment.category === selectedCategory ||
-        investment.categoryName === selectedCategory
+        investment.title === selectedCategory 
       );
       setFilteredInvestments(filtered);
     } else {
@@ -68,7 +68,8 @@ const Investment = () => {
   };
 
   const handleEdit = (investmentId) => {
-    navigate(`/edit-investment/${investmentId}`);
+    console.log(investmentId);
+    navigate('/edit-investment', { state: { investmentId } });
   };
 
   const handleDelete = (investment) => {
@@ -124,12 +125,6 @@ const Investment = () => {
     <div className="investment-page">
       <div className="investment-header">
         <h1>My Investments</h1>
-        <button 
-          className="add-investment-btn"
-          onClick={() => navigate('/add-investment')}
-        >
-          + Add Investment
-        </button>
       </div>
 
       {error && <div className="error-message">{error}</div>}
@@ -156,10 +151,10 @@ const Investment = () => {
             {investmentCategories.map((category) => (
               <button
                 key={category.id || category.name}
-                className={`category-btn ${selectedCategory === (category.name || category.categoryName) ? 'active' : ''}`}
-                onClick={() => handleCategoryFilter(category.name || category.categoryName)}
+                className={`category-btn ${selectedCategory === (category.title) ? 'active' : ''}`}
+                onClick={() => handleCategoryFilter(category.title)}
               >
-                {category.name || category.categoryName}
+                {category.title}
               </button>
             ))}
           </div>
@@ -193,7 +188,7 @@ const Investment = () => {
                 <div className="investment-category">
                   <span className="category-label">Category:</span>
                   <span className="category-value">
-                    {investment.category || investment.categoryName || investment.type || 'N/A'}
+                    {investment.title || 'N/A'}
                   </span>
                 </div>
                 
@@ -250,13 +245,13 @@ const Investment = () => {
             )}
             <div className="delete-dialog-actions">
               <button 
-                className="cancel-btn"
+                className="cancel-btn-inv"
                 onClick={cancelDelete}
               >
                 Cancel
               </button>
               <button 
-                className="confirm-delete-btn"
+                className="confirm-delete-btn-inv"
                 onClick={confirmDelete}
               >
                 Delete

@@ -320,6 +320,7 @@
 .edit-btn,
 .delete-btn {
   padding: 8px 16px;
+  justify-content: center;
   border: none;
   border-radius: 12px;
   font-size: 0.9rem;

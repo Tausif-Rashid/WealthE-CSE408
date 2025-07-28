@@ -465,6 +465,30 @@ public class ApiControllerAzmal {
     }
 
     // Investment endpoints
+    @GetMapping("/user/get-investment-categories")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getInvestmentType() {
+        String sql;
+
+
+        try{
+            sql = "SELECT id, title, rate_rebate, \n" +
+                    "       min_amount::numeric(20,2) AS minimum, \n" +
+                    "       max_amount::numeric(20,2) AS maximum,\n" +
+                    "       description \n" +
+                    "FROM rule_investment_type ORDER BY id;\n";
+            //System.out.println("SQL successfully run");
+            List<Map<String, Object>> temp = jdbcTemplate.queryForList(sql);
+            //System.out.println(temp);
+            return temp;
+        }catch(Exception e){
+            System.out.println("Error occured: " + e);
+            return null;
+        }
+
+
+
+    }
     @PostMapping("/user/add-investment")
     public ResponseEntity<Map<String, Object>> addInvestment(@RequestBody Map<String, Object> investmentData) {
         try {
@@ -529,7 +553,10 @@ public class ApiControllerAzmal {
             }, keyHolder);
 
             if (rowsAffected > 0) {
-                Number generatedId = keyHolder.getKey();
+                Map<String, Object> keys = keyHolder.getKeys();
+                Number generatedId = null;
+                if(keys != null)
+                    generatedId = (Number) keys.get("id");
                 return ResponseEntity.ok(Map.of(
                         "success", true,
                         "message", "Investment added successfully",
@@ -1288,7 +1315,7 @@ public class ApiControllerAzmal {
         }
     }
 
-    @PostMapping("/user/tax-circle-by-zone")
+    @PostMapping("/user/tax-circles-by-zone")
     public List<Map<String, Object>> getTaxCircle(@RequestBody Map<String, Object> request) {
 
         int zone = request.get("tax_zone")!= null ? Integer.parseInt(request.get("tax_zone").toString()): null ;

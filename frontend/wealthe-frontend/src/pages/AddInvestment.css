@@ -1,7 +1,7 @@
 /* Add Investment Page Styles - WealthE Themed */
 .add-investment-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   background-attachment: fixed;
   padding: 40px 20px;
   display: flex;
@@ -189,8 +189,8 @@ select.form-input {
   border-top: 2px solid rgba(59, 130, 246, 0.1);
 }
 
-.cancel-btn,
-.submit-btn {
+.cancel-btn-add-inv,
+.submit-btn-add-inv {
   padding: 15px 30px;
   border: none;
   border-radius: 15px;
@@ -205,25 +205,25 @@ select.form-input {
   gap: 8px;
 }
 
-.cancel-btn {
+.cancel-btn-add-inv {
   background: #6b7280;
   color: white;
   box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
 }
 
-.cancel-btn:hover:not(:disabled) {
+.cancel-btn-add-inv:hover:not(:disabled) {
   background: #4b5563;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
 }
 
-.submit-btn {
+.submit-btn-add-inv {
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
-.submit-btn:hover:not(:disabled) {
+.submit-btn-add-inv:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }

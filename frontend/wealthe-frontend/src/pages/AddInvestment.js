@@ -137,8 +137,8 @@ const AddInvestment = () => {
             >
               <option value="">Select investment category</option>
               {investmentCategories.map((category, index) => (
-                <option key={index} value={category.name || category.categoryName}>
-                  {category.name || category.categoryName}
+                <option key={index} value={category.title}>
+                  {category.title}
                 </option>
               ))}
             </select>
@@ -180,14 +180,14 @@ const AddInvestment = () => {
             <button
               type="button"
               onClick={handleCancel}
-              className="cancel-btn"
+              className="cancel-btn-add-inv"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="submit-btn"
+              className="submit-btn-add-inv"
               disabled={loading}
             >
               {loading ? (

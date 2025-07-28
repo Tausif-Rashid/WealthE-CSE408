@@ -173,7 +173,7 @@ const AppRoutes = () => {
       />
 
       <Route 
-        path="/edit-investment/:investmentId" 
+        path="/edit-investment" 
         element={
           <ProtectedRoute>
             <Layout>

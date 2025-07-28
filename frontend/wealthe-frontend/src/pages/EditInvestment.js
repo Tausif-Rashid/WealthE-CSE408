@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams,useLocation } from 'react-router';
 import { getInvestmentCategories, editInvestment, getUserInvestment } from '../utils/api';
 import './AddInvestment.css';
 
 const EditInvestment = () => {
   const navigate = useNavigate();
-  const { investmentId } = useParams();
+//   const { investmentId } = useParams();
+  const location = useLocation();
   const amountInputRef = useRef(null);
+  
+  const investmentId = location.state?.investmentId;
   
   const [investmentCategories, setInvestmentCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +25,7 @@ const EditInvestment = () => {
   useEffect(() => {
     // Redirect if no investmentId is provided
     if (!investmentId) {
+        console.log("id not found")
       navigate('/investment');
       return;
     }
@@ -48,7 +52,7 @@ const EditInvestment = () => {
           
           // Populate form with existing data
           setFormData({
-            category: investmentToEdit.category || investmentToEdit.title || investmentToEdit.type || '',
+            category: investmentToEdit.title|| '',
             amount: investmentToEdit.amount ? investmentToEdit.amount.toString() : '',
             date: formattedDate
           });
@@ -187,8 +191,8 @@ const EditInvestment = () => {
             >
               <option value="">Select investment category</option>
               {investmentCategories.map((category, index) => (
-                <option key={index} value={category.name || category.categoryName}>
-                  {category.name || category.categoryName}
+                <option key={index} value={category.title}>
+                  {category.title}
                 </option>
               ))}
             </select>
@@ -233,14 +237,14 @@ const EditInvestment = () => {
             <button
               type="button"
               onClick={handleCancel}
-              className="cancel-btn"
+              className="cancel-btn-add-inv"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="submit-btn"
+              className="submit-btn-add-inv"
               disabled={loading}
             >
               {loading ? (

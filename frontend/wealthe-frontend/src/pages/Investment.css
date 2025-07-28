@@ -2,7 +2,7 @@
 .investment-page {
   padding: 30px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
@@ -18,7 +18,7 @@
 }
 
 .investment-header h1 {
-  color: white;
+  color: #1e3a8a;
   margin: 0;
   font-size: 2.5rem;
   font-weight: bold;
@@ -159,13 +159,13 @@
 }
 
 .investment-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(210, 219, 249, 0.203);
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  /* backdrop-filter: blur(10px); */
 }
 
 .investment-card:hover {
@@ -236,7 +236,7 @@
   justify-content: flex-end;
 }
 
-.edit-btn,
+/* .edit-btn,
 .delete-btn {
   padding: 10px 20px;
   border: none;
@@ -257,7 +257,7 @@
 .edit-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
-}
+} */
 
 .delete-btn {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
@@ -398,8 +398,8 @@
   justify-content: center;
 }
 
-.cancel-btn,
-.confirm-delete-btn {
+.cancel-btn-inv,
+.confirm-delete-btn-inv {
   padding: 12px 24px;
   border: none;
   border-radius: 12px;
@@ -410,23 +410,23 @@
   min-width: 100px;
 }
 
-.cancel-btn {
+.cancel-button-inv {
   background: #6b7280;
   color: white;
 }
 
-.cancel-btn:hover {
+.cancel-btn-inv:hover {
   background: #4b5563;
   transform: translateY(-1px);
 }
 
-.confirm-delete-btn {
+.confirm-delete-btn-inv {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
 }
 
-.confirm-delete-btn:hover {
+.confirm-delete-btn-inv:hover {
   transform: translateY(-1px);
   box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
 }

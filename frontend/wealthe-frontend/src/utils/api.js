@@ -187,7 +187,7 @@ export const getExpenseCategories = async () => {
 };
 
 export const getInvestmentCategories = async () => {
-  return apiCall('/admin/investment-categories', {
+  return apiCall('/user/get-investment-categories', {
     method: 'GET',
   });
 };
@@ -425,7 +425,9 @@ export const deleteIncome = async (incomeId) => {
 
 // Investment API functions
 export const getUserInvestment = async () => {
-  return apiCall('/user/investment');
+  return apiCall('/user/investment',{
+    method: 'GET',
+  });
 };
 
 export const addInvestment = async (investmentData) => {
