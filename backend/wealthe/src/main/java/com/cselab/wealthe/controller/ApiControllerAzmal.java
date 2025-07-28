@@ -1216,4 +1216,41 @@ public class ApiControllerAzmal {
         }
     }
 
+    @PostMapping("/user/delete-bank-account")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> deleteBankAccount(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            Integer id = (Integer) request.get("id");
+
+            if (id == null) {
+                response.put("success", false);
+                response.put("message", "ID is required");
+                return response;
+            }
+
+            String sql = "DELETE FROM asset_bank_account WHERE id = ?";
+
+            // Execute query and get result
+            Map<String, Object> bankAccount = jdbcTemplate.queryForMap(sql, id);
+
+            response.put("success", true);
+//            response.put("data", bankAccount);
+            response.put("message", "Bank account deleted successfully");
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to delete bank account: " + e.getMessage());
+            return response;
+        }
+    }
+
+
+
 }
