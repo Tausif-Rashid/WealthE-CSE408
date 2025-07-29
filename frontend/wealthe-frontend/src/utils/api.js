@@ -989,3 +989,65 @@ export const updateTaxFormIncome = async (incomeData) => {
   });
 };
 
+
+export const updateTaxFormExpense = async (expenseData) => {
+  return apiCall('/user/update-tax-form-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      personal: expenseData.personal,
+      housing: expenseData.housing,
+      utility: expenseData.utility,
+      education: expenseData.education,
+      transport: expenseData.transport,
+      others: expenseData.others
+    }),
+  });
+};
+
+export const updateTaxFormInvestment = async (investmentData) => {
+  return apiCall('/user/update-tax-form-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      three_month_sanchaypatra : investmentData.three_month_sanchaypatra,
+      five_years_sanchaypatra : investmentData.five_years_sanchaypatra,
+      Zakat : investmentData.Zakat,
+      FDR : investmentData.FDR,
+      family_sanchaypatra: investmentData.family_sanchaypatra
+    }),
+  });
+};
+
+export const updateTaxFormAssetLiability = async (assetData) => {
+  return apiCall('/user/update-tax-form-asset', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bankAccount: assetData.bankAccount,
+      car: assetData.car,
+      flat: assetData.flat,
+      jewelery: assetData.jewellery,
+      plot: assetData.plot,
+      bankLoan: assetData.bankLoan,
+      personLoan: assetData.personLoan
+
+    }),
+  });
+};
+
+export const submitTaxForm = async () => {
+  return apiCall('/user/submit-tax-form', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}), // Empty body
+  });
+};
