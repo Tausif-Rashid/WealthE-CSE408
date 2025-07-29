@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MessageDialog from '../components/MessageDialog';
-import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome } from '../utils/api';
+import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAsset  } from '../utils/api';
 import './TaxForm.css';
 
 const TaxForm = () => {
@@ -49,10 +49,12 @@ const TaxForm = () => {
       others: ''
     },
     expense: {
-      medicalExpense: '',
-      educationExpense: '',
-      insuranceExpense: '',
-      otherExpense: ''
+      personal: '',
+      housing: '',
+      utility: '',
+      education: '',
+      transport: '',
+      others: ''
     },
     investment: {
       providentFund: '',
@@ -275,6 +277,9 @@ const TaxForm = () => {
       if (tabName === 'income') {
         console.log('Updating income data:', currentTabData);
         response = await updateTaxFormIncome(currentTabData);
+      } else if (tabName === 'expense') {
+        console.log('Updating expense data:', currentTabData);
+        response = await updateTaxFormExpense(currentTabData);
       } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
@@ -286,8 +291,8 @@ const TaxForm = () => {
         });
       }
 
-      if (tabName === 'income') {
-        // For income API, check the success property in JSON response
+      if (tabName === 'income' || tabName === 'expense') {
+        // For income and expense APIs, check the success property in JSON response
         if (response.success) {
           // Move to next tab
           setActiveTab(prev => prev + 1);
@@ -333,6 +338,8 @@ const TaxForm = () => {
       let response;
       if (tabName === 'income') {
         response = await updateTaxFormIncome(currentTabData);
+      } else if (tabName === 'expense') {
+        response = await updateTaxFormExpense(currentTabData);
       } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
@@ -344,8 +351,8 @@ const TaxForm = () => {
         });
       }
 
-      if (tabName === 'income') {
-        // For income API, check the success property in JSON response
+      if (tabName === 'income' || tabName === 'expense') {
+        // For income and expense APIs, check the success property in JSON response
         if (response.success) {
           showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
         } else {
@@ -638,42 +645,62 @@ const TaxForm = () => {
       <h3>Expense Details</h3>
       <div className="tax-form-grid">
         <div className="tax-form-group">
-          <label htmlFor="medicalExpense">Medical Expenses</label>
+          <label htmlFor="personal">Personal</label>
           <input
             type="number"
-            id="medicalExpense"
-            value={formData.expense.medicalExpense}
-            onChange={(e) => handleInputChange('expense', 'medicalExpense', e.target.value)}
-            placeholder="Enter medical expenses"
+            id="personal"
+            value={formData.expense.personal}
+            onChange={(e) => handleInputChange('expense', 'personal', e.target.value)}
+            placeholder="Enter personal expenses"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="educationExpense">Education Expenses</label>
+          <label htmlFor="housing">Housing</label>
           <input
             type="number"
-            id="educationExpense"
-            value={formData.expense.educationExpense}
-            onChange={(e) => handleInputChange('expense', 'educationExpense', e.target.value)}
+            id="housing"
+            value={formData.expense.housing}
+            onChange={(e) => handleInputChange('expense', 'housing', e.target.value)}
+            placeholder="Enter housing expenses"
+          />
+        </div>
+        <div className="tax-form-group">
+          <label htmlFor="utility">Utility</label>
+          <input
+            type="number"
+            id="utility"
+            value={formData.expense.utility}
+            onChange={(e) => handleInputChange('expense', 'utility', e.target.value)}
+            placeholder="Enter utility expenses"
+          />
+        </div>
+        <div className="tax-form-group">
+          <label htmlFor="education">Education</label>
+          <input
+            type="number"
+            id="education"
+            value={formData.expense.education}
+            onChange={(e) => handleInputChange('expense', 'education', e.target.value)}
             placeholder="Enter education expenses"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="insuranceExpense">Insurance Expenses</label>
+          <label htmlFor="transport">Transport</label>
           <input
             type="number"
-            id="insuranceExpense"
-            value={formData.expense.insuranceExpense}
-            onChange={(e) => handleInputChange('expense', 'insuranceExpense', e.target.value)}
-            placeholder="Enter insurance expenses"
+            id="transport"
+            value={formData.expense.transport}
+            onChange={(e) => handleInputChange('expense', 'transport', e.target.value)}
+            placeholder="Enter transport expenses"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="otherExpense">Other Expenses</label>
+          <label htmlFor="others">Others</label>
           <input
             type="number"
-            id="otherExpense"
-            value={formData.expense.otherExpense}
-            onChange={(e) => handleInputChange('expense', 'otherExpense', e.target.value)}
+            id="others"
+            value={formData.expense.others}
+            onChange={(e) => handleInputChange('expense', 'others', e.target.value)}
             placeholder="Enter other expenses"
           />
         </div>
