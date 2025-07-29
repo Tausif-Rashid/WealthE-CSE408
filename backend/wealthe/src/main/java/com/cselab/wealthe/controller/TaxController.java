@@ -254,22 +254,22 @@ public class TaxController {
 
             if (formCount != null && formCount > 0) {
                 // User has submitted tax form, get data from tax_form_table
-                String formDataSql = "SELECT asset_bank_account, asset_car, asset_flat, asset_jewelery, asset_plot FROM tax_form_table WHERE user_id = ? AND done_asset_liability = true AND done_submit = false";
+                String formDataSql = "SELECT asset_bank_balance, asset_cars, asset_flats, asset_jewellery, asset_plots FROM tax_form_table WHERE user_id = ? AND done_asset = true AND done_submit = false";
 
                 try {
                     Map<String, Object> formData = jdbcTemplate.queryForMap(formDataSql, userId);
 
                     // Extract values and handle nulls
-                    Double bankAccountTotal = formData.get("asset_bank_account") != null ?
-                            Double.parseDouble(formData.get("asset_bank_account").toString()) : 0.0;
-                    Double carTotal = formData.get("asset_car") != null ?
-                            Double.parseDouble(formData.get("asset_car").toString()) : 0.0;
-                    Double flatTotal = formData.get("asset_flat") != null ?
-                            Double.parseDouble(formData.get("asset_flat").toString()) : 0.0;
-                    Double jewelryTotal = formData.get("asset_jewelery") != null ?
-                            Double.parseDouble(formData.get("asset_jewelery").toString()) : 0.0;
-                    Double plotTotal = formData.get("asset_plot") != null ?
-                            Double.parseDouble(formData.get("asset_plot").toString()) : 0.0;
+                    Double bankAccountTotal = formData.get("asset_bank_balance") != null ?
+                            Double.parseDouble(formData.get("asset_bank_balance").toString()) : 0.0;
+                    Double carTotal = formData.get("asset_cars") != null ?
+                            Double.parseDouble(formData.get("asset_cars").toString()) : 0.0;
+                    Double flatTotal = formData.get("asset_flats") != null ?
+                            Double.parseDouble(formData.get("asset_flats").toString()) : 0.0;
+                    Double jewelryTotal = formData.get("asset_jewellery") != null ?
+                            Double.parseDouble(formData.get("asset_jewellery").toString()) : 0.0;
+                    Double plotTotal = formData.get("asset_plots") != null ?
+                            Double.parseDouble(formData.get("asset_plots").toString()) : 0.0;
 
                     // Build response object with tax form data
                     response.put("bankAccount", bankAccountTotal);
@@ -281,12 +281,12 @@ public class TaxController {
                     return response;
 
                 } catch (EmptyResultDataAccessException e) {
-                    // No records found with done_asset_liability = true, fall back to original method
-                    System.out.println("No tax form data with done_asset_liability = true found, using original calculation");
+                    // No records found with done_asset = true, fall back to original method
+                    System.out.println("No tax form data with done_asset = true found, using original calculation");
                 }
             }
 
-            // Original calculation logic (when no tax form data exists or done_asset_liability is not true)
+            // Original calculation logic (when no tax form data exists or done_asset is not true)
             // SQL queries for each asset type
             String bankAccountSql = "SELECT COALESCE(SUM(amount), 0) as total FROM asset_bank_account WHERE user_id = ?";
             String carSql = "SELECT COALESCE(SUM(cost), 0) as total FROM asset_car WHERE user_id = ?";
@@ -334,7 +334,7 @@ public class TaxController {
 
             if (formCount != null && formCount > 0) {
                 // User has submitted tax form, get data from tax_form_table
-                String formDataSql = "SELECT liability_bank_loan, liability_person_loan FROM tax_form_table WHERE user_id = ? AND done_asset_liability = true AND done_submit = false";
+                String formDataSql = "SELECT liability_bank_loan, liability_person_loan FROM tax_form_table WHERE user_id = ? AND done_asset = true AND done_submit = false";
 
                 try {
                     Map<String, Object> formData = jdbcTemplate.queryForMap(formDataSql, userId);
@@ -352,12 +352,12 @@ public class TaxController {
                     return response;
 
                 } catch (EmptyResultDataAccessException e) {
-                    // No records found with done_asset_liability = true, fall back to original method
-                    System.out.println("No tax form data with done_asset_liability = true found, using original calculation");
+                    // No records found with done_asset = true, fall back to original method
+                    System.out.println("No tax form data with done_asset = true found, using original calculation");
                 }
             }
 
-            // Original calculation logic (when no tax form data exists or done_asset_liability is not true)
+            // Original calculation logic (when no tax form data exists or done_asset is not true)
             // SQL queries for each liability type
             String personLoanSql = "SELECT COALESCE(SUM(remaining), 0) as total FROM liability_person_loan WHERE user_id = ?";
             String bankLoanSql = "SELECT COALESCE(SUM(remaining), 0) as total FROM liability_bank_loan WHERE user_id = ?";
@@ -642,7 +642,7 @@ public class TaxController {
                     (personLoanObj instanceof Number ? ((Number) personLoanObj).doubleValue() : Double.parseDouble(personLoanObj.toString())) : 0.0;
 
             // SQL query to update tax form asset and liability data
-            String sql = "UPDATE tax_form_table SET asset_bank_account = ?, asset_car = ?, asset_flat = ?, asset_jewelery = ?, asset_plot = ?, liability_bank_loan = ?, liability_person_loan = ?, done_asset_liability = true WHERE user_id = ? AND done_submit = false";
+            String sql = "UPDATE tax_form_table SET asset_bank_balance = ?, asset_cars = ?, asset_flats = ?, asset_jewellery = ?, asset_plots = ?, liability_bank_loan = ?, liability_person_loan = ?, done_asset = true WHERE user_id = ? AND done_submit = false";
 
             // Execute the update
             int rowsAffected = jdbcTemplate.update(sql, assetBankAccount, assetCar, assetFlat, assetJewelery, assetPlot, liabilityBankLoan, liabilityPersonLoan, userId);

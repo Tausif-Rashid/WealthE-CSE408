@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MessageDialog from '../components/MessageDialog';
-import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAsset  } from '../utils/api';
+import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset,getTaxLiability, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAssetLiability    } from '../utils/api';
 import './TaxForm.css';
 
 const TaxForm = () => {
@@ -64,11 +64,13 @@ const TaxForm = () => {
       family_sanchaypatra: ''
     },
     assetLiability: {
-      totalAssets: '',
-      totalLiabilities: '',
-      bankAccounts: '',
-      properties: '',
-      vehicles: ''
+      bankAccountTotal: '',
+      carTotal: '',
+      flatTotal: '',
+      jewelryTotal: '',
+      plotTotal: '',
+      bankLoan: '',
+      personLoan: ''
     },
     taxComputation: {
       totalIncome: '',
@@ -325,6 +327,40 @@ const TaxForm = () => {
         } else if (tabName === 'investment') {
           console.log('Updating investment data:', currentTabData);
           response = await updateTaxFormInvestment(currentTabData);
+
+          const assets = await getTaxAsset();
+          console.log('Asset data:', assets);
+          if(assets){
+            const asset = assets;
+            setFormData(prev => ({
+              ...prev,
+              assetLiability: {
+                ...prev.assetLiability,
+                bankAccountTotal: asset.bankAccount?.toString() || '',
+                carTotal: asset.car?.toString() || '',
+                flatTotal: asset.flat?.toString() || '',
+                jewelryTotal: asset.jewellery?.toString() || '',
+                plotTotal: asset.plot?.toString() || '',
+              }
+            }));
+          }
+
+          const liabilities = await getTaxLiability();
+          console.log('Liability data:', liabilities);
+          if(liabilities){
+            const liability = liabilities;
+            setFormData(prev => ({
+              ...prev,
+              assetLiability: {
+                ...prev.assetLiability,
+                bankLoan: liability.bankLoan?.toString() || '',
+                personLoan: liability.personLoan?.toString() || ''
+              }
+            }));
+          }
+        } else if (tabName === 'assetLiability') {
+          console.log('Updating asset liability data:', currentTabData);
+          response = await updateTaxFormAssetLiability(currentTabData);
         } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
@@ -336,8 +372,8 @@ const TaxForm = () => {
         });
       }
 
-      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment') {
-        // For income, expense, and investment APIs, check the success property in JSON response
+      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment' || tabName === 'assetLiability') {
+        // For income, expense, investment, and asset APIs, check the success property in JSON response
         if (response.success) {
           // Move to next tab
           setActiveTab(prev => prev + 1);
@@ -387,6 +423,8 @@ const TaxForm = () => {
           response = await updateTaxFormExpense(currentTabData);
         } else if (tabName === 'investment') {
           response = await updateTaxFormInvestment(currentTabData);
+        } else if (tabName === 'assetLiability') {
+          response = await updateTaxFormAssetLiability(currentTabData);
         } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
@@ -398,8 +436,8 @@ const TaxForm = () => {
         });
       }
 
-      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment') {
-        // For income, expense, and investment APIs, check the success property in JSON response
+      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment' || tabName === 'assetLiability') {
+        // For income, expense, investment, and asset APIs, check the success property in JSON response
         if (response.success) {
           showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
         } else {
@@ -817,54 +855,76 @@ const TaxForm = () => {
     <div className="tax-form-tab-content">
       <h3>Asset & Liability Details</h3>
       <div className="tax-form-grid">
+        {/* Assets Section */}
         <div className="tax-form-group">
-          <label htmlFor="totalAssets">Total Assets</label>
+          <label htmlFor="bankAccountTotal">Bank Account Total</label>
           <input
             type="number"
-            id="totalAssets"
-            value={formData.assetLiability.totalAssets}
-            onChange={(e) => handleInputChange('assetLiability', 'totalAssets', e.target.value)}
-            placeholder="Enter total assets value"
+            id="bankAccountTotal"
+            value={formData.assetLiability.bankAccountTotal}
+            onChange={(e) => handleInputChange('assetLiability', 'bankAccountTotal', e.target.value)}
+            placeholder="Enter bank account total"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="totalLiabilities">Total Liabilities</label>
+          <label htmlFor="carTotal">Car Total</label>
           <input
             type="number"
-            id="totalLiabilities"
-            value={formData.assetLiability.totalLiabilities}
-            onChange={(e) => handleInputChange('assetLiability', 'totalLiabilities', e.target.value)}
-            placeholder="Enter total liabilities"
+            id="carTotal"
+            value={formData.assetLiability.carTotal}
+            onChange={(e) => handleInputChange('assetLiability', 'carTotal', e.target.value)}
+            placeholder="Enter car total value"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="bankAccounts">Bank Accounts</label>
+          <label htmlFor="flatTotal">Flat Total</label>
           <input
             type="number"
-            id="bankAccounts"
-            value={formData.assetLiability.bankAccounts}
-            onChange={(e) => handleInputChange('assetLiability', 'bankAccounts', e.target.value)}
-            placeholder="Enter bank account balance"
+            id="flatTotal"
+            value={formData.assetLiability.flatTotal}
+            onChange={(e) => handleInputChange('assetLiability', 'flatTotal', e.target.value)}
+            placeholder="Enter flat total value"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="properties">Properties</label>
+          <label htmlFor="jewelryTotal">Jewelry Total</label>
           <input
             type="number"
-            id="properties"
-            value={formData.assetLiability.properties}
-            onChange={(e) => handleInputChange('assetLiability', 'properties', e.target.value)}
-            placeholder="Enter properties value"
+            id="jewelryTotal"
+            value={formData.assetLiability.jewelryTotal}
+            onChange={(e) => handleInputChange('assetLiability', 'jewelryTotal', e.target.value)}
+            placeholder="Enter jewelry total value"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="vehicles">Vehicles</label>
+          <label htmlFor="plotTotal">Plot Total</label>
           <input
             type="number"
-            id="vehicles"
-            value={formData.assetLiability.vehicles}
-            onChange={(e) => handleInputChange('assetLiability', 'vehicles', e.target.value)}
-            placeholder="Enter vehicles value"
+            id="plotTotal"
+            value={formData.assetLiability.plotTotal}
+            onChange={(e) => handleInputChange('assetLiability', 'plotTotal', e.target.value)}
+            placeholder="Enter plot total value"
+          />
+        </div>
+        {/* Liabilities Section */}
+        <div className="tax-form-group">
+          <label htmlFor="bankLoan">Bank Loan</label>
+          <input
+            type="number"
+            id="bankLoan"
+            value={formData.assetLiability.bankLoan}
+            onChange={(e) => handleInputChange('assetLiability', 'bankLoan', e.target.value)}
+            placeholder="Enter bank loan amount"
+          />
+        </div>
+        <div className="tax-form-group">
+          <label htmlFor="personLoan">Person Loan</label>
+          <input
+            type="number"
+            id="personLoan"
+            value={formData.assetLiability.personLoan}
+            onChange={(e) => handleInputChange('assetLiability', 'personLoan', e.target.value)}
+            placeholder="Enter person loan amount"
           />
         </div>
       </div>
