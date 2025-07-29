@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [incomeData, setIncomeData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
   const [chartsLoading, setChartsLoading] = useState(false);
+  const [userInfoExpanded, setUserInfoExpanded] = useState(false);
   const incomeChartRef = useRef(null);
   const expenseChartRef = useRef(null);
   const incomeChartInstance = useRef(null);
@@ -324,54 +325,61 @@ const Dashboard = () => {
         
         <div className="user-details-section">
           <div className="details-card">
-            <h2> User Information</h2>
-            <div className="details-grid">
-              <div className="detail-item">
-                <label>ID:</label>
-                <span>{user?.id || 'Not available'}</span> 
-                {/*this id is from user for testing, use from userInfo */}
-              </div>
-              <div className="detail-item">
-                <label>Full Name:</label>
-                <span>{userInfo?.name || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Phone:</label>
-                <span>{userInfo?.phone || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>NID:</label>
-                <span>{userInfo?.nid || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Date of Birth:</label>
-                <span>{userInfo?.dob ? new Date(userInfo.dob).toLocaleDateString() : 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Spouse Name:</label>
-                <span>{userInfo?.spouse_name || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Spouse TIN:</label>
-                <span>{userInfo?.spouse_tin || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>TIN:</label>
-                <span>{taxInfo?.tin || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Area:</label>
-                <span>{taxInfo?.area_name || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Tax Zone:</label>
-                <span>{taxInfo?.tax_zone || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Tax Circle:</label>
-                <span>{taxInfo?.tax_circle || 'Not provided'}</span>
-              </div>
+            <div className="details-header" onClick={() => setUserInfoExpanded(!userInfoExpanded)}>
+              <h2>👤 User Information</h2>
+              <span className={`expand-icon ${userInfoExpanded ? 'expanded' : ''}`}>
+                {userInfoExpanded ? '▼' : '▶'}
+              </span>
             </div>
+            {userInfoExpanded && (
+              <div className="details-grid">
+                <div className="detail-item">
+                  <label>ID:</label>
+                  <span>{user?.id || 'Not available'}</span> 
+                  {/*this id is from user for testing, use from userInfo */}
+                </div>
+                <div className="detail-item">
+                  <label>Full Name:</label>
+                  <span>{userInfo?.name || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Phone:</label>
+                  <span>{userInfo?.phone || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>NID:</label>
+                  <span>{userInfo?.nid || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Date of Birth:</label>
+                  <span>{userInfo?.dob ? new Date(userInfo.dob).toLocaleDateString() : 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Spouse Name:</label>
+                  <span>{userInfo?.spouse_name || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Spouse TIN:</label>
+                  <span>{userInfo?.spouse_tin || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>TIN:</label>
+                  <span>{taxInfo?.tin || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Area:</label>
+                  <span>{taxInfo?.area_name || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Tax Zone:</label>
+                  <span>{taxInfo?.tax_zone || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Tax Circle:</label>
+                  <span>{taxInfo?.tax_circle || 'Not provided'}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
