@@ -39,6 +39,9 @@ public class TaxController {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
+    private FetchPdfDataService fetchPdfDataService;
+
+    @Autowired
     private static final Logger logger = LoggerFactory.getLogger(TaxController.class);
 
 
@@ -53,7 +56,8 @@ public class TaxController {
             // Get user ID from authentication
             int userId = Integer.parseInt(auth.getName());
 
-            FetchPdfDataService fetchPdfDataService = null;
+            System.out.println("asdf asdf asdf asdf");
+
             FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
             System.out.println(data.toString());
 
@@ -934,9 +938,7 @@ public class TaxController {
                 return response;
             }
 
-            FetchPdfDataService fetchPdfDataService = null;
-            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
-            System.out.println(data.toString());
+
 
 
             // 11. Build response object
