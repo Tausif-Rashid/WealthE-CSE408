@@ -445,26 +445,24 @@ const Dashboard = () => {
                 )}
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Bar Chart Section */}
-        <div className="bar-chart-section">
-          <div className="chart-card full-width">
-            <h3>📊 Income vs Expense - Last 4 Months</h3>
-            <div className="bar-chart-wrapper">
-              {barChartLoading ? (
-                <div className="chart-loading">
-                  <div className="spinner"></div>
-                  <p>Loading previous months data...</p>
-                </div>
-              ) : previousMonthsData.length > 0 ? (
-                <canvas ref={barChartRef}></canvas>
-              ) : (
-                <div className="no-data-message">
-                  <p>📈 No data available for previous months</p>
-                </div>
-              )}
+            {/* Bar Chart */}
+            <div className="chart-card">
+              <h3>📊 Income vs Expense - Last 4 Months</h3>
+              <div className="chart-wrapper">
+                {barChartLoading ? (
+                  <div className="chart-loading">
+                    <div className="spinner"></div>
+                    <p>Loading previous months data...</p>
+                  </div>
+                ) : previousMonthsData.length > 0 ? (
+                  <canvas ref={barChartRef}></canvas>
+                ) : (
+                  <div className="no-data-message">
+                    <p>📈 No data available for previous months</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

@@ -378,37 +378,6 @@
   }
 }
 
-/* Bar Chart Section */
-.bar-chart-section {
-  margin-bottom: 30px;
-  position: relative;
-  z-index: 1;
-}
-
-.chart-card.full-width {
-  width: 100%;
-}
-
-.bar-chart-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 400px;
-  position: relative;
-}
-
-.bar-chart-wrapper canvas {
-  max-width: 100%;
-  height: 100%;
-}
-
-/* Responsive design for bar chart */
-@media (max-width: 768px) {
-  .bar-chart-wrapper {
-    height: 300px;
-  }
-}
-
 /* Collapsible User Information Styles */
 .details-header {
   display: flex;
