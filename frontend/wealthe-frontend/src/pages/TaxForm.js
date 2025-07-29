@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MessageDialog from '../components/MessageDialog';
-import { getUserInfo, getTaxInfo } from '../utils/api';
+import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome } from '../utils/api';
 import './TaxForm.css';
 
 const TaxForm = () => {
@@ -43,10 +43,10 @@ const TaxForm = () => {
     },
     income: {
       salary: '',
-      bonus: '',
-      businessIncome: '',
-      rentalIncome: '',
-      otherIncome: ''
+      agriculture: '',
+      rent: '',
+      interest: '',
+      others: ''
     },
     expense: {
       medicalExpense: '',
@@ -93,11 +93,12 @@ const TaxForm = () => {
         // Fetch both user info and tax info
         const [userData, taxData] = await Promise.all([
           getUserInfo(),
-          getTaxInfo()
+          getTaxInfo()          
         ]);
 
         console.log('User data:', userData);
         console.log('Tax data:', taxData);
+        
 
         if (userData && userData.length > 0) {
           const user = userData[0];
@@ -133,6 +134,8 @@ const TaxForm = () => {
               }
             }
           }));
+
+
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -144,6 +147,8 @@ const TaxForm = () => {
 
     fetchUserData();
   }, []);
+
+
 
   const handleInputChange = (tabName, fieldName, value) => {
     setFormData(prev => ({
@@ -230,6 +235,29 @@ const TaxForm = () => {
         return;
       }
       console.log('Validation passed');
+      
+      // Fetch income data when moving from personal info tab
+      try {
+        const incomes = await getTaxIncome();
+        console.log('Income data:', incomes);
+        
+        if (incomes) {
+          const income = incomes;
+          setFormData(prev => ({
+            ...prev,
+            income: {
+              ...prev.income,
+              salary: income.salary?.toString() || '',
+              agriculture: income.agriculture?.toString() || '',
+              rent: income.rent?.toString() || '',
+              interest: income.interest?.toString() || '',
+              others: income.other?.toString() || '' // Note: API returns 'other' but form uses 'others'
+            }
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching income data:', error);
+      }
     }
 
     // Map tab index to form data key
@@ -243,22 +271,40 @@ const TaxForm = () => {
       setLoading(true);
       
       // Make API call to save current tab data
-      const response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(currentTabData)
-      });
-
-      if (response.ok) {
-        // Move to next tab
-        setActiveTab(prev => prev + 1);
-        showDialog('success', 'Success', `${tabs[activeTab].name} data saved successfully!`);
+      let response;
+      if (tabName === 'income') {
+        console.log('Updating income data:', currentTabData);
+        response = await updateTaxFormIncome(currentTabData);
       } else {
-        const errorData = await response.json();
-        showDialog('error', 'Error', errorData.message || 'Failed to save data');
+        response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(currentTabData)
+        });
+      }
+
+      if (tabName === 'income') {
+        // For income API, check the success property in JSON response
+        if (response.success) {
+          // Move to next tab
+          setActiveTab(prev => prev + 1);
+          showDialog('success', 'Success', `${tabs[activeTab].name} data saved successfully!`);
+        } else {
+          showDialog('error', 'Error', response.message || 'Failed to save data');
+        }
+      } else {
+        // For other APIs, check HTTP status
+        if (response.ok) {
+          // Move to next tab
+          setActiveTab(prev => prev + 1);
+          showDialog('success', 'Success', `${tabs[activeTab].name} data saved successfully!`);
+        } else {
+          const errorData = await response.json();
+          showDialog('error', 'Error', errorData.message || 'Failed to save data');
+        }
       }
     } catch (error) {
       console.error('Error saving data:', error);
@@ -284,20 +330,35 @@ const TaxForm = () => {
       setLoading(true);
       
       // Make API call to save final tab data
-      const response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(currentTabData)
-      });
-
-      if (response.ok) {
-        showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
+      let response;
+      if (tabName === 'income') {
+        response = await updateTaxFormIncome(currentTabData);
       } else {
-        const errorData = await response.json();
-        showDialog('error', 'Error', errorData.message || 'Failed to submit form');
+        response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify(currentTabData)
+        });
+      }
+
+      if (tabName === 'income') {
+        // For income API, check the success property in JSON response
+        if (response.success) {
+          showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
+        } else {
+          showDialog('error', 'Error', response.message || 'Failed to submit form');
+        }
+      } else {
+        // For other APIs, check HTTP status
+        if (response.ok) {
+          showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
+        } else {
+          const errorData = await response.json();
+          showDialog('error', 'Error', errorData.message || 'Failed to submit form');
+        }
       }
     } catch (error) {
       console.error('Error submitting form:', error);
@@ -519,7 +580,7 @@ const TaxForm = () => {
       <h3>Income Details</h3>
       <div className="tax-form-grid">
         <div className="tax-form-group">
-          <label htmlFor="salary">Salary Income</label>
+          <label htmlFor="salary">Salary</label>
           <input
             type="number"
             id="salary"
@@ -529,42 +590,42 @@ const TaxForm = () => {
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="bonus">Bonus Income</label>
+          <label htmlFor="agriculture">Agriculture</label>
           <input
             type="number"
-            id="bonus"
-            value={formData.income.bonus}
-            onChange={(e) => handleInputChange('income', 'bonus', e.target.value)}
-            placeholder="Enter bonus amount"
+            id="agriculture"
+            value={formData.income.agriculture}
+            onChange={(e) => handleInputChange('income', 'agriculture', e.target.value)}
+            placeholder="Enter agriculture income"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="businessIncome">Business Income</label>
+          <label htmlFor="rent">Rent</label>
           <input
             type="number"
-            id="businessIncome"
-            value={formData.income.businessIncome}
-            onChange={(e) => handleInputChange('income', 'businessIncome', e.target.value)}
-            placeholder="Enter business income"
-          />
-        </div>
-        <div className="tax-form-group">
-          <label htmlFor="rentalIncome">Rental Income</label>
-          <input
-            type="number"
-            id="rentalIncome"
-            value={formData.income.rentalIncome}
-            onChange={(e) => handleInputChange('income', 'rentalIncome', e.target.value)}
+            id="rent"
+            value={formData.income.rent}
+            onChange={(e) => handleInputChange('income', 'rent', e.target.value)}
             placeholder="Enter rental income"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="otherIncome">Other Income</label>
+          <label htmlFor="interest">Interest</label>
           <input
             type="number"
-            id="otherIncome"
-            value={formData.income.otherIncome}
-            onChange={(e) => handleInputChange('income', 'otherIncome', e.target.value)}
+            id="interest"
+            value={formData.income.interest}
+            onChange={(e) => handleInputChange('income', 'interest', e.target.value)}
+            placeholder="Enter interest income"
+          />
+        </div>
+        <div className="tax-form-group">
+          <label htmlFor="others">Others</label>
+          <input
+            type="number"
+            id="others"
+            value={formData.income.others}
+            onChange={(e) => handleInputChange('income', 'others', e.target.value)}
             placeholder="Enter other income"
           />
         </div>

@@ -340,7 +340,7 @@ public class TaxController {
             Integer existingCount = jdbcTemplate.queryForObject(checkSql, Integer.class, userId);
 
             if (existingCount != null && existingCount > 0) {
-                response.put("success", false);
+                response.put("success", true);
                 response.put("message", "Tax form already exists for this user");
                 return response;
             }
