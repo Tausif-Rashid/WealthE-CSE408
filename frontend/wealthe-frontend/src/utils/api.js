@@ -956,3 +956,9 @@ export const getTaxAsset = async () => {
     method: 'GET',
   });
 };
+
+export const getTaxLiability = async () => {
+  return apiCall('/user/tax-liability', {
+    method: 'GET',
+  });
+};

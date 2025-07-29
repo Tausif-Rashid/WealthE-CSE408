@@ -255,4 +255,36 @@ public class TaxController {
         }
     }
 
+    @GetMapping("/user/tax-liability")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getTaxLiability() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL queries for each liability type
+            String personLoanSql = "SELECT COALESCE(SUM(remaining), 0) as total FROM liability_person_loan WHERE user_id = ?";
+            String bankLoanSql = "SELECT COALESCE(SUM(remaining), 0) as total FROM liability_bank_loan WHERE user_id = ?";
+
+            // Execute queries and get totals
+            Double personLoanTotal = jdbcTemplate.queryForObject(personLoanSql, Double.class, userId);
+            Double bankLoanTotal = jdbcTemplate.queryForObject(bankLoanSql, Double.class, userId);
+
+            // Build response object
+            response.put("personLoan", personLoanTotal != null ? personLoanTotal : 0.0);
+            response.put("bankLoan", bankLoanTotal != null ? bankLoanTotal : 0.0);
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("error", "Failed to retrieve tax liability data: " + e.getMessage());
+            return response;
+        }
+    }
+
 }

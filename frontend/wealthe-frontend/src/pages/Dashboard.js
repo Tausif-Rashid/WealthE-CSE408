@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
-import { getUserInfo, getTaxInfo,  getTaxAsset } from '../utils/api';
+import { getUserInfo, getTaxInfo } from '../utils/api';
 import './Dashboard.css';
 import { useNavigate } from 'react-router';
 
@@ -31,16 +31,7 @@ const Dashboard = () => {
           setLoading(false);
         }
 
-        console.log("Tax Info...");
-        try {
-          const userTaxInfo = await getTaxAsset();
-            
-            console.log('Fetched user info:', userTaxInfo); // Debug log
-          // setUserInfo(userData?.[0] || null);
-        } catch (err) {
-          setError('Failed to load user information');
-          console.error('Error fetching user info:', err);
-        }
+        
     };
 
     fetchUserInfo();
