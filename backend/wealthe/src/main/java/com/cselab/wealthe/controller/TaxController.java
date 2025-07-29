@@ -748,7 +748,9 @@ public class TaxController {
                 // Create a clean key name (remove spaces, convert to camelCase)
                 String key = investmentType.toLowerCase()
                         .replace(" ", "")
-                        .replace("-", "");
+                        .replace("-", "")
+                        .replace("3month", "threemonth")
+                .replace("5years", "fiveyears");
 
                 investmentTotals.put(key, total != null ? total : 0.0);
             }
