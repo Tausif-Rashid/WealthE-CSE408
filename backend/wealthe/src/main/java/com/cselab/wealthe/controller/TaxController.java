@@ -275,7 +275,7 @@ public class TaxController {
                     response.put("bankAccount", bankAccountTotal);
                     response.put("car", carTotal);
                     response.put("flat", flatTotal);
-                    response.put("jewelry", jewelryTotal);
+                    response.put("jewellery", jewelryTotal);
                     response.put("plot", plotTotal);
 
                     return response;
@@ -391,7 +391,7 @@ public class TaxController {
             int userId = Integer.parseInt(auth.getName());
 
             // Check if user already has a tax form
-            String checkSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? AND done_submit= false";
+            String checkSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? AND done_submit = false";
             Integer existingCount = jdbcTemplate.queryForObject(checkSql, Integer.class, userId);
 
             if (existingCount != null && existingCount > 0) {
@@ -400,11 +400,14 @@ public class TaxController {
                 return response;
             }
 
-            // SQL query to insert new tax form
-            String sql = "INSERT INTO tax_form_table(user_id) VALUES (?)";
+            // Get today's date
+            LocalDate today = LocalDate.now();
+
+            // SQL query to insert new tax form with today's date
+            String sql = "INSERT INTO tax_form_table(user_id, date) VALUES (?, ?)";
 
             // Execute the insert
-            int rowsAffected = jdbcTemplate.update(sql, userId);
+            int rowsAffected = jdbcTemplate.update(sql, userId, today);
 
             if (rowsAffected > 0) {
                 response.put("success", true);
