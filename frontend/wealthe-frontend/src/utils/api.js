@@ -931,3 +931,60 @@ export const editPersonLoan = async (id, loanData) => {
     }),
   });
 };
+
+//liabilities apis
+export const getTaxIncome = async () => {
+  return apiCall('/user/tax-income', {
+    method: 'GET',
+  });
+};
+
+export const getTaxExpense = async () => {
+  return apiCall('/user/tax-expense', {
+    method: 'GET',
+  });
+};
+
+export const getTaxInvestment = async () => {
+  return apiCall('/user/tax-investment', {
+    method: 'GET',
+  });
+};
+
+export const getTaxAsset = async () => {
+  return apiCall('/user/tax-asset', {
+    method: 'GET',
+  });
+};
+
+export const getTaxLiability = async () => {
+  return apiCall('/user/tax-liability', {
+    method: 'GET',
+  });
+};
+
+export const createTaxForm = async () => {
+  return apiCall('/user/tax-personalInfo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}), // Empty body
+  });
+};
+
+export const updateTaxFormIncome = async (incomeData) => {
+  return apiCall('/user/update-tax-form-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      income_salary: incomeData.salary,
+      income_agriculture: incomeData.agriculture,
+      income_rent: incomeData.rent,
+      income_interest: incomeData.interest,
+      income_others: incomeData.others
+    }),
+  });
+};

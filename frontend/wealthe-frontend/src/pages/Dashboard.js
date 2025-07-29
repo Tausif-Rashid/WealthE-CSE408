@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
-import { getUserInfo, getTaxInfo } from '../utils/api';
+import { getUserInfo, getTaxInfo, getTaxIncome } from '../utils/api';
 import './Dashboard.css';
 import { useNavigate } from 'react-router';
 
@@ -18,6 +18,7 @@ const Dashboard = () => {
         setLoading(true);
         try {
           const userData = await getUserInfo();
+          const data = await getTaxIncome();
             if (!userData) {
                 throw new Error('No user data found');
             }
@@ -30,6 +31,8 @@ const Dashboard = () => {
             //console.log('Done fetch user data'); // Debug log
           setLoading(false);
         }
+
+        
     };
 
     fetchUserInfo();
