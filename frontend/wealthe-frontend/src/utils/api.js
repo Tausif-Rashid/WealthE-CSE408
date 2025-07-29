@@ -931,3 +931,10 @@ export const editPersonLoan = async (id, loanData) => {
     }),
   });
 };
+
+//liabilities apis
+export const getTaxIncome = async () => {
+  return apiCall('/user/tax-income', {
+    method: 'GET',
+  });
+};
