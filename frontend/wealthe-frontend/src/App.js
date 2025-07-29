@@ -17,6 +17,7 @@ import Income from './pages/Income';
 import AddIncome from './pages/AddIncome';
 import EditIncome from './pages/EditIncome';
 import TaxEstimation from './pages/TaxEstimation';
+import TaxForm from './pages/TaxForm';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import IncomeRule from './pages/Admin/IncomeRule';
 import InvestmentRule from './pages/Admin/InvestmentRule';
@@ -355,6 +356,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <TaxEstimation />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/tax-form" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <TaxForm />
             </Layout>
           </ProtectedRoute>
         } 

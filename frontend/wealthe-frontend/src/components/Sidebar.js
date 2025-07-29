@@ -15,6 +15,7 @@ const Sidebar = () => {
       { path: '/income', icon: '💰', label: 'Income' },
       { path: '/investment', icon: '📈', label: 'Investment' },
       { path: '/tax-estimation', icon: '📊', label: 'Tax Estimation' },
+      { path: '/tax-form', icon: '📋', label: 'Tax Form' },
       { path: '/assets', icon: '🏦', label: 'Assets'},
       { path: '/liabilities', icon: '💳', label: 'Liabilities' },
       { path: '/chatbot', icon: '💬', label: 'Ask question' },
