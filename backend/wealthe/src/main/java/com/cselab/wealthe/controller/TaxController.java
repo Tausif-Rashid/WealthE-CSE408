@@ -1,5 +1,6 @@
 package com.cselab.wealthe.controller;
 
+import com.cselab.wealthe.service.FetchPdfDataService;
 import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,10 @@ public class TaxController {
         try {
             // Get user ID from authentication
             int userId = Integer.parseInt(auth.getName());
+
+            FetchPdfDataService fetchPdfDataService = null;
+            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
+            System.out.println(data.toString());
 
             // Check if user has submitted tax form data
             String countSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? ";
@@ -926,6 +931,11 @@ public class TaxController {
                 response.put("error", "No tax form found or form already submitted");
                 return response;
             }
+
+            FetchPdfDataService fetchPdfDataService = null;
+            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
+            System.out.println(data.toString());
+
 
             // 11. Build response object
             response.put("gross_tax", grossTax != null ? grossTax : 0.0);
