@@ -51,6 +51,51 @@ public class ApiController {
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
 
+
+    @GetMapping("/user/monthly-income")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getMonthlyIncomeByType() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        if (userId != 0) {
+            String sql = "SELECT type, SUM(amount) as total_income " +
+                    "FROM income " +
+                    "WHERE user_id = ? " +
+                    "AND date >= DATE_TRUNC('month', CURRENT_DATE) " +
+                    "AND date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' " +
+                    "GROUP BY type " +
+                    "ORDER BY total_income DESC";
+
+            return jdbcTemplate.queryForList(sql, userId);
+        }
+
+        logger.debug("Failed to get user id in /user/monthly-income-by-type");
+        return null;
+    }
+
+    @GetMapping("/user/monthly-expense")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getMonthlyExpenseByType() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        if (userId != 0) {
+            String sql = "SELECT type, SUM(amount) as total_expense " +
+                    "FROM expense " +
+                    "WHERE user_id = ? " +
+                    "AND date >= DATE_TRUNC('month', CURRENT_DATE) " +
+                    "AND date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' " +
+                    "GROUP BY type " +
+                    "ORDER BY total_expense DESC";
+
+            return jdbcTemplate.queryForList(sql, userId);
+        }
+
+        logger.debug("Failed to get user id in /user/monthly-expense-by-type");
+        return null;
+    }
+
     @GetMapping("/user/info")
     public List<Map<String, Object>> getUserInfo() { //Returns an array of user object with 1 element
         String sql;

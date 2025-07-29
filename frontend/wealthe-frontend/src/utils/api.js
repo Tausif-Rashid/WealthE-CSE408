@@ -1057,3 +1057,15 @@ export const submitTaxForm = async () => {
     body: JSON.stringify({}), // Empty body
   });
 };
+
+export const getMonthlyIncomeByType = async () => {
+  return apiCall('/user/monthly-income', {
+    method: 'GET',
+  });
+};
+
+export const getMonthlyExpenseByType = async () => {
+  return apiCall('/user/monthly-expense', {
+    method: 'GET',
+  });
+};

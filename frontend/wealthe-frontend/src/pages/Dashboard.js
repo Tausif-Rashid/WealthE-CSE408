@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
-import { getUserInfo, getTaxInfo } from '../utils/api';
+import { getUserInfo, getTaxInfo, getMonthlyIncomeByType, getMonthlyExpenseByType } from '../utils/api';
 import './Dashboard.css';
 import { useNavigate } from 'react-router';
 
@@ -10,6 +10,13 @@ const Dashboard = () => {
   const [taxInfo, setTaxInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [incomeData, setIncomeData] = useState([]);
+  const [expenseData, setExpenseData] = useState([]);
+  const [chartsLoading, setChartsLoading] = useState(false);
+  const incomeChartRef = useRef(null);
+  const expenseChartRef = useRef(null);
+  const incomeChartInstance = useRef(null);
+  const expenseChartInstance = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +70,165 @@ const Dashboard = () => {
     fetchTaxInfo();
   }, []);
 
+  // Chart.js dynamic import and chart functions
+  const loadChartJS = async () => {
+    const { Chart, registerables } = await import('chart.js');
+    Chart.register(...registerables);
+    return Chart;
+  };
+
+  const createPieChart = async (canvasRef, data, title, colors) => {
+    if (!data || data.length === 0) return null;
+
+    const Chart = await loadChartJS();
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return null;
+
+    return new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: data.map(item => item.type || 'Unknown'),
+        datasets: [{
+          data: data.map(item => parseFloat(item.total_income || item.total_expense || 0)),
+          backgroundColor: colors,
+          borderColor: colors.map(color => color.replace('0.8', '1')),
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              font: {
+                size: 12,
+                family: 'Arial, sans-serif'
+              },
+              color: '#374151'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${label}: ৳${value.toLocaleString()} (${percentage}%)`;
+              }
+            }
+          }
+        },
+        animation: {
+          animateRotate: true,
+          animateScale: true,
+          duration: 1000
+        }
+      }
+    });
+  };
+
+  // Fetch chart data
+  useEffect(() => {
+    const fetchChartData = async () => {
+      setChartsLoading(true);
+      try {
+        const [incomeResponse, expenseResponse] = await Promise.all([
+          getMonthlyIncomeByType(),
+          getMonthlyExpenseByType()
+        ]);
+
+        console.log('Income data:', incomeResponse);
+        console.log('Expense data:', expenseResponse);
+
+        setIncomeData(incomeResponse || []);
+        setExpenseData(expenseResponse || []);
+      } catch (err) {
+        console.error('Error fetching chart data:', err);
+      } finally {
+        setChartsLoading(false);
+      }
+    };
+
+    fetchChartData();
+  }, []);
+
+  // Create charts when data is available
+  useEffect(() => {
+    const initializeCharts = async () => {
+      // Destroy existing charts
+      if (incomeChartInstance.current) {
+        incomeChartInstance.current.destroy();
+      }
+      if (expenseChartInstance.current) {
+        expenseChartInstance.current.destroy();
+      }
+
+      // Income chart colors
+      const incomeColors = [
+        'rgba(34, 197, 94, 0.8)',   // Green
+        'rgba(59, 130, 246, 0.8)',  // Blue
+        'rgba(168, 85, 247, 0.8)',  // Purple
+        'rgba(236, 72, 153, 0.8)',  // Pink
+        'rgba(245, 158, 11, 0.8)',  // Amber
+        'rgba(239, 68, 68, 0.8)',   // Red
+      ];
+
+      // Expense chart colors
+      const expenseColors = [
+        'rgba(239, 68, 68, 0.8)',   // Red
+        'rgba(245, 158, 11, 0.8)',  // Amber
+        'rgba(236, 72, 153, 0.8)',  // Pink
+        'rgba(168, 85, 247, 0.8)',  // Purple
+        'rgba(59, 130, 246, 0.8)',  // Blue
+        'rgba(34, 197, 94, 0.8)',   // Green
+      ];
+
+      // Create charts
+      if (incomeData.length > 0) {
+        incomeChartInstance.current = await createPieChart(
+          incomeChartRef, 
+          incomeData, 
+          'Monthly Income by Type', 
+          incomeColors
+        );
+      }
+
+      if (expenseData.length > 0) {
+        expenseChartInstance.current = await createPieChart(
+          expenseChartRef, 
+          expenseData, 
+          'Monthly Expense by Type', 
+          expenseColors
+        );
+      }
+    };
+
+    if (!chartsLoading && (incomeData.length > 0 || expenseData.length > 0)) {
+      initializeCharts();
+    }
+
+    // Cleanup function
+    return () => {
+      if (incomeChartInstance.current) {
+        incomeChartInstance.current.destroy();
+      }
+      if (expenseChartInstance.current) {
+        expenseChartInstance.current.destroy();
+      }
+    };
+  }, [incomeData, expenseData, chartsLoading]);
+
   if (loading) {
     return (
       <div className="dashboard-container">
@@ -112,6 +278,50 @@ const Dashboard = () => {
             </div>
           </div>
         </div>        
+
+        {/* Charts Section */}
+        <div className="charts-section">
+          <div className="charts-container">
+            {/* Income Chart */}
+            <div className="chart-card">
+              <h3>📊 Monthly Income by Type</h3>
+              <div className="chart-wrapper">
+                {chartsLoading ? (
+                  <div className="chart-loading">
+                    <div className="spinner"></div>
+                    <p>Loading income data...</p>
+                  </div>
+                ) : incomeData.length > 0 ? (
+                  <canvas ref={incomeChartRef}></canvas>
+                ) : (
+                  <div className="no-data-message">
+                    <p>📈 No income data available for this month</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Expense Chart */}
+            <div className="chart-card">
+              <h3>📊 Monthly Expense by Type</h3>
+              <div className="chart-wrapper">
+                {chartsLoading ? (
+                  <div className="chart-loading">
+                    <div className="spinner"></div>
+                    <p>Loading expense data...</p>
+                  </div>
+                ) : expenseData.length > 0 ? (
+                  <canvas ref={expenseChartRef}></canvas>
+                ) : (
+                  <div className="no-data-message">
+                    <p>📉 No expense data available for this month</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
         <div className="user-details-section">
           <div className="details-card">
             <h2> User Information</h2>

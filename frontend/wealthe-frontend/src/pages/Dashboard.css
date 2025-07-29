@@ -149,6 +149,7 @@
 }
 
 .user-details-section {
+  display: none; /* Hide User Information section */
   margin-bottom: 30px;
   position: relative;
   z-index: 1;
@@ -292,5 +293,88 @@
   
   .dashboard-header h1 {
     font-size: 2rem;
+  }
+}
+
+/* Pie Charts Section */
+.charts-section {
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.chart-card {
+  background: rgba(255, 237, 237, 0.344);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.chart-card h3 {
+  margin: 0 0 20px 0;
+  color: rgb(62, 62, 62);
+  font-size: 1.3rem;
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  position: relative;
+}
+
+.chart-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: rgb(92, 92, 92);
+}
+
+.chart-loading .spinner {
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+.no-data-message {
+  text-align: center;
+  color: rgb(92, 92, 92);
+  font-style: italic;
+  padding: 20px;
+}
+
+/* Responsive design for charts */
+@media (max-width: 768px) {
+  .charts-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .chart-wrapper {
+    height: 250px;
   }
 }
