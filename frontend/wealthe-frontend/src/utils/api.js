@@ -944,3 +944,9 @@ export const getTaxExpense = async () => {
     method: 'GET',
   });
 };
+
+export const getTaxInvestment = async () => {
+  return apiCall('/user/tax-investment', {
+    method: 'GET',
+  });
+};

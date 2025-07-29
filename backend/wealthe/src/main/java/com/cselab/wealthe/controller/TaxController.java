@@ -157,4 +157,61 @@ public class TaxController {
 
     }
 
+    @GetMapping("/user/tax-investment")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getTaxInvestment() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // Calculate "last July 1st" date dynamically
+            LocalDate now = LocalDate.now();
+            LocalDate lastJuly1st;
+
+            if (now.getMonthValue() >= 7) {
+                // If current month is July or later, use July 1st of current year
+                lastJuly1st = LocalDate.of(now.getYear(), 7, 1);
+            } else {
+                // If current month is before July, use July 1st of previous year
+                lastJuly1st = LocalDate.of(now.getYear() - 1, 7, 1);
+            }
+
+            String dateFilter = lastJuly1st.toString(); // Converts to 'YYYY-MM-DD' format
+
+            // Get all investment types from rule_investment_type table
+            String rulesSql = "SELECT title FROM rule_investment_type";
+            List<String> investmentTypes = jdbcTemplate.queryForList(rulesSql, String.class);
+
+            Map<String, Double> investmentTotals = new HashMap<>();
+
+// Query for each investment type dynamically
+            for (String investmentType : investmentTypes) {
+                String sql = "SELECT COALESCE(SUM(amount), 0) as total FROM investment WHERE user_id = ? AND title = ? AND date >= ?::date";
+                Double total = jdbcTemplate.queryForObject(sql, Double.class, userId, investmentType, dateFilter);
+
+                // Create a clean key name (remove spaces, convert to camelCase)
+                String key = investmentType.toLowerCase()
+                        .replace(" ", "")
+                        .replace("-", "");
+
+                investmentTotals.put(key, total != null ? total : 0.0);
+            }
+
+// Add all totals to response
+            response.putAll(investmentTotals);
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("error", "Failed to retrieve investment data: " + e.getMessage());
+            return response;
+        }
+
+    }
+
 }
