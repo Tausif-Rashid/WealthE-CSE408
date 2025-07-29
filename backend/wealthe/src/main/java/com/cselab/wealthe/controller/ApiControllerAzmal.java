@@ -2901,4 +2901,337 @@ public class ApiControllerAzmal {
 
 
 
+    @GetMapping("/user/bank-loans")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserBankLoanList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try {
+                sql = "SELECT id, user_id, bank_name, account, interest, amount, remaining FROM liability_bank_loan WHERE user_id=?";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @GetMapping("/user/person-loans")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getUserPersonLoanList() {
+        String sql;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int id = Integer.parseInt(auth.getName());
+
+        if (id != 0) {
+            try {
+                sql = "SELECT id, user_id, lender_name, lender_nid, amount, remaining, interest FROM liability_person_loan WHERE user_id=?";
+                return jdbcTemplate.queryForList(sql, id);
+            } catch (Exception e) {
+                System.out.println(e);
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    @PostMapping("/user/bank-loan")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> addBankLoan(@RequestBody Map<String, Object> bankLoanData) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userId != 0) {
+            try {
+                String sql = "INSERT INTO liability_bank_loan(user_id, bank_name, account, interest, amount, remaining) VALUES (?, ?, ?, ?, ?, ?)";
+
+                int result = jdbcTemplate.update(sql,
+                        userId, // Use authenticated user_id for security
+                        bankLoanData.get("bank_name"),
+                        bankLoanData.get("account"),
+                        bankLoanData.get("interest"),
+                        bankLoanData.get("amount"),
+                        bankLoanData.get("remaining")
+                );
+
+                if (result > 0) {
+                    response.put("success", true);
+                    response.put("message", "Bank loan added successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "Failed to add bank loan");
+                    return ResponseEntity.badRequest().body(response);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+                response.put("success", false);
+                response.put("message", "Error occurred while adding bank loan: " + e.getMessage());
+                return ResponseEntity.internalServerError().body(response);
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    @PostMapping("/user/person-loan")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> addPersonLoan(@RequestBody Map<String, Object> personLoanData) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userId != 0) {
+            try {
+                String sql = "INSERT INTO liability_person_loan(user_id, lender_name, lender_nid, amount, remaining, interest) VALUES (?, ?, ?, ?, ?, ?)";
+
+                int result = jdbcTemplate.update(sql,
+                        userId, // Use authenticated user_id for security
+                        personLoanData.get("lender_name"),
+                        personLoanData.get("lender_nid"),
+                        personLoanData.get("amount"),
+                        personLoanData.get("remaining"),
+                        personLoanData.get("interest")
+                );
+
+                if (result > 0) {
+                    response.put("success", true);
+                    response.put("message", "Person loan added successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "Failed to add person loan");
+                    return ResponseEntity.badRequest().body(response);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+                response.put("success", false);
+                response.put("message", "Error occurred while adding person loan: " + e.getMessage());
+                return ResponseEntity.internalServerError().body(response);
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    @DeleteMapping("/user/bank-loan/{id}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> deleteBankLoan(@PathVariable int id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userId != 0) {
+            try {
+                // First check if the bank loan exists and belongs to the authenticated user
+                String checkSql = "SELECT COUNT(*) FROM liability_bank_loan WHERE id = ? AND user_id = ?";
+                int count = jdbcTemplate.queryForObject(checkSql, Integer.class, id, userId);
+
+                if (count == 0) {
+                    response.put("success", false);
+                    response.put("message", "Bank loan not found or unauthorized access");
+                    return ResponseEntity.notFound().build();
+                }
+
+                // Delete the bank loan
+                String deleteSql = "DELETE FROM liability_bank_loan WHERE id = ? AND user_id = ?";
+                int result = jdbcTemplate.update(deleteSql, id, userId);
+
+                if (result > 0) {
+                    response.put("success", true);
+                    response.put("message", "Bank loan deleted successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "Failed to delete bank loan");
+                    return ResponseEntity.badRequest().body(response);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+                response.put("success", false);
+                response.put("message", "Error occurred while deleting bank loan: " + e.getMessage());
+                return ResponseEntity.internalServerError().body(response);
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    @DeleteMapping("/user/person-loan/{id}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> deletePersonLoan(@PathVariable int id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userId != 0) {
+            try {
+                // First check if the person loan exists and belongs to the authenticated user
+                String checkSql = "SELECT COUNT(*) FROM liability_person_loan WHERE id = ? AND user_id = ?";
+                int count = jdbcTemplate.queryForObject(checkSql, Integer.class, id, userId);
+
+                if (count == 0) {
+                    response.put("success", false);
+                    response.put("message", "Person loan not found or unauthorized access");
+                    return ResponseEntity.notFound().build();
+                }
+
+                // Delete the person loan
+                String deleteSql = "DELETE FROM liability_person_loan WHERE id = ? AND user_id = ?";
+                int result = jdbcTemplate.update(deleteSql, id, userId);
+
+                if (result > 0) {
+                    response.put("success", true);
+                    response.put("message", "Person loan deleted successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "Failed to delete person loan");
+                    return ResponseEntity.badRequest().body(response);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+                response.put("success", false);
+                response.put("message", "Error occurred while deleting person loan: " + e.getMessage());
+                return ResponseEntity.internalServerError().body(response);
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    @PutMapping("/user/bank-loan/{id}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> updateBankLoan(@PathVariable int id, @RequestBody Map<String, Object> bankLoanData) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userId != 0) {
+            try {
+                // First check if the bank loan exists and belongs to the authenticated user
+                String checkSql = "SELECT COUNT(*) FROM liability_bank_loan WHERE id = ? AND user_id = ?";
+                int count = jdbcTemplate.queryForObject(checkSql, Integer.class, id, userId);
+
+                if (count == 0) {
+                    response.put("success", false);
+                    response.put("message", "Bank loan not found or unauthorized access");
+                    return ResponseEntity.notFound().build();
+                }
+
+                // Update the bank loan (excluding id and user_id from update for security)
+                String updateSql = "UPDATE liability_bank_loan SET bank_name=?, account=?, interest=?, amount=?, remaining=? WHERE id=? AND user_id=?";
+
+                int result = jdbcTemplate.update(updateSql,
+                        bankLoanData.get("bank_name"),
+                        bankLoanData.get("account"),
+                        bankLoanData.get("interest"),
+                        bankLoanData.get("amount"),
+                        bankLoanData.get("remaining"),
+                        id,
+                        userId
+                );
+
+                if (result > 0) {
+                    response.put("success", true);
+                    response.put("message", "Bank loan updated successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "Failed to update bank loan");
+                    return ResponseEntity.badRequest().body(response);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+                response.put("success", false);
+                response.put("message", "Error occurred while updating bank loan: " + e.getMessage());
+                return ResponseEntity.internalServerError().body(response);
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
+
+    @PutMapping("/user/person-loan/{id}")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> updatePersonLoan(@PathVariable int id, @RequestBody Map<String, Object> personLoanData) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (userId != 0) {
+            try {
+                // First check if the person loan exists and belongs to the authenticated user
+                String checkSql = "SELECT COUNT(*) FROM liability_person_loan WHERE id = ? AND user_id = ?";
+                int count = jdbcTemplate.queryForObject(checkSql, Integer.class, id, userId);
+
+                if (count == 0) {
+                    response.put("success", false);
+                    response.put("message", "Person loan not found or unauthorized access");
+                    return ResponseEntity.notFound().build();
+                }
+
+                // Update the person loan (excluding id and user_id from update for security)
+                String updateSql = "UPDATE liability_person_loan SET lender_name=?, lender_nid=?, amount=?, remaining=?, interest=? WHERE id=? AND user_id=?";
+
+                int result = jdbcTemplate.update(updateSql,
+                        personLoanData.get("lender_name"),
+                        personLoanData.get("lender_nid"),
+                        personLoanData.get("amount"),
+                        personLoanData.get("remaining"),
+                        personLoanData.get("interest"),
+                        id,
+                        userId
+                );
+
+                if (result > 0) {
+                    response.put("success", true);
+                    response.put("message", "Person loan updated successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "Failed to update person loan");
+                    return ResponseEntity.badRequest().body(response);
+                }
+
+            } catch (Exception e) {
+                System.out.println(e);
+                response.put("success", false);
+                response.put("message", "Error occurred while updating person loan: " + e.getMessage());
+                return ResponseEntity.internalServerError().body(response);
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "Unauthorized access");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        }
+    }
 }

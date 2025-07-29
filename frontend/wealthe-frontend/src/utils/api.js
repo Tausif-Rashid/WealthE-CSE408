@@ -837,3 +837,97 @@ export const deletePlot = async (plotId) => {
   });
 };
 
+//liabilities apis
+export const getBankLoans = async () => {
+  return apiCall('/user/bank-loans', {
+    method: 'GET',
+  });
+};
+
+export const getPersonLoans = async () => {
+  return apiCall('/user/person-loans', {
+    method: 'GET',
+  });
+};
+
+export const addBankLoan = async (loanData) => {
+  return apiCall('/user/bank-loan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bank_name: loanData.bank_name,
+      account: loanData.account,
+      interest: loanData.interest,
+      amount: loanData.amount,
+      remaining: loanData.remaining
+    }),
+  });
+};
+
+export const addPersonLoan = async (loanData) => {
+  return apiCall('/user/person-loan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      lender_name: loanData.lender_name,
+      lender_nid: loanData.lender_nid,
+      amount: loanData.amount,
+      remaining: loanData.remaining,
+      interest: loanData.interest
+    }),
+  });
+};
+
+export const deleteBankLoan = async (id) => {
+  return apiCall(`/user/bank-loan/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const editBankLoan = async (id, loanData) => {
+  return apiCall(`/user/bank-loan/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bank_name: loanData.bank_name,
+      account: loanData.account,
+      interest: loanData.interest,
+      amount: loanData.amount,
+      remaining: loanData.remaining
+    }),
+  });
+};
+
+export const deletePersonLoan = async (id) => {
+  return apiCall(`/user/person-loan/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const editPersonLoan = async (id, loanData) => {
+  return apiCall(`/user/person-loan/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      lender_name: loanData.lender_name,
+      lender_nid: loanData.lender_nid,
+      amount: loanData.amount,
+      remaining: loanData.remaining,
+      interest: loanData.interest
+    }),
+  });
+};
