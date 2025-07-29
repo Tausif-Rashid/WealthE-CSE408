@@ -1075,3 +1075,15 @@ export const getPreviousMonthsData = async () => {
     method: 'GET',
   });
 };
+
+export const getTotalTaxPayers = async () => {
+  return apiCall('/admin/total-tax-payers', {
+    method: 'GET',
+  });
+};
+
+export const getAdminName = async () => {
+  return apiCall('/admin/name', {
+    method: 'GET',
+  });
+};

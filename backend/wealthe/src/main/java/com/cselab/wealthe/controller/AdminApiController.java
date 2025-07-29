@@ -48,6 +48,35 @@ public class AdminApiController {
         }
     }
 
+    @GetMapping("/admin/name")
+    public Map<String, Object> getAdminName() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        int userId = Integer.parseInt(auth.getName());
+        try {
+            String sql = "SELECT name FROM admin WHERE id = ?";
+            System.out.println("api called for admin total user");
+            return jdbcTemplate.queryForMap(sql, userId);
+        } catch (Exception e) {
+            logger.error("Failed to get total users count: " + e.getMessage());
+            return Map.of("total", 0);
+        }
+    }
+
+
+
+    @GetMapping("/admin/total-tax-payers")
+    public Map<String, Object> getTotalTaxPayers() {
+        try {
+            String sql = "SELECT COUNT(DISTINCT user_id) FROM tax_form_table WHERE done_submit=true";
+            System.out.println("api called for admin total user");
+            return jdbcTemplate.queryForMap(sql);
+        } catch (Exception e) {
+            logger.error("Failed to get total Taxpayer count: " + e.getMessage());
+            return Map.of("total", 0);
+        }
+    }
+
     @GetMapping("/admin/income-slabs")
     @CrossOrigin(origins = "*")
     public List<Map<String, Object>> getIncomeSlab() {
