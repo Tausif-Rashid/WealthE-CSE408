@@ -39,6 +39,9 @@ public class TaxController {
     private JdbcTemplate jdbcTemplate;
 
     @Autowired
+    private FetchPdfDataService fetchPdfDataService;
+
+    @Autowired
     private static final Logger logger = LoggerFactory.getLogger(TaxController.class);
 
 
@@ -53,9 +56,9 @@ public class TaxController {
             // Get user ID from authentication
             int userId = Integer.parseInt(auth.getName());
 
-            FetchPdfDataService fetchPdfDataService = null;
-            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
-            System.out.println(data.toString());
+            System.out.println("asdf asdf asdf asdf");
+
+
 
             // Check if user has submitted tax form data
             String countSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? ";
@@ -280,6 +283,7 @@ public class TaxController {
                     response.put("bankAccount", bankAccountTotal);
                     response.put("car", carTotal);
                     response.put("flat", flatTotal);
+                    response.put("jewellery", jewelryTotal);
                     response.put("jewellery", jewelryTotal);
                     response.put("plot", plotTotal);
 
@@ -758,7 +762,8 @@ public class TaxController {
                         .replace(" ", "")
                         .replace("-", "")
                         .replace("3month", "threemonth")
-                .replace("5years", "fiveyears");
+                        .replace("5years", "fiveyears");
+
 
                 investmentTotals.put(key, total != null ? total : 0.0);
             }
@@ -932,9 +937,8 @@ public class TaxController {
                 return response;
             }
 
-            FetchPdfDataService fetchPdfDataService = null;
-            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
-            System.out.println(data.toString());
+
+
 
 
             // 11. Build response object
@@ -944,7 +948,11 @@ public class TaxController {
             response.put("min_tax", (int) Math.ceil(minTax != null ? minTax : 0.0));
             response.put("payable_tax", (int) Math.ceil(payableTax != null ? payableTax : 0.0));
 
+            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
+            System.out.println(data.toString());
+
             return response;
+
 
         } catch (Exception e) {
             System.out.println("Error occurred: " + e);
