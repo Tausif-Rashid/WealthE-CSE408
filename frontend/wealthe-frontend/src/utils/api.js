@@ -962,3 +962,29 @@ export const getTaxLiability = async () => {
     method: 'GET',
   });
 };
+
+export const createTaxForm = async () => {
+  return apiCall('/user/tax-personalInfo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}), // Empty body
+  });
+};
+
+export const updateTaxFormIncome = async (incomeData) => {
+  return apiCall('/user/update-tax-form-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      income_salary: incomeData.salary,
+      income_agriculture: incomeData.agriculture,
+      income_rent: incomeData.rent,
+      income_interest: incomeData.interest,
+      income_others: incomeData.others
+    }),
+  });
+};
