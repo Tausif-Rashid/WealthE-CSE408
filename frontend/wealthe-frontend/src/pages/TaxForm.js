@@ -57,10 +57,11 @@ const TaxForm = () => {
       others: ''
     },
     investment: {
-      providentFund: '',
-      lifeInsurance: '',
-      mutualFund: '',
-      otherInvestment: ''
+      three_month_sanchaypatra: '',
+      five_years_sanchaypatra: '',
+      Zakat: '',
+      FDR: '',
+      family_sanchaypatra: ''
     },
     assetLiability: {
       totalAssets: '',
@@ -260,6 +261,12 @@ const TaxForm = () => {
       } catch (error) {
         console.error('Error fetching income data:', error);
       }
+    }else if(activeTab === 1){
+      console.log('Expense data getting:');
+
+      
+    }else if(activeTab === 2){
+     
     }
 
     // Map tab index to form data key
@@ -277,10 +284,48 @@ const TaxForm = () => {
       if (tabName === 'income') {
         console.log('Updating income data:', currentTabData);
         response = await updateTaxFormIncome(currentTabData);
-      } else if (tabName === 'expense') {
-        console.log('Updating expense data:', currentTabData);
-        response = await updateTaxFormExpense(currentTabData);
-      } else {
+
+        const expenses = await getTaxExpense();
+      
+        if(expenses){
+          const expense = expenses;
+          setFormData(prev => ({
+            ...prev,
+            expense: {
+              ...prev.expense,
+              personal: expense.personal?.toString() || '',
+              housing: expense.housing?.toString() || '',
+              utility: expense.utility?.toString() || '',
+              education: expense.education?.toString() || '',
+              transport: expense.transportation?.toString() || '',
+              others: expense.others?.toString() || ''
+            }
+          }));
+        }
+              } else if (tabName === 'expense') {
+          console.log('Updating expense data:', currentTabData);
+          response = await updateTaxFormExpense(currentTabData);
+
+          const investments = await getTaxInvestment();
+          console.log('Investment data:', investments);
+                 if(investments){
+             const investment = investments;
+             setFormData(prev => ({
+               ...prev,
+               investment: {
+                 ...prev.investment,
+                 three_month_sanchaypatra: investment.threemonthshanchaypatra?.toString() || '',
+                 five_years_sanchaypatra: investment.fiveyearsshanchaypatra?.toString() || '',
+                 Zakat: investment.zakat?.toString() || '',
+                 FDR: investment.fdr?.toString() || '',
+                 family_sanchaypatra: investment.familyshanchaypatra?.toString() || ''
+               }
+             }));
+           }
+        } else if (tabName === 'investment') {
+          console.log('Updating investment data:', currentTabData);
+          response = await updateTaxFormInvestment(currentTabData);
+        } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
           headers: {
@@ -291,8 +336,8 @@ const TaxForm = () => {
         });
       }
 
-      if (tabName === 'income' || tabName === 'expense') {
-        // For income and expense APIs, check the success property in JSON response
+      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment') {
+        // For income, expense, and investment APIs, check the success property in JSON response
         if (response.success) {
           // Move to next tab
           setActiveTab(prev => prev + 1);
@@ -338,9 +383,11 @@ const TaxForm = () => {
       let response;
       if (tabName === 'income') {
         response = await updateTaxFormIncome(currentTabData);
-      } else if (tabName === 'expense') {
-        response = await updateTaxFormExpense(currentTabData);
-      } else {
+              } else if (tabName === 'expense') {
+          response = await updateTaxFormExpense(currentTabData);
+        } else if (tabName === 'investment') {
+          response = await updateTaxFormInvestment(currentTabData);
+        } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
           headers: {
@@ -351,8 +398,8 @@ const TaxForm = () => {
         });
       }
 
-      if (tabName === 'income' || tabName === 'expense') {
-        // For income and expense APIs, check the success property in JSON response
+      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment') {
+        // For income, expense, and investment APIs, check the success property in JSON response
         if (response.success) {
           showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
         } else {
@@ -713,43 +760,53 @@ const TaxForm = () => {
       <h3>Investment Details</h3>
       <div className="tax-form-grid">
         <div className="tax-form-group">
-          <label htmlFor="providentFund">Provident Fund</label>
+          <label htmlFor="three_month_sanchaypatra">Three Month Sanchaypatra</label>
           <input
             type="number"
-            id="providentFund"
-            value={formData.investment.providentFund}
-            onChange={(e) => handleInputChange('investment', 'providentFund', e.target.value)}
-            placeholder="Enter provident fund amount"
+            id="three_month_sanchaypatra"
+            value={formData.investment.three_month_sanchaypatra}
+            onChange={(e) => handleInputChange('investment', 'three_month_sanchaypatra', e.target.value)}
+            placeholder="Enter three month sanchaypatra amount"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="lifeInsurance">Life Insurance</label>
+          <label htmlFor="five_years_sanchaypatra">Five Years Sanchaypatra</label>
           <input
             type="number"
-            id="lifeInsurance"
-            value={formData.investment.lifeInsurance}
-            onChange={(e) => handleInputChange('investment', 'lifeInsurance', e.target.value)}
-            placeholder="Enter life insurance amount"
+            id="five_years_sanchaypatra"
+            value={formData.investment.five_years_sanchaypatra}
+            onChange={(e) => handleInputChange('investment', 'five_years_sanchaypatra', e.target.value)}
+            placeholder="Enter five years sanchaypatra amount"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="mutualFund">Mutual Fund</label>
+          <label htmlFor="Zakat">Zakat</label>
           <input
             type="number"
-            id="mutualFund"
-            value={formData.investment.mutualFund}
-            onChange={(e) => handleInputChange('investment', 'mutualFund', e.target.value)}
-            placeholder="Enter mutual fund amount"
+            id="Zakat"
+            value={formData.investment.Zakat}
+            onChange={(e) => handleInputChange('investment', 'Zakat', e.target.value)}
+            placeholder="Enter zakat amount"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="otherInvestment">Other Investments</label>
+          <label htmlFor="FDR">FDR</label>
           <input
             type="number"
-            id="otherInvestment"
-            value={formData.investment.otherInvestment}
-            onChange={(e) => handleInputChange('investment', 'otherInvestment', e.target.value)}
-            placeholder="Enter other investment amount"
+            id="FDR"
+            value={formData.investment.FDR}
+            onChange={(e) => handleInputChange('investment', 'FDR', e.target.value)}
+            placeholder="Enter FDR amount"
+          />
+        </div>
+        <div className="tax-form-group">
+          <label htmlFor="family_sanchaypatra">Family Sanchaypatra</label>
+          <input
+            type="number"
+            id="family_sanchaypatra"
+            value={formData.investment.family_sanchaypatra}
+            onChange={(e) => handleInputChange('investment', 'family_sanchaypatra', e.target.value)}
+            placeholder="Enter family sanchaypatra amount"
           />
         </div>
       </div>
