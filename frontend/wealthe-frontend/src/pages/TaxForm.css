@@ -72,19 +72,12 @@
   border-radius: 8px;
   color: rgb(39, 38, 38);
   font-weight: 600;
-  cursor: pointer;
   transition: all 0.3s ease;
   min-width: auto;
   position: relative;
   white-space: nowrap;
   flex-shrink: 0;
-}
-
-.tax-form-tab-button:hover:not(:disabled) {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: #3b82f6;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+  pointer-events: none;
 }
 
 .tax-form-tab-button.active {
@@ -100,9 +93,8 @@
   color: white;
 }
 
-.tax-form-tab-button:disabled {
+.tax-form-tab-button.disabled {
   opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .tax-form-tab-icon {
@@ -371,6 +363,54 @@
   border-top-color: #fff;
   animation: spin 1s ease-in-out infinite;
   margin-right: 10px;
+}
+
+/* Readonly Fields */
+.readonly-field {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  border: 1px solid #dee2e6;
+}
+
+.readonly-field:focus {
+  outline: none;
+  border-color: #dee2e6;
+  box-shadow: none;
+}
+
+/* Disabled Radio and Checkbox Labels */
+.tax-form-radio input:disabled + span,
+.tax-form-checkbox input:disabled + span {
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* Tax Form Loading State */
+.tax-form-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.tax-form-spinner {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(59, 130, 246, 0.3);
+  border-radius: 50%;
+  border-top-color: #3b82f6;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+.tax-form-loading p {
+  color: rgb(39, 38, 38);
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 @keyframes spin {

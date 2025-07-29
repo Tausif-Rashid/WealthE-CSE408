@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MessageDialog from '../components/MessageDialog';
+import { getUserInfo, getTaxInfo } from '../utils/api';
 import './TaxForm.css';
 
 const TaxForm = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogType, setDialogType] = useState('');
   const [dialogTitle, setDialogTitle] = useState('');
@@ -83,6 +85,66 @@ const TaxForm = () => {
     { name: 'Tax Computation', icon: '🧮' }
   ];
 
+  // Fetch user info and tax info when component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setInitialLoading(true);
+      try {
+        // Fetch both user info and tax info
+        const [userData, taxData] = await Promise.all([
+          getUserInfo(),
+          getTaxInfo()
+        ]);
+
+        console.log('User data:', userData);
+        console.log('Tax data:', taxData);
+
+        if (userData && userData.length > 0) {
+          const user = userData[0];
+          const tax = taxData && taxData.length > 0 ? taxData[0] : null;
+
+          // Populate form with user data and tax data
+          setFormData(prev => ({
+            ...prev,
+            personalInfo: {
+              ...prev.personalInfo,
+              // From user data
+              taxpayerName: user.name || '',
+              nidPassport: user.nid || '',
+              dateOfBirth: user.dob || '',
+              spouseName: user.spouse_name || '',
+              spouseTin: user.spouse_tin || '',
+              mobile: user.phone || '',
+              // From tax data
+              email: tax?.email || '',
+              tin: tax?.tin || '',
+              circle: tax?.tax_circle?.toString() || '',
+              taxZone: tax?.tax_zone?.toString() || '',
+              address: tax?.area_name || '',
+              assessmentYear: `${new Date().getFullYear() - 1}-${new Date().getFullYear()}`,
+              residentialStatus: tax?.is_resident ? 'resident' : 'non-resident',
+              specialBenefits: {
+                warWounded: tax?.is_ff || false,
+                female: tax?.is_female || false,
+                thirdGender: false, // Not in API response
+                disabled: tax?.is_disabled || false,
+                aged65: false, // Not in API response
+                parentOfDisabled: false // Not in API response
+              }
+            }
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        showDialog('error', 'Error', 'Failed to load user information. Please try again.');
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleInputChange = (tabName, fieldName, value) => {
     setFormData(prev => ({
       ...prev,
@@ -106,6 +168,42 @@ const TaxForm = () => {
     }));
   };
 
+  const validatePersonalInfo = () => {
+    const personalInfo = formData.personalInfo;
+    console.log('Validating personal info:', personalInfo);
+    
+    const requiredFields = [
+      { field: 'taxpayerName', label: 'Name of the Taxpayer' },
+      { field: 'nidPassport', label: 'National ID No. / Passport No.' },
+      { field: 'tin', label: 'TIN' },
+      { field: 'circle', label: 'Circle' },
+      { field: 'taxZone', label: 'Tax Zone' },
+      { field: 'assessmentYear', label: 'Assessment Year' },
+      { field: 'dateOfBirth', label: 'Date of Birth' },
+      { field: 'address', label: 'Address' },
+      { field: 'mobile', label: 'Mobile' },
+      { field: 'email', label: 'Email' }
+    ];
+
+    const emptyFields = requiredFields.filter(({ field }) => {
+      const value = personalInfo[field];
+      const isEmpty = !value || value.toString().trim() === '';
+      console.log(`Field ${field}: "${value}" - isEmpty: ${isEmpty}`);
+      return isEmpty;
+    });
+
+    console.log('Empty fields:', emptyFields);
+
+    if (emptyFields.length > 0) {
+      const fieldLabels = emptyFields.map(({ label }) => label).join(', ');
+      showDialog('warning', 'Missing Information', 
+        `Please update the following fields in your user profile: ${fieldLabels}. You can update this information in your profile settings.`);
+      return false;
+    }
+
+    return true;
+  };
+
   const showDialog = (type, title, message) => {
     setDialogType(type);
     setDialogTitle(title);
@@ -122,8 +220,24 @@ const TaxForm = () => {
   };
 
   const handleNext = async () => {
-    const currentTabData = formData[Object.keys(formData)[activeTab]];
-    const tabName = Object.keys(formData)[activeTab];
+    console.log('handleNext called, activeTab:', activeTab);
+    
+    // Validate personal info tab
+    if (activeTab === 0) {
+      console.log('Validating personal info tab...');
+      if (!validatePersonalInfo()) {
+        console.log('Validation failed, returning early');
+        return;
+      }
+      console.log('Validation passed');
+    }
+
+    // Map tab index to form data key
+    const tabMapping = ['personalInfo', 'income', 'expense', 'investment', 'assetLiability', 'taxComputation'];
+    const tabName = tabMapping[activeTab];
+    const currentTabData = formData[tabName];
+    
+    console.log('Tab name:', tabName, 'Current tab data:', currentTabData);
     
     try {
       setLoading(true);
@@ -161,8 +275,10 @@ const TaxForm = () => {
   };
 
   const handleSubmit = async () => {
-    const currentTabData = formData[Object.keys(formData)[activeTab]];
-    const tabName = Object.keys(formData)[activeTab];
+    // Map tab index to form data key
+    const tabMapping = ['personalInfo', 'income', 'expense', 'investment', 'assetLiability', 'taxComputation'];
+    const tabName = tabMapping[activeTab];
+    const currentTabData = formData[tabName];
     
     try {
       setLoading(true);
@@ -202,8 +318,8 @@ const TaxForm = () => {
             type="text"
             id="taxpayerName"
             value={formData.personalInfo.taxpayerName}
-            onChange={(e) => handleInputChange('personalInfo', 'taxpayerName', e.target.value)}
-            placeholder="Enter taxpayer's full name"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -214,8 +330,8 @@ const TaxForm = () => {
             type="text"
             id="nidPassport"
             value={formData.personalInfo.nidPassport}
-            onChange={(e) => handleInputChange('personalInfo', 'nidPassport', e.target.value)}
-            placeholder="Enter NID or Passport number"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -226,8 +342,8 @@ const TaxForm = () => {
             type="text"
             id="tin"
             value={formData.personalInfo.tin}
-            onChange={(e) => handleInputChange('personalInfo', 'tin', e.target.value)}
-            placeholder="Enter TIN"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -238,8 +354,8 @@ const TaxForm = () => {
             type="text"
             id="circle"
             value={formData.personalInfo.circle}
-            onChange={(e) => handleInputChange('personalInfo', 'circle', e.target.value)}
-            placeholder="Enter circle"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -249,8 +365,8 @@ const TaxForm = () => {
             type="text"
             id="taxZone"
             value={formData.personalInfo.taxZone}
-            onChange={(e) => handleInputChange('personalInfo', 'taxZone', e.target.value)}
-            placeholder="Enter tax zone"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -261,8 +377,8 @@ const TaxForm = () => {
             type="text"
             id="assessmentYear"
             value={formData.personalInfo.assessmentYear}
-            onChange={(e) => handleInputChange('personalInfo', 'assessmentYear', e.target.value)}
-            placeholder="e.g., 2024-2025"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -276,7 +392,7 @@ const TaxForm = () => {
                 name="residentialStatus"
                 value="resident"
                 checked={formData.personalInfo.residentialStatus === 'resident'}
-                onChange={(e) => handleInputChange('personalInfo', 'residentialStatus', e.target.value)}
+                disabled
               />
               <span>Resident</span>
             </label>
@@ -286,69 +402,24 @@ const TaxForm = () => {
                 name="residentialStatus"
                 value="non-resident"
                 checked={formData.personalInfo.residentialStatus === 'non-resident'}
-                onChange={(e) => handleInputChange('personalInfo', 'residentialStatus', e.target.value)}
+                disabled
               />
               <span>Non-resident</span>
             </label>
           </div>
         </div>
 
-        {/* 7. Taxpayer's Status */}
-        <div className="tax-form-group">
-          <label>7. Taxpayer's Status</label>
-          <div className="tax-form-radio-group">
-            <label className="tax-form-radio">
-              <input
-                type="radio"
-                name="taxpayerStatus"
-                value="individual"
-                checked={formData.personalInfo.taxpayerStatus === 'individual'}
-                onChange={(e) => handleInputChange('personalInfo', 'taxpayerStatus', e.target.value)}
-              />
-              <span>Individual</span>
-            </label>
-            <label className="tax-form-radio">
-              <input
-                type="radio"
-                name="taxpayerStatus"
-                value="firm"
-                checked={formData.personalInfo.taxpayerStatus === 'firm'}
-                onChange={(e) => handleInputChange('personalInfo', 'taxpayerStatus', e.target.value)}
-              />
-              <span>Firm</span>
-            </label>
-            <label className="tax-form-radio">
-              <input
-                type="radio"
-                name="taxpayerStatus"
-                value="huf"
-                checked={formData.personalInfo.taxpayerStatus === 'huf'}
-                onChange={(e) => handleInputChange('personalInfo', 'taxpayerStatus', e.target.value)}
-              />
-              <span>Hindu Undivided Family</span>
-            </label>
-            <label className="tax-form-radio">
-              <input
-                type="radio"
-                name="taxpayerStatus"
-                value="others"
-                checked={formData.personalInfo.taxpayerStatus === 'others'}
-                onChange={(e) => handleInputChange('personalInfo', 'taxpayerStatus', e.target.value)}
-              />
-              <span>Others</span>
-            </label>
-          </div>
-        </div>
+        
 
-        {/* 8. Special Benefits */}
+        {/* 7. Special Benefits */}
         <div className="tax-form-group full-width">
-          <label>8. Tick on the box for getting special benefit:</label>
+          <label>7. Tick on the box for getting special benefit:</label>
           <div className="tax-form-checkbox-group">
             <label className="tax-form-checkbox">
               <input
                 type="checkbox"
                 checked={formData.personalInfo.specialBenefits.warWounded}
-                onChange={(e) => handleSpecialBenefitChange('warWounded', e.target.checked)}
+                disabled
               />
               <span>A gazette war-wounded freedom fighter</span>
             </label>
@@ -356,65 +427,42 @@ const TaxForm = () => {
               <input
                 type="checkbox"
                 checked={formData.personalInfo.specialBenefits.female}
-                onChange={(e) => handleSpecialBenefitChange('female', e.target.checked)}
+                disabled
               />
               <span>Female</span>
             </label>
             <label className="tax-form-checkbox">
               <input
                 type="checkbox"
-                checked={formData.personalInfo.specialBenefits.thirdGender}
-                onChange={(e) => handleSpecialBenefitChange('thirdGender', e.target.checked)}
-              />
-              <span>Third gender</span>
-            </label>
-            <label className="tax-form-checkbox">
-              <input
-                type="checkbox"
                 checked={formData.personalInfo.specialBenefits.disabled}
-                onChange={(e) => handleSpecialBenefitChange('disabled', e.target.checked)}
+                disabled
               />
               <span>Disable person</span>
-            </label>
-            <label className="tax-form-checkbox">
-              <input
-                type="checkbox"
-                checked={formData.personalInfo.specialBenefits.aged65}
-                onChange={(e) => handleSpecialBenefitChange('aged65', e.target.checked)}
-              />
-              <span>Aged 65 years or more</span>
-            </label>
-            <label className="tax-form-checkbox">
-              <input
-                type="checkbox"
-                checked={formData.personalInfo.specialBenefits.parentOfDisabled}
-                onChange={(e) => handleSpecialBenefitChange('parentOfDisabled', e.target.checked)}
-              />
-              <span>A parent of a person with disability</span>
             </label>
           </div>
         </div>
 
-        {/* 9. Date of Birth */}
+        {/* 8. Date of Birth */}
         <div className="tax-form-group">
-          <label htmlFor="dateOfBirth">9. Date of Birth (DD MM YYYY)</label>
+          <label htmlFor="dateOfBirth">8. Date of Birth (DD MM YYYY)</label>
           <input
             type="date"
             id="dateOfBirth"
             value={formData.personalInfo.dateOfBirth}
-            onChange={(e) => handleInputChange('personalInfo', 'dateOfBirth', e.target.value)}
+            readOnly
+            className="readonly-field"
           />
         </div>
 
-        {/* 10. Spouse Information */}
+        {/* 9. Spouse Information */}
         <div className="tax-form-group">
-          <label htmlFor="spouseName">10. Wife/Husband's Name</label>
+          <label htmlFor="spouseName">9. Wife/Husband's Name</label>
           <input
             type="text"
             id="spouseName"
             value={formData.personalInfo.spouseName}
-            onChange={(e) => handleInputChange('personalInfo', 'spouseName', e.target.value)}
-            placeholder="Enter spouse's name"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -424,31 +472,20 @@ const TaxForm = () => {
             type="text"
             id="spouseTin"
             value={formData.personalInfo.spouseTin}
-            onChange={(e) => handleInputChange('personalInfo', 'spouseTin', e.target.value)}
-            placeholder="Enter spouse's TIN"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
-        {/* 11. Address and Contact Information */}
+        {/* 10. Address and Contact Information */}
         <div className="tax-form-group full-width">
-          <label htmlFor="address">11. Address</label>
+          <label htmlFor="address">10. Address</label>
           <textarea
             id="address"
             value={formData.personalInfo.address}
-            onChange={(e) => handleInputChange('personalInfo', 'address', e.target.value)}
-            placeholder="Enter your full address"
+            readOnly
+            className="readonly-field"
             rows="3"
-          />
-        </div>
-
-        <div className="tax-form-group">
-          <label htmlFor="telephone">Telephone</label>
-          <input
-            type="tel"
-            id="telephone"
-            value={formData.personalInfo.telephone}
-            onChange={(e) => handleInputChange('personalInfo', 'telephone', e.target.value)}
-            placeholder="Enter telephone number"
           />
         </div>
 
@@ -458,8 +495,8 @@ const TaxForm = () => {
             type="tel"
             id="mobile"
             value={formData.personalInfo.mobile}
-            onChange={(e) => handleInputChange('personalInfo', 'mobile', e.target.value)}
-            placeholder="Enter mobile number"
+            readOnly
+            className="readonly-field"
           />
         </div>
 
@@ -469,8 +506,8 @@ const TaxForm = () => {
             type="email"
             id="email"
             value={formData.personalInfo.email}
-            onChange={(e) => handleInputChange('personalInfo', 'email', e.target.value)}
-            placeholder="Enter email address"
+            readOnly
+            className="readonly-field"
           />
         </div>
       </div>
@@ -766,6 +803,24 @@ const TaxForm = () => {
     }
   };
 
+  // Show loading state while fetching initial data
+  if (initialLoading) {
+    return (
+      <div className="tax-form-container">
+        <div className="tax-form-header">
+          <h1>📋 Tax Form</h1>
+          <p>Loading your information...</p>
+        </div>
+        <div className="tax-form-content">
+          <div className="tax-form-loading">
+            <div className="tax-form-spinner"></div>
+            <p>Loading your personal information...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="tax-form-container">
       <div className="tax-form-header">
@@ -774,22 +829,19 @@ const TaxForm = () => {
       </div>
 
       <div className="tax-form-content">
-        <div className="tax-form-tabs-header">
+        <div className="tax-form-tabs-container">
+          <div className="tax-form-tabs-header">
             {tabs.map((tab, index) => (
-              <button
+              <div
                 key={index}
                 className={`tax-form-tab-button ${activeTab === index ? 'active' : ''} ${index < activeTab ? 'completed' : ''}`}
-                onClick={() => setActiveTab(index)}
-                disabled={loading}
               >
                 <span className="tax-form-tab-icon">{tab.icon}</span>
                 <span className="tax-form-tab-label">{tab.name}</span>
                 {index < activeTab && <span className="tax-form-checkmark">✓</span>}
-              </button>
+              </div>
             ))}
-        </div>
-        <div className="tax-form-tabs-container">
-          
+          </div>
 
           <div className="tax-form-tab-panel">
             {renderTabContent()}
@@ -834,7 +886,7 @@ const TaxForm = () => {
       </div>
 
       <MessageDialog
-        open={dialogOpen}
+        isOpen={dialogOpen}
         type={dialogType}
         title={dialogTitle}
         message={dialogMessage}
