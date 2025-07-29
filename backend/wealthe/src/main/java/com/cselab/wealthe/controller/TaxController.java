@@ -95,5 +95,66 @@ public class TaxController {
             response.put("error", "Failed to retrieve tax income data: " + e.getMessage());
             return response;
         }
+
     }
+
+    @GetMapping("/user/tax-expense")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getTaxExpense() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // Calculate "last July 1st" date dynamically
+            LocalDate now = LocalDate.now();
+            LocalDate lastJuly1st;
+
+            if (now.getMonthValue() >= 7) {
+                // If current month is July or later, use July 1st of current year
+                lastJuly1st = LocalDate.of(now.getYear(), 7, 1);
+            } else {
+                // If current month is before July, use July 1st of previous year
+                lastJuly1st = LocalDate.of(now.getYear() - 1, 7, 1);
+            }
+
+            String dateFilter = lastJuly1st.toString(); // Converts to 'YYYY-MM-DD' format
+
+            // SQL queries for each income type from last July 1st (cast string to date)
+            String housingSql = "SELECT COALESCE(SUM(amount), 0) as total FROM expense WHERE user_id = ? AND type = 'Rent' AND date >= ?::date";
+            String utilitySql = "SELECT COALESCE(SUM(amount), 0) as total FROM expense WHERE user_id = ? AND type = 'Utility' AND date >= ?::date";
+            String eduSql = "SELECT COALESCE(SUM(amount), 0) as total FROM expense WHERE user_id = ? AND type = 'Educational Expense' AND date >= ?::date";
+            String travelSql = "SELECT COALESCE(SUM(amount), 0) as total FROM expense WHERE user_id = ? AND type = 'Transportation' AND date >= ?::date";
+            String otherSql = "SELECT COALESCE(SUM(amount), 0) as total FROM expense WHERE user_id = ? AND type = 'Others' AND date >= ?::date";
+            String PersonalSql = "SELECT COALESCE(SUM(amount), 0) as total FROM expense WHERE user_id = ? AND type NOT IN ('Utility', 'Educational Expense', 'Rent', 'Transportation', 'Others') AND date >= ?::date";
+
+            // Execute queries and get totals
+            Double housingTotal = jdbcTemplate.queryForObject(housingSql, Double.class, userId, dateFilter);
+            Double utilityTotal = jdbcTemplate.queryForObject(utilitySql, Double.class, userId, dateFilter);
+            Double eduTotal = jdbcTemplate.queryForObject(eduSql, Double.class, userId, dateFilter);
+            Double travelTotal = jdbcTemplate.queryForObject(travelSql, Double.class, userId, dateFilter);
+            Double otherTotal = jdbcTemplate.queryForObject(otherSql, Double.class, userId, dateFilter);
+            Double personalTotal = jdbcTemplate.queryForObject(PersonalSql, Double.class, userId, dateFilter);
+
+            // Build response object
+            response.put("personal", personalTotal != null ? personalTotal : 0.0);
+            response.put("housing", housingTotal != null ? housingTotal : 0.0);
+            response.put("utility", utilityTotal != null ? utilityTotal : 0.0);
+            response.put("education", eduTotal != null ? eduTotal : 0.0);
+            response.put("transportation", travelTotal != null ? travelTotal : 0.0);
+            response.put("others", otherTotal != null ? otherTotal : 0.0);
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("error", "Failed to retrieve tax expense data: " + e.getMessage());
+            return response;
+        }
+
+    }
+
 }

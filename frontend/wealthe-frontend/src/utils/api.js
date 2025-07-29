@@ -938,3 +938,9 @@ export const getTaxIncome = async () => {
     method: 'GET',
   });
 };
+
+export const getTaxExpense = async () => {
+  return apiCall('/user/tax-expense', {
+    method: 'GET',
+  });
+};
