@@ -1,5 +1,6 @@
 package com.cselab.wealthe.controller;
 
+import com.cselab.wealthe.service.FetchPdfDataService;
 import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,10 @@ public class TaxController {
         try {
             // Get user ID from authentication
             int userId = Integer.parseInt(auth.getName());
+
+            FetchPdfDataService fetchPdfDataService = null;
+            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
+            System.out.println(data.toString());
 
             // Check if user has submitted tax form data
             String countSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? ";
@@ -276,6 +281,7 @@ public class TaxController {
                     response.put("car", carTotal);
                     response.put("flat", flatTotal);
                     response.put("jewellery", jewelryTotal);
+                    response.put("jewellery", jewelryTotal);
                     response.put("plot", plotTotal);
 
                     return response;
@@ -391,7 +397,7 @@ public class TaxController {
             int userId = Integer.parseInt(auth.getName());
 
             // Check if user already has a tax form
-            String checkSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? AND done_submit= false";
+            String checkSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? AND done_submit = false";
             Integer existingCount = jdbcTemplate.queryForObject(checkSql, Integer.class, userId);
 
             if (existingCount != null && existingCount > 0) {
@@ -400,11 +406,14 @@ public class TaxController {
                 return response;
             }
 
-            // SQL query to insert new tax form
-            String sql = "INSERT INTO tax_form_table(user_id) VALUES (?)";
+            // Get today's date
+            LocalDate today = LocalDate.now();
+
+            // SQL query to insert new tax form with today's date
+            String sql = "INSERT INTO tax_form_table(user_id, date) VALUES (?, ?)";
 
             // Execute the insert
-            int rowsAffected = jdbcTemplate.update(sql, userId);
+            int rowsAffected = jdbcTemplate.update(sql, userId, today);
 
             if (rowsAffected > 0) {
                 response.put("success", true);
@@ -924,6 +933,11 @@ public class TaxController {
                 response.put("error", "No tax form found or form already submitted");
                 return response;
             }
+
+            FetchPdfDataService fetchPdfDataService = null;
+            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
+            System.out.println(data.toString());
+
 
             // 11. Build response object
             response.put("gross_tax", grossTax != null ? grossTax : 0.0);
