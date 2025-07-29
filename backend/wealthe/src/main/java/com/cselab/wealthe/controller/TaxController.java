@@ -430,6 +430,194 @@ public class TaxController {
         }
     }
 
+    @PostMapping("/user/update-tax-form-expense")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> updateTaxFormExpense(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // Extract expense data from request
+            Object personalObj = request.get("personal");
+            Object housingObj = request.get("housing");
+            Object utilityObj = request.get("utility");
+            Object educationObj = request.get("education");
+            Object transportObj = request.get("transport");
+            Object othersObj = request.get("others");
+
+            // Convert to appropriate types with null safety
+            Double expensePersonal = personalObj != null ?
+                    (personalObj instanceof Number ? ((Number) personalObj).doubleValue() : Double.parseDouble(personalObj.toString())) : 0.0;
+            Double expenseHousing = housingObj != null ?
+                    (housingObj instanceof Number ? ((Number) housingObj).doubleValue() : Double.parseDouble(housingObj.toString())) : 0.0;
+            Double expenseUtility = utilityObj != null ?
+                    (utilityObj instanceof Number ? ((Number) utilityObj).doubleValue() : Double.parseDouble(utilityObj.toString())) : 0.0;
+            Double expenseEducation = educationObj != null ?
+                    (educationObj instanceof Number ? ((Number) educationObj).doubleValue() : Double.parseDouble(educationObj.toString())) : 0.0;
+            Double expenseTransport = transportObj != null ?
+                    (transportObj instanceof Number ? ((Number) transportObj).doubleValue() : Double.parseDouble(transportObj.toString())) : 0.0;
+            Double expenseOthers = othersObj != null ?
+                    (othersObj instanceof Number ? ((Number) othersObj).doubleValue() : Double.parseDouble(othersObj.toString())) : 0.0;
+
+            // SQL query to update tax form expense data
+            String sql = "UPDATE tax_form_table SET expense_personal = ?, expense_housing = ?, expense_utility = ?, expense_education = ?, expense_transport = ?, expense_others = ?, done_expense = true WHERE user_id = ? AND done_submit = false";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, expensePersonal, expenseHousing, expenseUtility, expenseEducation, expenseTransport, expenseOthers, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Tax form expense data updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "No tax form found or form already submitted");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format for expense values: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update tax form expense: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/update-tax-form-investment")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> updateTaxFormInvestment(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // Extract investment data from request
+            Object threeMonthObj = request.get("three_month_sanchaypatra");
+            Object fiveYearsObj = request.get("five_years_sanchaypatra");
+            Object zakatObj = request.get("Zakat");
+            Object fdrObj = request.get("FDR");
+            Object familyObj = request.get("family_sanchaypatra");
+
+            // Convert to appropriate types with null safety
+            Double threeMonthSanchaypatra = threeMonthObj != null ?
+                    (threeMonthObj instanceof Number ? ((Number) threeMonthObj).doubleValue() : Double.parseDouble(threeMonthObj.toString())) : 0.0;
+            Double fiveYearsSanchaypatra = fiveYearsObj != null ?
+                    (fiveYearsObj instanceof Number ? ((Number) fiveYearsObj).doubleValue() : Double.parseDouble(fiveYearsObj.toString())) : 0.0;
+            Double zakat = zakatObj != null ?
+                    (zakatObj instanceof Number ? ((Number) zakatObj).doubleValue() : Double.parseDouble(zakatObj.toString())) : 0.0;
+            Double fdr = fdrObj != null ?
+                    (fdrObj instanceof Number ? ((Number) fdrObj).doubleValue() : Double.parseDouble(fdrObj.toString())) : 0.0;
+            Double familySanchaypatra = familyObj != null ?
+                    (familyObj instanceof Number ? ((Number) familyObj).doubleValue() : Double.parseDouble(familyObj.toString())) : 0.0;
+
+            // SQL query to update tax form investment data
+            String sql = "UPDATE tax_form_table SET investment_3_month_shanchaypatra = ?, investment_5_years_shanchaypatra = ?, investment_zakat = ?, investment_fdr = ?, investment_family_shanchaypatra = ?, done_investment = true WHERE user_id = ? AND done_submit = false";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, threeMonthSanchaypatra, fiveYearsSanchaypatra, zakat, fdr, familySanchaypatra, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Tax form investment data updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "No tax form found or form already submitted");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format for investment values: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update tax form investment: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @PostMapping("/user/update-tax-form-asset")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> updateTaxFormAssetLiability(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // Extract asset and liability data from request
+            Object bankAccountObj = request.get("bankAccount");
+            Object carObj = request.get("car");
+            Object flatObj = request.get("flat");
+            Object jeweleryObj = request.get("jewelery");
+            Object plotObj = request.get("plot");
+            Object bankLoanObj = request.get("bankLoan");
+            Object personLoanObj = request.get("personLoan");
+
+            // Convert to appropriate types with null safety
+            Double assetBankAccount = bankAccountObj != null ?
+                    (bankAccountObj instanceof Number ? ((Number) bankAccountObj).doubleValue() : Double.parseDouble(bankAccountObj.toString())) : 0.0;
+            Double assetCar = carObj != null ?
+                    (carObj instanceof Number ? ((Number) carObj).doubleValue() : Double.parseDouble(carObj.toString())) : 0.0;
+            Double assetFlat = flatObj != null ?
+                    (flatObj instanceof Number ? ((Number) flatObj).doubleValue() : Double.parseDouble(flatObj.toString())) : 0.0;
+            Double assetJewelery = jeweleryObj != null ?
+                    (jeweleryObj instanceof Number ? ((Number) jeweleryObj).doubleValue() : Double.parseDouble(jeweleryObj.toString())) : 0.0;
+            Double assetPlot = plotObj != null ?
+                    (plotObj instanceof Number ? ((Number) plotObj).doubleValue() : Double.parseDouble(plotObj.toString())) : 0.0;
+            Double liabilityBankLoan = bankLoanObj != null ?
+                    (bankLoanObj instanceof Number ? ((Number) bankLoanObj).doubleValue() : Double.parseDouble(bankLoanObj.toString())) : 0.0;
+            Double liabilityPersonLoan = personLoanObj != null ?
+                    (personLoanObj instanceof Number ? ((Number) personLoanObj).doubleValue() : Double.parseDouble(personLoanObj.toString())) : 0.0;
+
+            // SQL query to update tax form asset and liability data
+            String sql = "UPDATE tax_form_table SET asset_bank_account = ?, asset_car = ?, asset_flat = ?, asset_jewelery = ?, asset_plot = ?, liability_bank_loan = ?, liability_person_loan = ?, done_asset_liability = true WHERE user_id = ? AND done_submit = false";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, assetBankAccount, assetCar, assetFlat, assetJewelery, assetPlot, liabilityBankLoan, liabilityPersonLoan, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Tax form asset and liability data updated successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "No tax form found or form already submitted");
+            }
+
+            return response;
+
+        } catch (NumberFormatException e) {
+            response.put("success", false);
+            response.put("message", "Invalid number format for asset/liability values: " + e.getMessage());
+            return response;
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to update tax form asset and liability: " + e.getMessage());
+            return response;
+        }
+    }
+
+
+
     // Helper method to calculate tax and rebate
     private Map<String, Double> calculateTaxAndRebate(Double income, Double investment, String category) {
         Map<String, Double> result = new HashMap<>();
@@ -672,5 +860,41 @@ public class TaxController {
         return minTax;
     }
 
+    @PostMapping("/user/submit-tax-form")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> submitTaxForm(@RequestBody Map<String, Object> request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
 
-}
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            
+            String sql = "UPDATE tax_form_table SET done_submit=true WHERE user_id = ? AND done_submit = false";
+
+            // Execute the update
+            int rowsAffected = jdbcTemplate.update(sql, userId);
+
+            if (rowsAffected > 0) {
+                response.put("success", true);
+                response.put("message", "Tax form submitted successfully");
+                response.put("rowsAffected", rowsAffected);
+            } else {
+                response.put("success", false);
+                response.put("message", "No tax form found or form already submitted");
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Failed to submit tax form" + e.getMessage());
+            return response;
+        }
+    }
+
+
+    }
