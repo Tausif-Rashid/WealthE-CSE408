@@ -950,3 +950,9 @@ export const getTaxInvestment = async () => {
     method: 'GET',
   });
 };
+
+export const getTaxAsset = async () => {
+  return apiCall('/user/tax-asset', {
+    method: 'GET',
+  });
+};

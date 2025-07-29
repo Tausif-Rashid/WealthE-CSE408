@@ -214,4 +214,45 @@ public class TaxController {
 
     }
 
+    @GetMapping("/user/tax-asset")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getTaxAsset() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // SQL queries for each asset type
+            String bankAccountSql = "SELECT COALESCE(SUM(amount), 0) as total FROM asset_bank_account WHERE user_id = ?";
+            String carSql = "SELECT COALESCE(SUM(cost), 0) as total FROM asset_car WHERE user_id = ?";
+            String flatSql = "SELECT COALESCE(SUM(cost), 0) as total FROM asset_flat WHERE user_id = ?";
+            String jewelrySql = "SELECT COALESCE(SUM(cost), 0) as total FROM asset_jewelery WHERE user_id = ?";
+            String plotSql = "SELECT COALESCE(SUM(cost), 0) as total FROM asset_plot WHERE user_id = ?";
+
+            // Execute queries and get totals
+            Double bankAccountTotal = jdbcTemplate.queryForObject(bankAccountSql, Double.class, userId);
+            Double carTotal = jdbcTemplate.queryForObject(carSql, Double.class, userId);
+            Double flatTotal = jdbcTemplate.queryForObject(flatSql, Double.class, userId);
+            Double jewelryTotal = jdbcTemplate.queryForObject(jewelrySql, Double.class, userId);
+            Double plotTotal = jdbcTemplate.queryForObject(plotSql, Double.class, userId);
+
+            // Build response object
+            response.put("bankAccount", bankAccountTotal != null ? bankAccountTotal : 0.0);
+            response.put("car", carTotal != null ? carTotal : 0.0);
+            response.put("flat", flatTotal != null ? flatTotal : 0.0);
+            response.put("jewelry", jewelryTotal != null ? jewelryTotal : 0.0);
+            response.put("plot", plotTotal != null ? plotTotal : 0.0);
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("error", "Failed to retrieve tax asset data: " + e.getMessage());
+            return response;
+        }
+    }
+
 }
