@@ -971,16 +971,6 @@ const TaxForm = () => {
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="minTax">Minimum Tax</label>
-          <input
-            type="number"
-            id="minTax"
-            value={formData.taxComputation.minTax}
-            readOnly
-            className="readonly-field"
-          />
-        </div>
-        <div className="tax-form-group">
           <label htmlFor="rebateAmount">Rebate Amount</label>
           <input
             type="number"
@@ -996,6 +986,16 @@ const TaxForm = () => {
             type="number"
             id="netTax"
             value={formData.taxComputation.netTax}
+            readOnly
+            className="readonly-field"
+          />
+        </div>
+        <div className="tax-form-group">
+          <label htmlFor="minTax">Minimum Tax</label>
+          <input
+            type="number"
+            id="minTax"
+            value={formData.taxComputation.minTax}
             readOnly
             className="readonly-field"
           />

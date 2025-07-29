@@ -58,8 +58,7 @@ public class TaxController {
 
             System.out.println("asdf asdf asdf asdf");
 
-            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
-            System.out.println(data.toString());
+
 
             // Check if user has submitted tax form data
             String countSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? ";
@@ -941,14 +940,19 @@ public class TaxController {
 
 
 
+
             // 11. Build response object
-            response.put("gross_tax", grossTax != null ? grossTax : 0.0);
-            response.put("rebate_amount", rebateAmount != null ? rebateAmount : 0.0);
-            response.put("net_tax", netTax != null ? netTax : 0.0);
-            response.put("min_tax", minTax != null ? minTax : 0.0);
-            response.put("payable_tax", payableTax != null ? payableTax : 0.0);
+            response.put("gross_tax", (int) Math.ceil(grossTax != null ? grossTax : 0.0));
+            response.put("rebate_amount", (int) Math.ceil(rebateAmount != null ? rebateAmount : 0.0));
+            response.put("net_tax", (int) Math.ceil(netTax != null ? netTax : 0.0));
+            response.put("min_tax", (int) Math.ceil(minTax != null ? minTax : 0.0));
+            response.put("payable_tax", (int) Math.ceil(payableTax != null ? payableTax : 0.0));
+
+            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
+            System.out.println(data.toString());
 
             return response;
+
 
         } catch (Exception e) {
             System.out.println("Error occurred: " + e);
