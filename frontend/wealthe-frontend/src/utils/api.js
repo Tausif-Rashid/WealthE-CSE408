@@ -963,6 +963,12 @@ export const getTaxLiability = async () => {
   });
 };
 
+export const getTaxAmount = async () => {
+  return apiCall('/user/tax-amount', {
+    method: 'GET',
+  });
+};
+
 export const createTaxForm = async () => {
   return apiCall('/user/tax-personalInfo', {
     method: 'POST',

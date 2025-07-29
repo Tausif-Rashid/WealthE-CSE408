@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MessageDialog from '../components/MessageDialog';
-import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset,getTaxLiability, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAssetLiability    } from '../utils/api';
+import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset,getTaxLiability, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAssetLiability,submitTaxForm,getTaxAmount} from '../utils/api';
 import './TaxForm.css';
 
 const TaxForm = () => {
@@ -73,11 +73,11 @@ const TaxForm = () => {
       personLoan: ''
     },
     taxComputation: {
-      totalIncome: '',
-      totalDeduction: '',
-      taxableIncome: '',
-      taxRate: '',
-      calculatedTax: ''
+      grossTax: '',
+      minTax: '',
+      rebateAmount: '',
+      payableTax: '',
+      netTax: ''
     }
   });
 
@@ -223,7 +223,7 @@ const TaxForm = () => {
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-    if (dialogType === 'success' && activeTab === 5) {
+    if (dialogType === 'success' && activeTab === 6) {
       // If it's the final tab and success, navigate to dashboard
       navigate('/dashboard');
     }
@@ -267,8 +267,6 @@ const TaxForm = () => {
       console.log('Expense data getting:');
 
       
-    }else if(activeTab === 2){
-     
     }
 
     // Map tab index to form data key
@@ -361,6 +359,23 @@ const TaxForm = () => {
         } else if (tabName === 'assetLiability') {
           console.log('Updating asset liability data:', currentTabData);
           response = await updateTaxFormAssetLiability(currentTabData);
+
+          const taxAmount = await getTaxAmount();
+          console.log('Tax amount data:', taxAmount);
+          if(taxAmount){
+            const tax = taxAmount;
+                         setFormData(prev => ({
+               ...prev,
+               taxComputation: {
+                 ...prev.taxComputation,
+                 grossTax: tax.gross_tax?.toString() || '',
+                 minTax: tax.min_tax?.toString() || '',
+                 rebateAmount: tax.rebate_amount?.toString() || '',
+                 payableTax: tax.payable_tax?.toString() || '',
+                 netTax: tax.net_tax?.toString() || ''
+               }
+             }));
+          }
         } else {
         response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
           method: 'POST',
@@ -408,51 +423,59 @@ const TaxForm = () => {
 
   const handleSubmit = async () => {
     // Map tab index to form data key
-    const tabMapping = ['personalInfo', 'income', 'expense', 'investment', 'assetLiability', 'taxComputation'];
-    const tabName = tabMapping[activeTab];
-    const currentTabData = formData[tabName];
+    // const tabMapping = ['personalInfo', 'income', 'expense', 'investment', 'assetLiability', 'taxComputation'];
+    // const tabName = tabMapping[activeTab];
+    // const currentTabData = formData[tabName];
     
-    try {
-      setLoading(true);
+    // try {
+    //   setLoading(true);
       
-      // Make API call to save final tab data
-      let response;
-      if (tabName === 'income') {
-        response = await updateTaxFormIncome(currentTabData);
-              } else if (tabName === 'expense') {
-          response = await updateTaxFormExpense(currentTabData);
-        } else if (tabName === 'investment') {
-          response = await updateTaxFormInvestment(currentTabData);
-        } else if (tabName === 'assetLiability') {
-          response = await updateTaxFormAssetLiability(currentTabData);
-        } else {
-        response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(currentTabData)
-        });
-      }
+    //   // Make API call to save final tab data
+    //   let response;
+    //   if (tabName === 'income') {
+    //     response = await updateTaxFormIncome(currentTabData);
+    //           } else if (tabName === 'expense') {
+    //       response = await updateTaxFormExpense(currentTabData);
+    //     } else if (tabName === 'investment') {
+    //       response = await updateTaxFormInvestment(currentTabData);
+    //     } else if (tabName === 'assetLiability') {
+    //       response = await updateTaxFormAssetLiability(currentTabData);
+    //     } else {
+    //     response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //         'Authorization': `Bearer ${localStorage.getItem('token')}`
+    //       },
+    //       body: JSON.stringify(currentTabData)
+    //     });
+    //   }
 
-      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment' || tabName === 'assetLiability') {
-        // For income, expense, investment, and asset APIs, check the success property in JSON response
-        if (response.success) {
-          showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
-        } else {
-          showDialog('error', 'Error', response.message || 'Failed to submit form');
-        }
-      } else {
+    //   if (tabName === 'income' || tabName === 'expense' || tabName === 'investment' || tabName === 'assetLiability') {
+    //     // For income, expense, investment, and asset APIs, check the success property in JSON response
+    //     if (response.success) {
+    //       showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
+    //     } else {
+    //       showDialog('error', 'Error', response.message || 'Failed to submit form');
+    //     }
+    //   } else {
         // For other APIs, check HTTP status
-        if (response.ok) {
+        try{
+          setLoading(true);
+          const response = await submitTaxForm();
+          console.log('Submit tax form response:', response);
+        if (response.success) {
+          setLoading(false);
+          setActiveTab(prev => prev + 1);
           showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
         } else {
           const errorData = await response.json();
+          setLoading(false);
           showDialog('error', 'Error', errorData.message || 'Failed to submit form');
         }
-      }
+      
     } catch (error) {
+      setLoading(false);
       console.error('Error submitting form:', error);
       showDialog('error', 'Error', 'Failed to submit form. Please try again.');
     } finally {
@@ -933,56 +956,62 @@ const TaxForm = () => {
 
   const renderTaxComputationTab = () => (
     <div className="tax-form-tab-content">
-      <h3>Tax Computation</h3>
+      <h3>Tax Computation Results</h3>
+      
+      {/* Tax Breakdown */}
       <div className="tax-form-grid">
         <div className="tax-form-group">
-          <label htmlFor="totalIncome">Total Income</label>
+          <label htmlFor="grossTax">Gross Tax</label>
           <input
             type="number"
-            id="totalIncome"
-            value={formData.taxComputation.totalIncome}
-            onChange={(e) => handleInputChange('taxComputation', 'totalIncome', e.target.value)}
-            placeholder="Enter total income"
+            id="grossTax"
+            value={formData.taxComputation.grossTax}
+            readOnly
+            className="readonly-field"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="totalDeduction">Total Deduction</label>
+          <label htmlFor="minTax">Minimum Tax</label>
           <input
             type="number"
-            id="totalDeduction"
-            value={formData.taxComputation.totalDeduction}
-            onChange={(e) => handleInputChange('taxComputation', 'totalDeduction', e.target.value)}
-            placeholder="Enter total deduction"
+            id="minTax"
+            value={formData.taxComputation.minTax}
+            readOnly
+            className="readonly-field"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="taxableIncome">Taxable Income</label>
+          <label htmlFor="rebateAmount">Rebate Amount</label>
           <input
             type="number"
-            id="taxableIncome"
-            value={formData.taxComputation.taxableIncome}
-            onChange={(e) => handleInputChange('taxComputation', 'taxableIncome', e.target.value)}
-            placeholder="Enter taxable income"
+            id="rebateAmount"
+            value={formData.taxComputation.rebateAmount}
+            readOnly
+            className="readonly-field"
           />
         </div>
         <div className="tax-form-group">
-          <label htmlFor="taxRate">Tax Rate (%)</label>
+          <label htmlFor="netTax">Net Tax</label>
           <input
             type="number"
-            id="taxRate"
-            value={formData.taxComputation.taxRate}
-            onChange={(e) => handleInputChange('taxComputation', 'taxRate', e.target.value)}
-            placeholder="Enter tax rate"
+            id="netTax"
+            value={formData.taxComputation.netTax}
+            readOnly
+            className="readonly-field"
           />
         </div>
-        <div className="tax-form-group">
-          <label htmlFor="calculatedTax">Calculated Tax</label>
+      </div>
+
+      {/* Final Result - Payable Tax */}
+      <div className="tax-form-final-result">
+        <div className="tax-form-group full-width">
+          <label htmlFor="payableTax" className="final-result-label">Final Tax Amount (Payable Tax)</label>
           <input
             type="number"
-            id="calculatedTax"
-            value={formData.taxComputation.calculatedTax}
-            onChange={(e) => handleInputChange('taxComputation', 'calculatedTax', e.target.value)}
-            placeholder="Enter calculated tax"
+            id="payableTax"
+            value={formData.taxComputation.payableTax}
+            readOnly
+            className="readonly-field final-result-field"
           />
         </div>
       </div>

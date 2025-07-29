@@ -1,10 +1,11 @@
 /* Tax Form Page Styles - WealthE Themed */
 .tax-form-container {
-  padding: 30px;
+  padding: 20px;
   min-height: 100vh;
   background-attachment: fixed;
   position: relative;
   overflow-x: hidden;
+  margin: 20px;
 }
 
 .tax-form-header {
@@ -384,6 +385,35 @@
 .tax-form-checkbox input:disabled + span {
   color: #6c757d;
   cursor: not-allowed;
+}
+
+/* Final Result Styling */
+.tax-form-final-result {
+  margin-top: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9faac 0%, #e9ecef8e 100%);
+  border: 2px solid #2861a7;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.final-result-label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2861a7;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.final-result-field {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  background-color: #ffffff41 !important;
+  border: 3px solid #3b7cdc !important;
+  color: #3b7cdc !important;
+  padding: 15px;
+  border-radius: 8px;
 }
 
 /* Tax Form Loading State */

@@ -275,7 +275,7 @@ public class TaxController {
                     response.put("bankAccount", bankAccountTotal);
                     response.put("car", carTotal);
                     response.put("flat", flatTotal);
-                    response.put("jewelry", jewelryTotal);
+                    response.put("jewellery", jewelryTotal);
                     response.put("plot", plotTotal);
 
                     return response;
@@ -748,7 +748,10 @@ public class TaxController {
                 // Create a clean key name (remove spaces, convert to camelCase)
                 String key = investmentType.toLowerCase()
                         .replace(" ", "")
-                        .replace("-", "");
+                        .replace("-", "")
+                        .replace("3month", "threemonth")
+                        .replace("5years", "fiveyears");
+
 
                 investmentTotals.put(key, total != null ? total : 0.0);
             }
