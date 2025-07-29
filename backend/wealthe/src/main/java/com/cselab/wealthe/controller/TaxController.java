@@ -136,7 +136,7 @@ public class TaxController {
         }
     }
 
-    
+
 
     @GetMapping("/user/tax-expense")
     @CrossOrigin(origins = "*")
@@ -667,6 +667,101 @@ public class TaxController {
             e.printStackTrace();
             response.put("success", false);
             response.put("message", "Failed to update tax form asset and liability: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @GetMapping("/user/tax-investment")
+    @CrossOrigin(origins = "*")
+    public Map<String, Object> getTaxInvestment() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            // Get user ID from authentication
+            int userId = Integer.parseInt(auth.getName());
+
+            // Check if user has submitted tax form data
+            String countSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ?";
+            Integer formCount = jdbcTemplate.queryForObject(countSql, Integer.class, userId);
+
+            if (formCount != null && formCount > 0) {
+                // User has submitted tax form, get data from tax_form_table
+                String formDataSql = "SELECT investment_3_month_shanchaypatra, investment_5_years_shanchaypatra, investment_fdr, investment_zakat, investment_family_shanchaypatra FROM tax_form_table WHERE user_id = ? AND done_investment = true AND done_submit = false";
+
+                try {
+                    Map<String, Object> formData = jdbcTemplate.queryForMap(formDataSql, userId);
+
+                    // Extract values and handle nulls, mapping to response keys
+                    Double threeMonthSanchaypatra = formData.get("investment_3_month_shanchaypatra") != null ?
+                            Double.parseDouble(formData.get("investment_3_month_shanchaypatra").toString()) : 0.0;
+                    Double fiveYearsSanchaypatra = formData.get("investment_5_years_shanchaypatra") != null ?
+                            Double.parseDouble(formData.get("investment_5_years_shanchaypatra").toString()) : 0.0;
+                    Double fdr = formData.get("investment_fdr") != null ?
+                            Double.parseDouble(formData.get("investment_fdr").toString()) : 0.0;
+                    Double zakat = formData.get("investment_zakat") != null ?
+                            Double.parseDouble(formData.get("investment_zakat").toString()) : 0.0;
+                    Double familySanchaypatra = formData.get("investment_family_shanchaypatra") != null ?
+                            Double.parseDouble(formData.get("investment_family_shanchaypatra").toString()) : 0.0;
+
+                    // Build response object with tax form data (matching original response format)
+                    response.put("threemonthshanchaypatra", threeMonthSanchaypatra);
+                    response.put("fiveyearsshanchaypatra", fiveYearsSanchaypatra);
+                    response.put("fdr", fdr);
+                    response.put("zakat", zakat);
+                    response.put("familyshanchaypatra", familySanchaypatra);
+
+                    return response;
+
+                } catch (EmptyResultDataAccessException e) {
+                    // No records found with done_investment = true, fall back to original method
+                    System.out.println("No tax form data with done_investment = true found, using original calculation");
+                }
+            }
+
+            // Original calculation logic (when no tax form data exists or done_investment is not true)
+            // Calculate "last July 1st" date dynamically
+            LocalDate now = LocalDate.now();
+            LocalDate lastJuly1st;
+
+            if (now.getMonthValue() >= 7) {
+                // If current month is July or later, use July 1st of current year
+                lastJuly1st = LocalDate.of(now.getYear(), 7, 1);
+            } else {
+                // If current month is before July, use July 1st of previous year
+                lastJuly1st = LocalDate.of(now.getYear() - 1, 7, 1);
+            }
+
+            String dateFilter = lastJuly1st.toString(); // Converts to 'YYYY-MM-DD' format
+
+            // Get all investment types from rule_investment_type table
+            String rulesSql = "SELECT title FROM rule_investment_type";
+            List<String> investmentTypes = jdbcTemplate.queryForList(rulesSql, String.class);
+
+            Map<String, Double> investmentTotals = new HashMap<>();
+
+            // Query for each investment type dynamically
+            for (String investmentType : investmentTypes) {
+                String sql = "SELECT COALESCE(SUM(amount), 0) as total FROM investment WHERE user_id = ? AND title = ? AND date >= ?::date";
+                Double total = jdbcTemplate.queryForObject(sql, Double.class, userId, investmentType, dateFilter);
+
+                // Create a clean key name (remove spaces, convert to camelCase)
+                String key = investmentType.toLowerCase()
+                        .replace(" ", "")
+                        .replace("-", "");
+
+                investmentTotals.put(key, total != null ? total : 0.0);
+            }
+
+            // Add all totals to response
+            response.putAll(investmentTotals);
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            response.put("error", "Failed to retrieve investment data: " + e.getMessage());
             return response;
         }
     }
