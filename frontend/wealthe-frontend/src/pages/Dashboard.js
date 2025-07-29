@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
-import { getUserInfo, getTaxInfo, getMonthlyIncomeByType, getMonthlyExpenseByType } from '../utils/api';
+import { getUserInfo, getTaxInfo, getMonthlyIncomeByType, getMonthlyExpenseByType, getPreviousMonthsData } from '../utils/api';
 import './Dashboard.css';
 import { useNavigate } from 'react-router';
 
@@ -12,12 +12,16 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [incomeData, setIncomeData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
+  const [previousMonthsData, setPreviousMonthsData] = useState([]);
   const [chartsLoading, setChartsLoading] = useState(false);
+  const [barChartLoading, setBarChartLoading] = useState(false);
   const [userInfoExpanded, setUserInfoExpanded] = useState(false);
   const incomeChartRef = useRef(null);
   const expenseChartRef = useRef(null);
+  const barChartRef = useRef(null);
   const incomeChartInstance = useRef(null);
   const expenseChartInstance = useRef(null);
+  const barChartInstance = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -139,25 +143,133 @@ const Dashboard = () => {
     });
   };
 
+  const createBarChart = async (canvasRef, data) => {
+    if (!data || data.length === 0) return null;
+
+    const Chart = await loadChartJS();
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return null;
+
+    const labels = data.map(item => item.month || 'Unknown');
+    const incomeValues = data.map(item => parseFloat(item.income || 0));
+    const expenseValues = data.map(item => parseFloat(item.expense || 0));
+
+    return new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Income',
+            data: incomeValues,
+            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+            borderColor: 'rgba(34, 197, 94, 1)',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+          },
+          {
+            label: 'Expense',
+            data: expenseValues,
+            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+            borderColor: 'rgba(239, 68, 68, 1)',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              font: {
+                size: 12,
+                family: 'Arial, sans-serif'
+              },
+              color: '#374151'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label || '';
+                const value = context.parsed.y || 0;
+                return `${label}: ৳${value.toLocaleString()}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+            ticks: {
+              color: '#374151',
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)',
+            },
+            ticks: {
+              color: '#374151',
+              font: {
+                size: 11
+              },
+              callback: function(value) {
+                return '৳' + value.toLocaleString();
+              }
+            }
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+  };
+
   // Fetch chart data
   useEffect(() => {
     const fetchChartData = async () => {
       setChartsLoading(true);
+      setBarChartLoading(true);
       try {
-        const [incomeResponse, expenseResponse] = await Promise.all([
+        const [incomeResponse, expenseResponse, previousDataResponse] = await Promise.all([
           getMonthlyIncomeByType(),
-          getMonthlyExpenseByType()
+          getMonthlyExpenseByType(),
+          getPreviousMonthsData()
         ]);
 
         console.log('Income data:', incomeResponse);
         console.log('Expense data:', expenseResponse);
+        console.log('Previous months data:', previousDataResponse);
 
         setIncomeData(incomeResponse || []);
         setExpenseData(expenseResponse || []);
+        setPreviousMonthsData(previousDataResponse || []);
       } catch (err) {
         console.error('Error fetching chart data:', err);
       } finally {
         setChartsLoading(false);
+        setBarChartLoading(false);
       }
     };
 
@@ -173,6 +285,9 @@ const Dashboard = () => {
       }
       if (expenseChartInstance.current) {
         expenseChartInstance.current.destroy();
+      }
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
       }
 
       // Income chart colors
@@ -213,9 +328,16 @@ const Dashboard = () => {
           expenseColors
         );
       }
+
+      if (previousMonthsData.length > 0) {
+        barChartInstance.current = await createBarChart(
+          barChartRef,
+          previousMonthsData
+        );
+      }
     };
 
-    if (!chartsLoading && (incomeData.length > 0 || expenseData.length > 0)) {
+    if (!chartsLoading && !barChartLoading && (incomeData.length > 0 || expenseData.length > 0 || previousMonthsData.length > 0)) {
       initializeCharts();
     }
 
@@ -227,8 +349,11 @@ const Dashboard = () => {
       if (expenseChartInstance.current) {
         expenseChartInstance.current.destroy();
       }
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
+      }
     };
-  }, [incomeData, expenseData, chartsLoading]);
+  }, [incomeData, expenseData, previousMonthsData, chartsLoading, barChartLoading]);
 
   if (loading) {
     return (
@@ -319,6 +444,27 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bar Chart Section */}
+        <div className="bar-chart-section">
+          <div className="chart-card full-width">
+            <h3>📊 Income vs Expense - Last 4 Months</h3>
+            <div className="bar-chart-wrapper">
+              {barChartLoading ? (
+                <div className="chart-loading">
+                  <div className="spinner"></div>
+                  <p>Loading previous months data...</p>
+                </div>
+              ) : previousMonthsData.length > 0 ? (
+                <canvas ref={barChartRef}></canvas>
+              ) : (
+                <div className="no-data-message">
+                  <p>📈 No data available for previous months</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

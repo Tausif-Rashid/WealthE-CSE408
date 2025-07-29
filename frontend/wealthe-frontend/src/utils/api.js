@@ -1069,3 +1069,9 @@ export const getMonthlyExpenseByType = async () => {
     method: 'GET',
   });
 };
+
+export const getPreviousMonthsData = async () => {
+  return apiCall('/user/previous-data', {
+    method: 'GET',
+  });
+};
