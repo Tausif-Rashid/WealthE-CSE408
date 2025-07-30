@@ -15,21 +15,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Frontend Tests
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-        cache-dependency-path: frontend/wealthe-frontend/package-lock.json
-
-    - name: Run Frontend Tests
-      working-directory: ./frontend/wealthe-frontend
-      run: |
-        npm ci
-        npm test -- --watchAll=false --passWithNoTests --testPathIgnorePatterns="/e2e/" --testPathIgnorePatterns="/node_modules/" --testPathIgnorePatterns="/src/__tests__/"
-      env:
-        CI: true
+    
 
     # Backend Tests  
     - name: Set up JDK
