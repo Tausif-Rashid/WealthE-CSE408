@@ -476,7 +476,7 @@ public class TaxController {
                 response.put("message", "Tax form income data updated successfully");
                 response.put("rowsAffected", rowsAffected);
             } else {
-                response.put("success", false);
+                response.put("success", true);
                 response.put("message", "No tax form found or form already submitted");
             }
 
@@ -538,7 +538,7 @@ public class TaxController {
                 response.put("message", "Tax form expense data updated successfully");
                 response.put("rowsAffected", rowsAffected);
             } else {
-                response.put("success", false);
+                response.put("success", true);
                 response.put("message", "No tax form found or form already submitted");
             }
 
@@ -597,7 +597,7 @@ public class TaxController {
                 response.put("message", "Tax form investment data updated successfully");
                 response.put("rowsAffected", rowsAffected);
             } else {
-                response.put("success", false);
+                response.put("success", true);
                 response.put("message", "No tax form found or form already submitted");
             }
 
@@ -662,7 +662,7 @@ public class TaxController {
                 response.put("message", "Tax form asset and liability data updated successfully");
                 response.put("rowsAffected", rowsAffected);
             } else {
-                response.put("success", false);
+                response.put("success", true);
                 response.put("message", "No tax form found or form already submitted");
             }
 
@@ -1054,7 +1054,7 @@ public class TaxController {
                 response.put("message", "Tax form submitted successfully");
                 response.put("rowsAffected", rowsAffected);
             } else {
-                response.put("success", false);
+                response.put("success", true);
                 response.put("message", "No tax form found or form already submitted");
             }
 
