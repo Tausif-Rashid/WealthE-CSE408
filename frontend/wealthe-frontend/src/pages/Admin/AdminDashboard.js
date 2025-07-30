@@ -93,25 +93,11 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">✅</div>
-          <div className="stat-info">
-            <h3>Pending Files</h3>
-            <p className="stat-value">{stats.pendingFiles}</p>
-          </div>
-        </div>
+        
       </div>
 
       <div className="admin-sections">
-        <div className="section">
-          <h2>Recent Activities</h2>
-          {/* Add recent activities table/list here */}
-        </div>
         
-        <div className="section">
-          <h2>System Status</h2>
-          {/* Add system status information here */}
-        </div>
       </div>
     </div>
   );
