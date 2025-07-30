@@ -224,6 +224,97 @@ public class PdfService {
             throw new RuntimeException("Failed to generate PDF", e);
         }
     }
+
+
+    public String generateTaxFormPdfForSubmission(int submissionId, int userId) throws Exception {
+        // Create directory if it doesn't exist
+        File directory = new File(PDF_DIRECTORY);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+
+
+
+        if (userId == 0) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        // Fetch tax form data for specific submission
+        TaxFormData taxFormData = fetchPdfDataService.fetchTaxFormDataForSubmission(submissionId, userId);
+
+        if (taxFormData == null) {
+            throw new RuntimeException("Tax form data not found for submission ID: " + submissionId);
+        }
+
+        // Generate filename: user_id + submission_id + return.pdf
+        String filename = userId + "_" + submissionId + "_return.pdf";
+        String filePath = PDF_DIRECTORY + File.separator + filename;
+
+        // Create PDF
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            PdfWriter writer = new PdfWriter(fos);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc);
+
+            // Add fonts
+            PdfFont titleFont = PdfFontFactory.createFont();
+            PdfFont regularFont = PdfFontFactory.createFont();
+
+            // Title
+            Paragraph title = new Paragraph("WealthE - Tax Form Report")
+                    .setFont(titleFont)
+                    .setFontSize(20)
+                    .setBold()
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginBottom(20);
+            document.add(title);
+
+            // Generation timestamp
+            Paragraph generatedOn = new Paragraph("Generated on: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
+                    .setFont(regularFont)
+                    .setFontSize(10)
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setMarginBottom(20);
+            document.add(generatedOn);
+
+            // Personal Info Section
+            addPersonalInfoSection(document, taxFormData, titleFont, regularFont);
+
+            // Income Section
+            addIncomeSection(document, taxFormData, titleFont, regularFont);
+
+            // Tax Computation Section
+            addTaxComputationSection(document, taxFormData, titleFont, regularFont);
+
+            // Expense Section
+            addExpenseSection(document, taxFormData, titleFont, regularFont);
+
+            // Investment Section
+            addInvestmentSection(document, taxFormData, titleFont, regularFont);
+
+            // Asset & Liability Section
+            addAssetLiabilitySection(document, taxFormData, titleFont, regularFont);
+
+            // Footer
+            Paragraph footer = new Paragraph("This document was generated automatically by WealthE system.")
+                    .setFont(regularFont)
+                    .setFontSize(8)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setMarginTop(30)
+                    .setFontColor(ColorConstants.GRAY);
+            document.add(footer);
+
+            document.close();
+
+            logger.info("Tax Form PDF generated successfully for submission {}: {}", submissionId, filePath);
+            return filePath;
+
+        } catch (IOException e) {
+            logger.error("Error generating PDF: {}", e.getMessage());
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+    }
     
 
     

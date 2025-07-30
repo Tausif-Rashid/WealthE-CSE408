@@ -754,7 +754,7 @@ public class AdminApiController {
             }
 
             // Generate PDF using the existing service
-            String generatedFilePath = pdfService.generateTaxFormPdfForSubmission(submissionId);
+            String generatedFilePath = pdfService.generateTaxFormPdfForSubmission(submissionId,userId);
 
             response.put("success", true);
             response.put("message", "PDF generated successfully");
