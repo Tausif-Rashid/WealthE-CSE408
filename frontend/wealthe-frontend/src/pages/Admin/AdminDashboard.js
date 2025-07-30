@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../components/AuthContext';
 import './AdminDashboard.css';
-import { getRebateRules, getMinimumTaxList, getTotalUsers, getTaxAreaList } from '../../utils/api';
+import { getTotalTaxPayers, getTotalUsers, getTaxAreaList, getAdminName } from '../../utils/api';
 import { getUserInfo } from '../../utils/api';
 
 const AdminDashboard = () => {
@@ -11,8 +11,9 @@ const AdminDashboard = () => {
   const [error, setError] = useState('');
   const [stats, setStats] = useState({
     totalUsers: 0,
-    totalTransactions: 0,
-    pendingFiles: 0
+    totalTaxPayers: 0,
+    pendingFiles: 0, 
+    name: null
   });
 
   useEffect(() => {
@@ -20,9 +21,13 @@ const AdminDashboard = () => {
       setLoading(true);
       try {
         const response = await getTotalUsers();
+        const res = await getTotalTaxPayers();
+        const adminName = await getAdminName();
         setStats(prev => ({
           ...prev,
-          totalUsers: response.total
+          totalUsers: response.total,
+          totalTaxPayers: res.count,
+          name : adminName.name
         }));
       } catch (err) {
         setError('Failed to load dashboard statistics');
@@ -68,7 +73,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <div className="admin-header">
         <h1>Admin Dashboard</h1>
-        <p>Welcome back, <b> <big> {userInfo?.name} </big> </b>  </p>
+        <p>Welcome back, <b> <big> {stats.name} </big> </b>  </p>
       </div>
 
       <div className="stats-grid">
@@ -76,7 +81,7 @@ const AdminDashboard = () => {
           <div className="stat-icon">👥</div>
           <div className="stat-info">
             <h3>Total Users</h3>
-            <p className="stat-value">{stats.totalUsers}</p>
+            <p className="stat-value">{stats?.totalUsers}</p>
           </div>
         </div>
 
@@ -84,29 +89,15 @@ const AdminDashboard = () => {
           <div className="stat-icon">💰</div>
           <div className="stat-info">
             <h3># of Tax Payers</h3>
-            <p className="stat-value">{stats.totalTransactions}</p>
+            <p className="stat-value">{stats?.totalTaxPayers}</p>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">✅</div>
-          <div className="stat-info">
-            <h3>Pending Files</h3>
-            <p className="stat-value">{stats.pendingFiles}</p>
-          </div>
-        </div>
+        
       </div>
 
       <div className="admin-sections">
-        <div className="section">
-          <h2>Recent Activities</h2>
-          {/* Add recent activities table/list here */}
-        </div>
         
-        <div className="section">
-          <h2>System Status</h2>
-          {/* Add system status information here */}
-        </div>
       </div>
     </div>
   );

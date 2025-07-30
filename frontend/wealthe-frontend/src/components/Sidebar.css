@@ -1,38 +1,81 @@
+/* Sidebar - WealthE Themed (Landing Page Style) */
 .sidebar {
   width: 250px;
   height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 40%, #93c5fd 70%, #acddff 100%);
   color: white;
   position: fixed;
   left: 0;
   top: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15);
   z-index: 1000;
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
 }
 
 .sidebar-header {
-  padding: 20px;
+  padding: 25px 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(29, 38, 69, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-header .logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.sidebar-header .logo-icon {
+  filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  width: 35px;
+  height: 35px;
 }
 
 .sidebar-header h2 {
   margin: 0 0 15px 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #00000032;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .user-info p {
-  margin: 0;
+  margin: 0 0 3px 0;
   font-size: 0.9rem;
-  opacity: 0.8;
+  opacity: 0.9;
   word-break: break-word;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.user-info .user-role {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  font-style: italic;
 }
 
 .sidebar-nav {
   flex: 1;
   padding: 20px 0;
+  background: rgba(29, 38, 69, 0.1);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-nav ul {
@@ -48,47 +91,98 @@
 .sidebar-nav a {
   display: flex;
   align-items: center;
-  padding: 12px 20px;
+  padding: 14px 20px;
   color: white;
   text-decoration: none;
   transition: all 0.3s ease;
   border-left: 3px solid transparent;
+  margin: 0 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .sidebar-nav a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-left-color: #fff;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-left-color: rgba(255, 255, 255, 0.8);
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-nav a.active {
   background-color: rgba(255, 255, 255, 0.2);
-  border-left-color: #fff;
-  font-weight: bold;
+  border-left-color: #f5f7fa;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-nav .icon {
-  margin-right: 10px;
-  font-size: 1.2rem;
+  margin-right: 12px;
+  font-size: 1.3rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 .sidebar-footer {
   padding: 20px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(29, 38, 69, 0.2);
+  backdrop-filter: blur(10px);
 }
 
 .logout-btn {
   width: 100%;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #e73c3c58;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  border-radius: 10px;
   cursor: pointer;
   font-size: 1rem;
+  font-weight: 500;
   transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(231, 77, 60, 0.607);
+  border-color: rgb(231, 77, 60);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+/* Custom scrollbar for sidebar navigation */
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 250px; /* Keep full width on mobile for better usability */
+    height: 100vh;
+    position: relative; /* Change from fixed to relative for mobile container */
+  }
+  
+  .sidebar-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .sidebar-nav a {
+    padding: 12px 15px;
+    margin: 0 8px;
+  }
 }

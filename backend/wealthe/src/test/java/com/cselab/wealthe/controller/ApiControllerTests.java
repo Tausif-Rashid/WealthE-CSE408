@@ -110,7 +110,7 @@ public class ApiControllerTests {
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getName()).thenReturn("12");
 
-        String sql = "SELECT id, user_id,type, amount, description,date FROM expense WHERE user_id=? ORDER BY date DESC";
+        String sql = "SELECT * FROM expense WHERE user_id=? ORDER BY date DESC";
         List<Map<String, Object>> expected = List.of(
                 Map.of(
                         "id", 1,
@@ -150,7 +150,7 @@ public class ApiControllerTests {
         SecurityContextHolder.setContext(securityContext);
         when(authentication.getName()).thenReturn("12");
 
-        String sql = "SELECT id, user_id,type, amount, description,date FROM expense WHERE user_id=? ORDER BY date DESC";
+        String sql = "SELECT * FROM expense WHERE user_id=? ORDER BY date DESC";
         when(jdbcTemplate.queryForList(sql, 12)).thenThrow(new RuntimeException("db error"));
 
         List<Map<String, Object>> result = apiController.getUserExpenseList();

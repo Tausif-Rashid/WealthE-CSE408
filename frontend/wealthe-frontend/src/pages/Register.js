@@ -23,7 +23,6 @@ const Register = () => {
       ...prev,
       [name]: value
     }));
-    // Clear errors when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -31,59 +30,45 @@ const Register = () => {
       }));
     }
   };
-
   const validateForm = () => {
     const newErrors = {};
-
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-
     if (!formData.email) {
       newErrors.email = 'Email is required';
     } else if (!validateEmail(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (!validatePassword(formData.password)) {
       newErrors.password = 'Password must be at least 6 characters long';
     }
-
     if (!formData.confirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) {
       return;
     }
-
-    setLoading(true);    try {
-      // COMMENTED OUT: Password hashing - backend handles authentication
-      // Hash the password before sending to backend
-      // const hashedPassword = await hashPassword(formData.password);
-      
+    setLoading(true);
+    try {
       const userData = {
         name: formData.name.trim(),
         email: formData.email,
-        password: formData.password, // Send plain password - backend will hash it
+        password: formData.password,
       };
-
       const response = await register(userData);
-      
       if (response.token) {
         setAuthToken(response.token);
-        setAuthRole(response.role); // Set role as 'user' after registration
+        setAuthRole(response.role);
         authLogin(formData.email, response.token);
         navigate('/dashboard');
       }
@@ -95,23 +80,29 @@ const Register = () => {
       setLoading(false);
     }
   };
-
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>💰 Create Account</h1>
-          <p>Join us to start managing your wealth</p>
+          <div className="logo">
+            <img
+              src="/trending-up-svgrepo-com.svg"
+              alt="Trending Up"
+              className="logo-icon"
+              width="40"
+              height="40"
+            />
+            <h1>WealthE</h1>
+          </div>
+          <p>Create Account</p>
         </div>
-
         <form onSubmit={handleSubmit} className="auth-form">
           {errors.general && (
             <div className="error-message general-error">
               {errors.general}
             </div>
           )}
-
-          <div className="form-group">
+          <div className="form-group-login">
             <label htmlFor="name">Full Name</label>
             <input
               type="text"
@@ -121,13 +112,13 @@ const Register = () => {
               onChange={handleChange}
               className={errors.name ? 'error' : ''}
               placeholder="Enter your full name"
+              autoComplete="name"
             />
             {errors.name && (
               <span className="error-message">{errors.name}</span>
             )}
           </div>
-
-          <div className="form-group">
+          <div className="form-group-login">
             <label htmlFor="email">Email Address</label>
             <input
               type="email"
@@ -137,13 +128,13 @@ const Register = () => {
               onChange={handleChange}
               className={errors.email ? 'error' : ''}
               placeholder="Enter your email"
+              autoComplete="username"
             />
             {errors.email && (
               <span className="error-message">{errors.email}</span>
             )}
           </div>
-
-          <div className="form-group">
+          <div className="form-group-login">
             <label htmlFor="password">Password</label>
             <input
               type="password"
@@ -151,15 +142,15 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className={errors.password ? 'error' : ''}
+              className={errors.password ? 'error-login' : ''}
               placeholder="Enter your password"
+              autoComplete="new-password"
             />
             {errors.password && (
               <span className="error-message">{errors.password}</span>
             )}
           </div>
-
-          <div className="form-group">
+          <div className="form-group-login">
             <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
@@ -167,26 +158,25 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={errors.confirmPassword ? 'error' : ''}
+              className={errors.confirmPassword ? 'error-login' : ''}
               placeholder="Confirm your password"
+              autoComplete="new-password"
             />
             {errors.confirmPassword && (
               <span className="error-message">{errors.confirmPassword}</span>
             )}
           </div>
-
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="auth-button"
             disabled={loading}
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
-
         <div className="auth-footer">
           <p>
-            Already have an account? 
+            Already have an account?
             <Link to="/login" className="auth-link"> Sign In</Link>
           </p>
         </div>

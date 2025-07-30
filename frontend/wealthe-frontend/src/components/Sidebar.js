@@ -9,21 +9,15 @@ const Sidebar = () => {
   
   // Define navigation items based on user role
   const getNavItems = () => {
-      // if (user?.role === 'admin') {
-      //   return [
-      //     { path: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
-      //     { path: '/admin/users', icon: '👥', label: 'User Management' },
-      //     { path: '/admin/transactions', icon: '💰', label: 'Transactions' },
-      //     { path: '/admin/reports', icon: '📈', label: 'Reports' }
-      //   ];
-      // }
-    
     return [
       { path: '/dashboard', icon: '🏠', label: 'Dashboard' },
-      { path: '/expenses', icon: '💸', label: 'Expenses' },
       { path: '/income', icon: '💰', label: 'Income' },
+      { path: '/expenses', icon: '💸', label: 'Expenses' },
+      { path: '/investment', icon: '📈', label: 'Investment' },
       { path: '/tax-estimation', icon: '📊', label: 'Tax Estimation' },
-      
+      { path: '/tax-form', icon: '📋', label: 'Tax Form' },
+      { path: '/assets', icon: '🏦', label: 'Assets'},
+      { path: '/liabilities', icon: '💳', label: 'Liabilities' },
       { path: '/chatbot', icon: '💬', label: 'Ask question' },
     ];
   };
@@ -33,7 +27,16 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>WealthE</h2>
+        <div className="logo">
+          <img
+            src="/trending-up-svgrepo-com.svg"
+            alt="Trending Up"
+            className="logo-icon"
+            width="35"
+            height="35"
+          />
+          <h2>WealthE</h2>
+        </div>
         <div className="user-info">
           <p>{user?.email}</p>
           <p className="user-role">{user?.role || 'user'}</p>

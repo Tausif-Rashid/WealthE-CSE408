@@ -132,7 +132,7 @@ const AddExpense = () => {
               value={formData.type}
               onChange={handleInputChange}
               required
-              className="form-input"
+              className="form-input-drop"
             >
               <option value="">Select expense type</option>
               {expenseCategories.map((category, index) => (

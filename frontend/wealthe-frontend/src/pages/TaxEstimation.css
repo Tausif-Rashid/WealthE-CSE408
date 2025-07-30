@@ -1,24 +1,30 @@
-/* Tax Estimation Page Styles */
+/* Tax Estimation Page Styles - WealthE Themed */
 .tax-estimation-container {
   padding: 30px;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-attachment: fixed;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .tax-estimation-header {
   text-align: center;
   margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 .tax-estimation-header h1 {
-  color: #333;
+  color: #1e3a8a;
   margin: 0 0 10px 0;
   font-size: 2.5rem;
   font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 1px;
 }
 
 .tax-estimation-header p {
-  color: #666;
+  color: rgba(79, 76, 76, 0.8);
   margin: 0;
   font-size: 1.1rem;
 }
@@ -26,15 +32,19 @@
 .tax-estimation-content {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* Form Container */
 .tax-form-container {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 237, 237, 0.344);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 40px;
   margin-bottom: 30px;
+  color: rgb(39, 38, 38);
 }
 
 .tax-form {
@@ -52,33 +62,36 @@
 
 .form-group label {
   font-weight: 600;
-  color: #333;
+  color: rgb(39, 38, 38);
   font-size: 1.1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /* Form Inputs */
-.form-input {
+.form-input-est {
   padding: 12px 16px;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
+  border: 2px solid rgba(54, 53, 53, 0.659);
+  border-radius: 12px;
   font-size: 1rem;
-  color: #333;
-  background-color: white;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  color: rgb(39, 38, 38);
+  background: rgba(204, 204, 204, 0.205);
+  transition: all 0.3s ease;
 }
 
-.form-input:hover {
-  border-color: #007bff;
+.form-input-est:hover {
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.form-input:focus {
+.form-input-est:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .form-input::placeholder {
-  color: #999;
+  color: rgba(39, 38, 38, 0.6);
 }
 
 /* Prevent scroll wheel from changing number input values */
@@ -103,14 +116,14 @@
   justify-content: center;
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #e9ecef;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .reset-btn,
 .calculate-btn {
   padding: 12px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -123,23 +136,26 @@
 }
 
 .reset-btn {
-  background-color: #6c757d;
+  background: rgba(244, 104, 102, 0.8);
   color: white;
+  border: 1px solid rgba(108, 117, 125, 0.4);
 }
 
 .reset-btn:hover {
-  background-color: #5a6268;
-  transform: translateY(-1px);
+  background: rgba(232, 28, 28, 0.709);
+  transform: translateY(-2px);
 }
 
 .calculate-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
 }
 
 .calculate-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
 }
 
 .calculate-btn:disabled {
@@ -149,11 +165,13 @@
 
 /* Loading Container */
 .loading-container {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(210, 219, 249, 0.203);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 40px;
   text-align: center;
+  color: rgb(39, 38, 38);
 }
 
 .loading-spinner {
@@ -167,8 +185,8 @@
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #007bff;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 20px;
@@ -181,11 +199,13 @@
 
 /* Results Container */
 .results-container {
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(210, 219, 249, 0.203);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   padding: 40px;
   animation: slideInUp 0.5s ease-out;
+  color: rgb(39, 38, 38);
 }
 
 @keyframes slideInUp {
@@ -205,10 +225,11 @@
 }
 
 .results-header h2 {
-  color: #333;
+  color: rgb(39, 38, 38);
   margin: 0;
   font-size: 2rem;
   font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /* Results Grid */
@@ -221,20 +242,22 @@
 
 /* Result Cards */
 .result-card {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-radius: 12px;
+  background: rgba(210, 219, 249, 0.203);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e9ecef;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   align-items: center;
   gap: 15px;
+  color: rgb(39, 38, 38);
 }
 
 .result-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  background: rgba(74, 91, 130, 0.25);
 }
 
 .result-icon {
@@ -251,26 +274,28 @@
 
 .result-content h3 {
   margin: 0 0 8px 0;
-  color: #333;
+  color: rgb(39, 38, 38);
   font-size: 1.1rem;
   font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .result-amount {
   margin: 0;
   font-size: 1.4rem;
   font-weight: bold;
-  color: #007bff;
+  color: #1279ee;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-.result-amount.highlight {
-  color: #28a745;
+/* .result-amount.highlight {
+  color: #066e28;
   font-size: 1.6rem;
-}
+} */
 
 /* Specific card colors */
 .income-card {
-  border-left: 4px solid #007bff;
+  border-left: 4px solid #1279ee;
 }
 
 .investment-card {
@@ -282,27 +307,31 @@
 }
 
 .min-tax-card {
-  border-left: 4px solid #6f42c1;
+  border-left: 4px solid #b34141;
+}
+
+.calculated-tax-card {
+  border-left: 4px solid #105a6d;
 }
 
 .estimated-tax-card {
-  border-left: 4px solid #28a745;
-  background: linear-gradient(135deg, #d4edda 0%, #ffffff 100%);
+  border-left: 4px solid #066e28;
+  background: rgba(0, 255, 8, 0.162);
 }
 
 /* Results Summary */
 .results-summary {
-  background: #f8f9fa;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   padding: 20px;
-  border: 1px solid #e9ecef;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .summary-note {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  color: #666;
+  color: rgba(39, 38, 38, 0.8);
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -310,6 +339,7 @@
 .note-icon {
   font-size: 1.2rem;
   margin-top: 2px;
+  color: #1279ee;
 }
 
 /* Responsive Design */

@@ -1,4 +1,4 @@
-//import { data } from "react-router";
+// import { data } from "react-router";
 // const API_BASE_URL = 'http://localhost:8081';
 const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
 // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://172.174.246.178:8081'; 
@@ -187,7 +187,7 @@ export const getExpenseCategories = async () => {
 };
 
 export const getInvestmentCategories = async () => {
-  return apiCall('/admin/investment-categories', {
+  return apiCall('/user/get-investment-categories', {
     method: 'GET',
   });
 };
@@ -203,6 +203,13 @@ export const getTaxAreaList = async () => {
     method: 'GET',
   });
 };
+
+export const getAllTaxAreaList = async () => {
+  return apiCall('/user/tax-area-list', {
+    method: 'GET',
+  });
+};
+
 
 export const getMinimumTaxList = async () => {
   return apiCall('/admin/minimum-tax-list', {
@@ -416,6 +423,54 @@ export const deleteIncome = async (incomeId) => {
   });
 };
 
+// Investment API functions
+export const getUserInvestment = async () => {
+  return apiCall('/user/investment',{
+    method: 'GET',
+  });
+};
+
+export const addInvestment = async (investmentData) => {
+  return apiCall('/user/add-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      amount: investmentData.amount,
+      date: investmentData.date,
+      category: investmentData.category
+    }),
+  });
+};
+
+export const editInvestment = async (investmentId, investmentData) => {
+  return apiCall('/user/edit-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: investmentId,
+      amount: investmentData.amount,
+      date: investmentData.date,
+      category: investmentData.category
+    }),
+  });
+};
+
+export const deleteInvestment = async (investmentId) => {
+  return apiCall('/user/delete-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: investmentId
+    }),
+  });
+};
+
 export const updateUserProfile = async (profileData) => {
   return apiCall('/user/update-profile', {
     method: 'POST',
@@ -452,3 +507,671 @@ export const getTaxEstimation = async (taxData) => {
   });
 };
 
+// Get tax zones by area
+export const getTaxZonesByArea = async (areaName) => {
+  return apiCall('/user/tax-zones-by-area', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ area_name: areaName }),
+  });
+};
+
+// Get tax circles by zone
+export const getTaxCirclesByZone = async (zoneName) => {
+  return apiCall('/user/tax-circles-by-zone', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ tax_zone: zoneName }),
+  });
+};
+
+// Asset Management APIs
+
+// Bank Account APIs
+export const getBankAccounts = async () => {
+  return apiCall('/user/bank-accounts', {
+    method: 'GET',
+  });
+};
+
+export const getBankAccount = async (bankAccountId) => {
+  return apiCall('/user/bank-account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: bankAccountId }),
+  });
+};
+
+export const addBankAccount = async (bankAccountData) => {
+  return apiCall('/user/add-bank-account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      account: bankAccountData.account,
+      amount: bankAccountData.amount,
+      bank_name: bankAccountData.bank_name,
+      title: bankAccountData.title
+    }),
+  });
+};
+
+export const editBankAccount = async (bankAccountId, bankAccountData) => {
+  return apiCall('/user/edit-bank-account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: bankAccountId,
+      account: bankAccountData.account,
+      amount: bankAccountData.amount,
+      bank_name: bankAccountData.bank_name,
+      title: bankAccountData.title
+    }),
+  });
+};
+
+export const deleteBankAccount = async (bankAccountId) => {
+  return apiCall('/user/delete-bank-account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: bankAccountId }),
+  });
+};
+
+// Car APIs
+export const getCars = async () => {
+  return apiCall('/user/cars', {
+    method: 'GET',
+  });
+};
+
+export const getCar = async (carId) => {
+  return apiCall('/user/car', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: carId }),
+  });
+};
+
+export const addCar = async (carData) => {
+  return apiCall('/user/add-car', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: carData.model,
+      engine: carData.engine,
+      description: carData.description,
+      title: carData.title,
+      cost: carData.cost,
+      acquisition: carData.acquisition,
+      reg_number: carData.reg_number
+    }),
+  });
+};
+
+export const editCar = async (carId, carData) => {
+  return apiCall('/user/edit-car', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: carId,
+      model: carData.model,
+      engine: carData.engine,
+      description: carData.description,
+      title: carData.title,
+      cost: carData.cost,
+      acquisition: carData.acquisition,
+      reg_number: carData.reg_number
+    }),
+  });
+};
+
+export const deleteCar = async (carId) => {
+  return apiCall('/user/delete-car', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: carId }),
+  });
+};
+
+// Flat APIs
+export const getFlats = async () => {
+  return apiCall('/user/flats', {
+    method: 'GET',
+  });
+};
+
+export const getFlat = async (flatId) => {
+  return apiCall('/user/flat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: flatId }),
+  });
+};
+
+export const addFlat = async (flatData) => {
+  return apiCall('/user/add-flat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: flatData.title,
+      description: flatData.description,
+      cost: flatData.cost,
+      date: flatData.date,
+      location: flatData.location,
+      acquisition: flatData.acquisition
+    }),
+  });
+};
+
+export const editFlat = async (flatId, flatData) => {
+  return apiCall('/user/edit-flat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: flatId,
+      title: flatData.title,
+      description: flatData.description,
+      cost: flatData.cost,
+      date: flatData.date,
+      location: flatData.location,
+      acquisition: flatData.acquisition
+    }),
+  });
+};
+
+export const deleteFlat = async (flatId) => {
+  return apiCall('/user/delete-flat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: flatId }),
+  });
+};
+
+// Jewellery APIs
+export const getJewellery = async () => {
+  return apiCall('/user/jewellery', {
+    method: 'GET',
+  });
+};
+
+export const getJewelleryItem = async (jewelleryId) => {
+  return apiCall('/user/jewellery-item', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: jewelleryId }),
+  });
+};
+
+export const addJewellery = async (jewelleryData) => {
+  return apiCall('/user/add-jewellery', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      title: jewelleryData.title,
+      description: jewelleryData.description,
+      cost: jewelleryData.cost,
+      acquisition: jewelleryData.acquisition,
+      weight: jewelleryData.weight
+    }),
+  });
+};
+
+export const editJewellery = async (jewelleryId, jewelleryData) => {
+  return apiCall('/user/edit-jewellery', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: jewelleryId,
+      title: jewelleryData.title,
+      description: jewelleryData.description,
+      cost: jewelleryData.cost,
+      acquisition: jewelleryData.acquisition,
+      weight: jewelleryData.weight
+    }),
+  });
+};
+
+export const deleteJewellery = async (jewelleryId) => {
+  return apiCall('/user/delete-jewellery', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: jewelleryId }),
+  });
+};
+
+// Plot APIs
+export const getPlots = async () => {
+  return apiCall('/user/plots', {
+    method: 'GET',
+  });
+};
+
+export const getPlot = async (plotId) => {
+  return apiCall('/user/plot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: plotId }),
+  });
+};
+
+export const addPlot = async (plotData) => {
+  return apiCall('/user/add-plot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      type: plotData.type,
+      description: plotData.description,
+      cost: plotData.cost,
+      date: plotData.date,
+      acquisition: plotData.acquisition,
+      location: plotData.location
+    }),
+  });
+};
+
+export const editPlot = async (plotId, plotData) => {
+  return apiCall('/user/edit-plot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: plotId,
+      type: plotData.type,
+      description: plotData.description,
+      cost: plotData.cost,
+      date: plotData.date,
+      acquisition: plotData.acquisition,
+      location: plotData.location
+    }),
+  });
+};
+
+export const deletePlot = async (plotId) => {
+  return apiCall('/user/delete-plot', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id: plotId }),
+  });
+};
+
+//liabilities apis
+export const getBankLoans = async () => {
+  return apiCall('/user/bank-loans', {
+    method: 'GET',
+  });
+};
+
+export const getPersonLoans = async () => {
+  return apiCall('/user/person-loans', {
+    method: 'GET',
+  });
+};
+
+export const addBankLoan = async (loanData) => {
+  return apiCall('/user/bank-loan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bank_name: loanData.bank_name,
+      account: loanData.account,
+      interest: loanData.interest,
+      amount: loanData.amount,
+      remaining: loanData.remaining
+    }),
+  });
+};
+
+export const addPersonLoan = async (loanData) => {
+  return apiCall('/user/person-loan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      lender_name: loanData.lender_name,
+      lender_nid: loanData.lender_nid,
+      amount: loanData.amount,
+      remaining: loanData.remaining,
+      interest: loanData.interest
+    }),
+  });
+};
+
+export const deleteBankLoan = async (id) => {
+  return apiCall(`/user/bank-loan/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const editBankLoan = async (id, loanData) => {
+  return apiCall(`/user/bank-loan/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bank_name: loanData.bank_name,
+      account: loanData.account,
+      interest: loanData.interest,
+      amount: loanData.amount,
+      remaining: loanData.remaining
+    }),
+  });
+};
+
+export const deletePersonLoan = async (id) => {
+  return apiCall(`/user/person-loan/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const editPersonLoan = async (id, loanData) => {
+  return apiCall(`/user/person-loan/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      lender_name: loanData.lender_name,
+      lender_nid: loanData.lender_nid,
+      amount: loanData.amount,
+      remaining: loanData.remaining,
+      interest: loanData.interest
+    }),
+  });
+};
+
+//liabilities apis
+export const getTaxIncome = async () => {
+  return apiCall('/user/tax-income', {
+    method: 'GET',
+  });
+};
+
+export const getTaxExpense = async () => {
+  return apiCall('/user/tax-expense', {
+    method: 'GET',
+  });
+};
+
+export const getTaxInvestment = async () => {
+  return apiCall('/user/tax-investment', {
+    method: 'GET',
+  });
+};
+
+export const getTaxAsset = async () => {
+  return apiCall('/user/tax-asset', {
+    method: 'GET',
+  });
+};
+
+export const getTaxLiability = async () => {
+  return apiCall('/user/tax-liability', {
+    method: 'GET',
+  });
+};
+
+export const getTaxAmount = async () => {
+  return apiCall('/user/tax-amount', {
+    method: 'GET',
+  });
+};
+
+export const createTaxForm = async () => {
+  return apiCall('/user/tax-personalInfo', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}), // Empty body
+  });
+};
+
+export const updateTaxFormIncome = async (incomeData) => {
+  return apiCall('/user/update-tax-form-income', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      income_salary: incomeData.salary,
+      income_agriculture: incomeData.agriculture,
+      income_rent: incomeData.rent,
+      income_interest: incomeData.interest,
+      income_others: incomeData.others
+    }),
+  });
+};
+
+
+export const updateTaxFormExpense = async (expenseData) => {
+  return apiCall('/user/update-tax-form-expense', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      personal: expenseData.personal,
+      housing: expenseData.housing,
+      utility: expenseData.utility,
+      education: expenseData.education,
+      transport: expenseData.transport,
+      others: expenseData.others
+    }),
+  });
+};
+
+export const updateTaxFormInvestment = async (investmentData) => {
+  return apiCall('/user/update-tax-form-investment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      three_month_sanchaypatra : investmentData.three_month_sanchaypatra,
+      five_years_sanchaypatra : investmentData.five_years_sanchaypatra,
+      Zakat : investmentData.Zakat,
+      FDR : investmentData.FDR,
+      family_sanchaypatra: investmentData.family_sanchaypatra
+    }),
+  });
+};
+
+export const updateTaxFormAssetLiability = async (assetData) => {
+  return apiCall('/user/update-tax-form-asset', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      bankAccount: assetData.bankAccount,
+      car: assetData.car,
+      flat: assetData.flat,
+      jewelery: assetData.jewellery,
+      plot: assetData.plot,
+      bankLoan: assetData.bankLoan,
+      personLoan: assetData.personLoan
+
+    }),
+  });
+};
+
+export const submitTaxForm = async () => {
+  return apiCall('/user/submit-tax-form', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({}), // Empty body
+  });
+};
+
+export const getTaxSubmissions = async () => {
+  return apiCall('/user/tax-submissions', {
+    method: 'GET'
+  });
+};
+
+export const generateTaxPdf = async (submissionId) => {
+  return apiCall('/user/generate-tax-pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      submissionId: submissionId
+    }),
+  });
+};
+
+export const generateTaxPdfadmin = async (submissionId, userId) => {
+  return apiCall('/admin/generate-tax-pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      submissionId: submissionId, 
+      userId: userId
+    }),
+  });
+};
+
+export const downloadPdf = async (fileName) => {
+  const url = `${API_BASE_URL}/user/download-pdf/${fileName}`;
+  const config = {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.blob();
+  } catch (error) {
+    throw new Error(`Failed to download PDF: ${error.message}`);
+  }
+};
+
+export const downloadPdfAdmin = async (fileName, userId) => {
+  const url = `${API_BASE_URL}/admin/download-pdf`;
+  const config = {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      fileName: fileName,
+      userId: userId
+    })
+  };
+
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.blob();
+  } catch (error) {
+    throw new Error(`Failed to download PDF: ${error.message}`);
+  }
+};
+
+export const getAllTaxSubmissions = async () => {
+  return apiCall('/admin/all-tax-submissions', {
+    method: 'GET'
+  });
+};
+
+
+
+export const getMonthlyIncomeByType = async () => {
+  return apiCall('/user/monthly-income', {
+    method: 'GET',
+  });
+};
+
+export const getMonthlyExpenseByType = async () => {
+  return apiCall('/user/monthly-expense', {
+    method: 'GET',
+  });
+};
+
+export const getPreviousMonthsData = async () => {
+  return apiCall('/user/previous-data', {
+    method: 'GET',
+  });
+};
+
+export const getTotalTaxPayers = async () => {
+  return apiCall('/admin/total-tax-payers', {
+    method: 'GET',
+  });
+};
+
+export const getAdminName = async () => {
+  return apiCall('/admin/name', {
+    method: 'GET',
+  });
+};
