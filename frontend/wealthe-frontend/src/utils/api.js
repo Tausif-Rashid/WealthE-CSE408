@@ -1,6 +1,6 @@
 // import { data } from "react-router";
-const API_BASE_URL = 'http://localhost:8081';
-//const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
+// const API_BASE_URL = 'http://localhost:8081';
+const API_BASE_URL = 'http://172.174.246.178:8081'; // Adjust this to your backend URL
 // const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://172.174.246.178:8081'; 
 
 
@@ -963,6 +963,12 @@ export const getTaxLiability = async () => {
   });
 };
 
+export const getTaxAmount = async () => {
+  return apiCall('/user/tax-amount', {
+    method: 'GET',
+  });
+};
+
 export const createTaxForm = async () => {
   return apiCall('/user/tax-personalInfo', {
     method: 'POST',
@@ -1049,5 +1055,123 @@ export const submitTaxForm = async () => {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({}), // Empty body
+  });
+};
+
+export const getTaxSubmissions = async () => {
+  return apiCall('/user/tax-submissions', {
+    method: 'GET'
+  });
+};
+
+export const generateTaxPdf = async (submissionId) => {
+  return apiCall('/user/generate-tax-pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      submissionId: submissionId
+    }),
+  });
+};
+
+export const generateTaxPdfadmin = async (submissionId, userId) => {
+  return apiCall('/admin/generate-tax-pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      submissionId: submissionId, 
+      userId: userId
+    }),
+  });
+};
+
+export const downloadPdf = async (fileName) => {
+  const url = `${API_BASE_URL}/user/download-pdf/${fileName}`;
+  const config = {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.blob();
+  } catch (error) {
+    throw new Error(`Failed to download PDF: ${error.message}`);
+  }
+};
+
+export const downloadPdfAdmin = async (fileName, userId) => {
+  const url = `${API_BASE_URL}/admin/download-pdf`;
+  const config = {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      fileName: fileName,
+      userId: userId
+    })
+  };
+
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.blob();
+  } catch (error) {
+    throw new Error(`Failed to download PDF: ${error.message}`);
+  }
+};
+
+export const getAllTaxSubmissions = async () => {
+  return apiCall('/admin/all-tax-submissions', {
+    method: 'GET'
+  });
+};
+
+
+
+export const getMonthlyIncomeByType = async () => {
+  return apiCall('/user/monthly-income', {
+    method: 'GET',
+  });
+};
+
+export const getMonthlyExpenseByType = async () => {
+  return apiCall('/user/monthly-expense', {
+    method: 'GET',
+  });
+};
+
+export const getPreviousMonthsData = async () => {
+  return apiCall('/user/previous-data', {
+    method: 'GET',
+  });
+};
+
+export const getTotalTaxPayers = async () => {
+  return apiCall('/admin/total-tax-payers', {
+    method: 'GET',
+  });
+};
+
+export const getAdminName = async () => {
+  return apiCall('/admin/name', {
+    method: 'GET',
   });
 };

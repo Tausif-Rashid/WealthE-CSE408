@@ -1,5 +1,6 @@
 package com.cselab.wealthe.controller;
 
+
 import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class TaxController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+
     @Autowired
     private static final Logger logger = LoggerFactory.getLogger(TaxController.class);
 
@@ -51,6 +53,10 @@ public class TaxController {
         try {
             // Get user ID from authentication
             int userId = Integer.parseInt(auth.getName());
+
+            System.out.println("asdf asdf asdf asdf");
+
+
 
             // Check if user has submitted tax form data
             String countSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? ";
@@ -275,7 +281,8 @@ public class TaxController {
                     response.put("bankAccount", bankAccountTotal);
                     response.put("car", carTotal);
                     response.put("flat", flatTotal);
-                    response.put("jewelry", jewelryTotal);
+                    response.put("jewellery", jewelryTotal);
+                    response.put("jewellery", jewelryTotal);
                     response.put("plot", plotTotal);
 
                     return response;
@@ -391,7 +398,7 @@ public class TaxController {
             int userId = Integer.parseInt(auth.getName());
 
             // Check if user already has a tax form
-            String checkSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? AND done_submit= false";
+            String checkSql = "SELECT COUNT(*) FROM tax_form_table WHERE user_id = ? AND done_submit = false";
             Integer existingCount = jdbcTemplate.queryForObject(checkSql, Integer.class, userId);
 
             if (existingCount != null && existingCount > 0) {
@@ -400,11 +407,14 @@ public class TaxController {
                 return response;
             }
 
-            // SQL query to insert new tax form
-            String sql = "INSERT INTO tax_form_table(user_id) VALUES (?)";
+            // Get today's date
+            LocalDate today = LocalDate.now();
+
+            // SQL query to insert new tax form with today's date
+            String sql = "INSERT INTO tax_form_table(user_id, date) VALUES (?, ?)";
 
             // Execute the insert
-            int rowsAffected = jdbcTemplate.update(sql, userId);
+            int rowsAffected = jdbcTemplate.update(sql, userId, today);
 
             if (rowsAffected > 0) {
                 response.put("success", true);
@@ -748,7 +758,10 @@ public class TaxController {
                 // Create a clean key name (remove spaces, convert to camelCase)
                 String key = investmentType.toLowerCase()
                         .replace(" ", "")
-                        .replace("-", "");
+                        .replace("-", "")
+                        .replace("3month", "threemonth")
+                        .replace("5years", "fiveyears");
+
 
                 investmentTotals.put(key, total != null ? total : 0.0);
             }
@@ -922,14 +935,24 @@ public class TaxController {
                 return response;
             }
 
+
+            int gross = (int) Math.ceil(grossTax != null ? grossTax : 0.0);
+            int rebate = (int) Math.ceil(rebateAmount != null ? rebateAmount : 0.0);
+            int net = (int) Math.ceil(netTax != null ? netTax : 0.0);
+            int min = (int) Math.ceil(minTax != null ? minTax : 0.0);
+            int payable = (int) Math.ceil(payableTax != null ? payableTax : 0.0);
+
             // 11. Build response object
-            response.put("gross_tax", grossTax != null ? grossTax : 0.0);
-            response.put("rebate_amount", rebateAmount != null ? rebateAmount : 0.0);
-            response.put("net_tax", netTax != null ? netTax : 0.0);
-            response.put("min_tax", minTax != null ? minTax : 0.0);
-            response.put("payable_tax", payableTax != null ? payableTax : 0.0);
+            response.put("gross_tax", gross);
+            response.put("rebate_amount", rebate);
+            response.put("net_tax", net);
+            response.put("min_tax", min);
+            response.put("payable_tax", payable);
+
+
 
             return response;
+
 
         } catch (Exception e) {
             System.out.println("Error occurred: " + e);

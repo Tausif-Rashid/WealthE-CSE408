@@ -11,8 +11,8 @@ const Sidebar = () => {
   const getNavItems = () => {
     return [
       { path: '/dashboard', icon: '🏠', label: 'Dashboard' },
-      { path: '/expenses', icon: '💸', label: 'Expenses' },
       { path: '/income', icon: '💰', label: 'Income' },
+      { path: '/expenses', icon: '💸', label: 'Expenses' },
       { path: '/investment', icon: '📈', label: 'Investment' },
       { path: '/tax-estimation', icon: '📊', label: 'Tax Estimation' },
       { path: '/tax-form', icon: '📋', label: 'Tax Form' },

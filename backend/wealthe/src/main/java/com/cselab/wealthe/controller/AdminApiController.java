@@ -1,5 +1,6 @@
 package com.cselab.wealthe.controller;
 
+import com.cselab.wealthe.service.PdfService;
 import com.cselab.wealthe.util.JwtUtil;
 
 //import java.util.logging.Logger;
@@ -8,7 +9,11 @@ import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -17,12 +22,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -34,6 +41,9 @@ public class AdminApiController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private PdfService pdfService;
+
     private static final Logger logger = LoggerFactory.getLogger(AdminApiController.class);
 
     @GetMapping("/admin/total-users")
@@ -44,6 +54,35 @@ public class AdminApiController {
             return jdbcTemplate.queryForMap(sql);
         } catch (Exception e) {
             logger.error("Failed to get total users count: " + e.getMessage());
+            return Map.of("total", 0);
+        }
+    }
+
+    @GetMapping("/admin/name")
+    public Map<String, Object> getAdminName() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        int userId = Integer.parseInt(auth.getName());
+        try {
+            String sql = "SELECT name FROM admin WHERE id = ?";
+            System.out.println("api called for admin total user");
+            return jdbcTemplate.queryForMap(sql, userId);
+        } catch (Exception e) {
+            logger.error("Failed to get total users count: " + e.getMessage());
+            return Map.of("total", 0);
+        }
+    }
+
+
+
+    @GetMapping("/admin/total-tax-payers")
+    public Map<String, Object> getTotalTaxPayers() {
+        try {
+            String sql = "SELECT COUNT(DISTINCT user_id) FROM tax_form_table WHERE done_submit=true";
+            System.out.println("api called for admin total user");
+            return jdbcTemplate.queryForMap(sql);
+        } catch (Exception e) {
+            logger.error("Failed to get total Taxpayer count: " + e.getMessage());
             return Map.of("total", 0);
         }
     }
@@ -668,6 +707,108 @@ public class AdminApiController {
         }
     }
 
+    @GetMapping("/admin/all-tax-submissions")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getAllTaxSubmissions() {
+        try {
+            String sql = "SELECT t.id, t.user_id, t.date, t.done_submit, c.email as user_email " +
+                        "FROM tax_form_table t " +
+                        "JOIN credentials c ON t.user_id = c.id " +
+                        "ORDER BY t.date DESC";
+            return jdbcTemplate.queryForList(sql);
+        } catch (Exception e) {
+            logger.error("Failed to get all tax submissions: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
+    @PostMapping("/admin/generate-tax-pdf")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> generateTaxPdfadmin(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+
+
+            // Extract submission ID from request body
+            Integer submissionId = (Integer) request.get("submissionId");
+            Integer userId = (Integer) request.get("userId");
+             if (submissionId == null) {
+                response.put("success", false);
+                response.put("message", "Submission ID is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Generate filename: user_id + submission_id + return.pdf
+            String filename = userId + "_" + submissionId + "_return.pdf";
+            String filePath = "generated_pdfs" + System.getProperty("file.separator") + filename;
+
+            // Check if file already exists
+            File existingFile = new File(filePath);
+            if (existingFile.exists()) {
+                response.put("success", true);
+                response.put("message", "PDF already exists");
+                response.put("fileName", filename);
+                return ResponseEntity.ok(response);
+            }
+
+            // Generate PDF using the existing service
+            String generatedFilePath = pdfService.generateTaxFormPdfForSubmission(submissionId,userId);
+
+            response.put("success", true);
+            response.put("message", "PDF generated successfully");
+            response.put("fileName", filename);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("Error generating tax PDF: {}", e.getMessage());
+            response.put("success", false);
+            response.put("message", "Failed to generate PDF: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/admin/download-pdf")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Resource> downloadPdf(@RequestBody Map<String, Object> request) {
+        try {
+            // Extract filename and userId from request body
+            String fileName = (String) request.get("fileName");
+            Integer userId = (Integer) request.get("userId");
+            
+            if (fileName == null || userId == null) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            // Validate filename contains the provided user ID for security
+            if (!fileName.contains("tax_form_" + userId + "_") && !fileName.contains("user_info_" + userId + "_") && !fileName.contains(userId + "_")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            File file = new File("generated_pdfs" + System.getProperty("file.separator") + fileName);
+
+            if (!file.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = new FileSystemResource(file);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+            headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(file.length())
+                    .body(resource);
+
+        } catch (Exception e) {
+            logger.error("Error downloading PDF: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     /*@GetMapping("/user/tax_info")
     public List<Map<String, Object>> getUserTaxInfo() {
