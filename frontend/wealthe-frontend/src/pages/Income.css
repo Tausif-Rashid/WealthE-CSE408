@@ -378,117 +378,222 @@
   background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
 }
 
-/* Delete Dialog Styles */
-.dialog-overlay {
+/* Income Delete Dialog Styles */
+.income-delete-dialog-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  animation: incomeDialogFadeIn 0.3s ease-out;
 }
 
-.dialog-container {
-  background: rgba(29, 38, 69, 0.95);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  padding: 0;
-  max-width: 400px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  animation: slideIn 0.3s ease-out;
-  color: white;
-}
-
-@keyframes slideIn {
+@keyframes incomeDialogFadeIn {
   from {
-    transform: translateY(-20px);
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+.income-delete-dialog-container {
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  border-radius: 20px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  width: 90%;
+  max-width: 450px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+  animation: incomeDialogSlideIn 0.3s ease-out;
+  transform-origin: center;
+}
+
+@keyframes incomeDialogSlideIn {
+  from {
+    transform: scale(0.9) translateY(-20px);
     opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
     opacity: 1;
   }
 }
 
-.dialog-header {
-  padding: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(29, 38, 69, 0.3);
-}
-
-.dialog-header h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+.income-delete-dialog-header {
+  background: linear-gradient(135deg, #dc3545, #c82333);
   color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
-.dialog-content {
-  padding: 20px;
+.income-delete-dialog-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: incomeDialogHeaderShimmer 2s infinite;
 }
 
-.dialog-content p {
-  margin: 0 0 10px 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
+@keyframes incomeDialogHeaderShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
 }
 
-.warning-text {
-  color: #ff6b6b !important;
+.income-delete-dialog-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.income-delete-dialog-content {
+  padding: 30px 25px;
+  text-align: center;
+  background: #ffffff;
+}
+
+.income-delete-dialog-content p {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 1.1rem;
+  line-height: 1.6;
   font-weight: 500;
 }
 
-.dialog-actions {
-  padding: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+.income-delete-dialog-content p:last-child {
+  margin-bottom: 0;
+}
+
+.income-delete-warning-text {
+  color: #dc3545 !important;
+  font-weight: 600 !important;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+  font-size: 1rem !important;
+  animation: incomeWarningPulse 2s infinite;
+}
+
+@keyframes incomeWarningPulse {
+  0%, 100% { 
+    background: rgba(220, 53, 69, 0.1);
+    border-color: rgba(220, 53, 69, 0.2);
+  }
+  50% { 
+    background: rgba(220, 53, 69, 0.15);
+    border-color: rgba(220, 53, 69, 0.3);
+  }
+}
+
+.income-delete-dialog-actions {
+  padding: 25px;
+  background: #f8f9fa;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 15px;
 }
 
-.cancel-button {
-  background: rgba(108, 117, 125, 0.8);
+.income-delete-cancel-button {
+  background: linear-gradient(145deg, #6c757d, #5a6268);
   color: white;
-  border: 1px solid rgba(108, 117, 125, 0.4);
-  padding: 10px 20px;
+  border: none;
+  padding: 12px 24px;
   border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(108, 117, 125, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+  min-width: 100px;
 }
 
-.cancel-button:hover {
-  background: rgba(108, 117, 125, 1);
+.income-delete-cancel-button:hover {
+  background: linear-gradient(145deg, #5a6268, #545b62);
   transform: translateY(-2px);
+  box-shadow: 
+    0 6px 20px rgba(108, 117, 125, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-.delete-button {
-  background: rgba(220, 53, 69, 0.8);
+.income-delete-cancel-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 2px 8px rgba(108, 117, 125, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.income-delete-confirm-button {
+  background: linear-gradient(145deg, #dc3545, #c82333);
   color: white;
-  border: 1px solid rgba(220, 53, 69, 0.4);
-  padding: 10px 20px;
+  border: none;
+  padding: 12px 24px;
   border-radius: 12px;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 4px 12px rgba(220, 53, 69, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
 }
 
-.delete-button:hover {
-  background: rgba(220, 53, 69, 1);
+.income-delete-confirm-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.income-delete-confirm-button:hover {
+  background: linear-gradient(145deg, #c82333, #bd2130);
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  box-shadow: 
+    0 8px 25px rgba(220, 53, 69, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.income-delete-confirm-button:hover::before {
+  left: 100%;
+}
+
+.income-delete-confirm-button:active {
+  transform: translateY(0);
+  box-shadow: 
+    0 3px 10px rgba(220, 53, 69, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Responsive Design */
@@ -527,9 +632,20 @@
     font-size: 1.2rem;
   }
   
-  .dialog-container {
+  .income-delete-dialog-container {
     width: 95%;
     margin: 0 10px;
+  }
+  
+  .income-delete-dialog-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .income-delete-cancel-button,
+  .income-delete-confirm-button {
+    width: 100%;
+    justify-content: center;
   }
   
   .income-actions {

@@ -12,7 +12,6 @@ import {
   deleteJewellery,
   deletePlot
 } from '../utils/api';
-import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 import MessageDialog from '../components/MessageDialog';
 import './Assets.css';
 
@@ -321,13 +320,37 @@ const Assets = () => {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <DeleteConfirmDialog
-        isOpen={deleteDialog.show}
-        itemName={deleteDialog.assetName}
-        itemType="asset"
-        onConfirm={handleConfirmDelete}
-        onCancel={handleCancelDelete}
-      />
+      {deleteDialog.show && (
+        <div className="assets-delete-dialog-overlay">
+          <div className="assets-delete-dialog-container">
+            <div className="assets-delete-dialog-header">
+              <h2>🗑️ Delete Asset</h2>
+            </div>
+            
+            <div className="assets-delete-dialog-content">
+              <p>Are you sure you want to delete the asset "{deleteDialog.assetName}"?</p>
+              <p className="assets-delete-warning-text">⚠️ This action cannot be undone!</p>
+            </div>
+            
+            <div className="assets-delete-dialog-actions">
+              <button 
+                type="button" 
+                onClick={handleCancelDelete}
+                className="assets-delete-cancel-button"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                onClick={handleConfirmDelete}
+                className="assets-delete-confirm-button"
+              >
+                Delete Asset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Message Dialog */}
       <MessageDialog

@@ -90,7 +90,7 @@ const TaxEstimation = () => {
       </div>
 
       <div className="tax-estimation-content">
-        <div className="tax-form-container">
+        <div className="tax-form-container-est">
           <form onSubmit={handleSubmit} className="tax-form">
             <div className="form-group">
               <label htmlFor="bonusAmount">Bonus Amount</label>

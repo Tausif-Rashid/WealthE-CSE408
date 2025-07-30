@@ -314,29 +314,29 @@ const Income = () => {
 
       {/* Delete Dialog */}
       {deleteDialog.show && (
-        <div className="dialog-overlay">
-          <div className="dialog-container">
-            <div className="dialog-header">
+        <div className="income-delete-dialog-overlay">
+          <div className="income-delete-dialog-container">
+            <div className="income-delete-dialog-header">
               <h2>🗑️ Delete Income</h2>
             </div>
             
-            <div className="dialog-content">
+            <div className="income-delete-dialog-content">
               <p>Are you sure you want to delete the income "{deleteDialog.incomeName}"?</p>
-              <p className="warning-text">⚠️ This action cannot be undone!</p>
+              <p className="income-delete-warning-text">⚠️ This action cannot be undone!</p>
             </div>
             
-            <div className="dialog-actions">
+            <div className="income-delete-dialog-actions">
               <button 
                 type="button" 
                 onClick={handleCancelDelete}
-                className="cancel-button"
+                className="income-delete-cancel-button"
               >
                 Cancel
               </button>
               <button 
                 type="button" 
                 onClick={handleConfirmDelete}
-                className="delete-button"
+                className="income-delete-confirm-button"
               >
                 Delete Income
               </button>
