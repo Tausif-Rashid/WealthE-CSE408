@@ -163,7 +163,7 @@ const TaxEstimation = () => {
           </form>
         </div>
 
-        {/* Results Section */}
+        {/* Results */}
         {results && (
           <div className="results-container">
             <div className="results-header">
