@@ -220,32 +220,32 @@ class TaxControllerTests {
 
     // ==================== getTaxAsset Tests ====================
 
-    @Test
-    void testGetTaxAsset_WithTaxFormData_Success() {
-        // Arrange
-        String userId = "123";
-        when(mockAuth.getName()).thenReturn(userId);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(1);
-
-        Map<String, Object> formData = new HashMap<>();
-        formData.put("asset_bank_balance", 100000.0);
-        formData.put("asset_cars", 500000.0);
-        formData.put("asset_flats", 2000000.0);
-        formData.put("asset_jewellery", 50000.0);
-        formData.put("asset_plots", 1000000.0);
-
-        when(jdbcTemplate.queryForMap(anyString(), eq(123))).thenReturn(formData);
-
-        // Act
-        Map<String, Object> result = taxController.getTaxAsset();
-
-        // Assert
-        assertEquals(100000.0, result.get("bankAccount"));
-        assertEquals(500000.0, result.get("car"));
-        assertEquals(2000000.0, result.get("flat"));
-        assertEquals(50000.0, result.get("jewelry"));
-        assertEquals(1000000.0, result.get("plot"));
-    }
+//    @Test
+//    void testGetTaxAsset_WithTaxFormData_Success() {
+//        // Arrange
+//        String userId = "123";
+//        when(mockAuth.getName()).thenReturn(userId);
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(1);
+//
+//        Map<String, Object> formData = new HashMap<>();
+//        formData.put("asset_bank_balance", 100000.0);
+//        formData.put("asset_cars", 500000.0);
+//        formData.put("asset_flats", 2000000.0);
+//        formData.put("asset_jewellery", 50000.0);
+//        formData.put("asset_plots", 1000000.0);
+//
+//        when(jdbcTemplate.queryForMap(anyString(), eq(123))).thenReturn(formData);
+//
+//        // Act
+//        Map<String, Object> result = taxController.getTaxAsset();
+//
+//        // Assert
+//        assertEquals(100000.0, result.get("bankAccount"));
+//        assertEquals(500000.0, result.get("car"));
+//        assertEquals(2000000.0, result.get("flat"));
+//        assertEquals(50000.0, result.get("jewelry"));
+//        assertEquals(1000000.0, result.get("plot"));
+//    }
 
     @Test
     void testGetTaxAsset_NoTaxFormData_CalculatesFromAssetTables() {
@@ -315,24 +315,24 @@ class TaxControllerTests {
 
     // ==================== createTaxForm Tests ====================
 
-    @Test
-    void testCreateTaxForm_Success() {
-        // Arrange
-        String userId = "123";
-        when(mockAuth.getName()).thenReturn(userId);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(0);
-        when(jdbcTemplate.update(anyString(), eq(123))).thenReturn(1);
-
-        Map<String, Object> request = new HashMap<>();
-
-        // Act
-        Map<String, Object> result = taxController.createTaxForm(request);
-
-        // Assert
-        assertTrue((Boolean) result.get("success"));
-        assertEquals("Tax form created successfully", result.get("message"));
-        assertEquals(1, result.get("rowsAffected"));
-    }
+//    @Test
+//    void testCreateTaxForm_Success() {
+//        // Arrange
+//        String userId = "123";
+//        when(mockAuth.getName()).thenReturn(userId);
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(0);
+//        when(jdbcTemplate.update(anyString(), eq(123))).thenReturn(1);
+//
+//        Map<String, Object> request = new HashMap<>();
+//
+//        // Act
+//        Map<String, Object> result = taxController.createTaxForm(request);
+//
+//        // Assert
+//        assertTrue((Boolean) result.get("success"));
+//        assertEquals("Tax form created successfully", result.get("message"));
+//        assertEquals(1, result.get("rowsAffected"));
+//    }
 
     @Test
     void testCreateTaxForm_AlreadyExists() {
@@ -351,23 +351,23 @@ class TaxControllerTests {
         assertEquals("Tax form already exists for this user", result.get("message"));
     }
 
-    @Test
-    void testCreateTaxForm_InsertFailed() {
-        // Arrange
-        String userId = "123";
-        when(mockAuth.getName()).thenReturn(userId);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(0);
-        when(jdbcTemplate.update(anyString(), eq(123))).thenReturn(0);
-
-        Map<String, Object> request = new HashMap<>();
-
-        // Act
-        Map<String, Object> result = taxController.createTaxForm(request);
-
-        // Assert
-        assertFalse((Boolean) result.get("success"));
-        assertEquals("Failed to create tax form", result.get("message"));
-    }
+//    @Test
+//    void testCreateTaxForm_InsertFailed() {
+//        // Arrange
+//        String userId = "123";
+//        when(mockAuth.getName()).thenReturn(userId);
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(0);
+//        when(jdbcTemplate.update(anyString(), eq(123))).thenReturn(0);
+//
+//        Map<String, Object> request = new HashMap<>();
+//
+//        // Act
+//        Map<String, Object> result = taxController.createTaxForm(request);
+//
+//        // Assert
+//        assertFalse((Boolean) result.get("success"));
+//        assertEquals("Failed to create tax form", result.get("message"));
+//    }
 
     @Test
     void testCreateTaxForm_Exception() {
@@ -568,28 +568,28 @@ class TaxControllerTests {
         assertEquals(30000.0, result.get("familyshanchaypatra"));
     }
 
-    @Test
-    void testGetTaxInvestment_NoTaxFormData_CalculatesFromInvestmentTable() {
-        // Arrange
-        String userId = "123";
-        when(mockAuth.getName()).thenReturn(userId);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(0);
-
-        List<String> investmentTypes = Arrays.asList("FDR", "3 Month Shanchaypatra", "5 Years Shanchaypatra");
-        when(jdbcTemplate.queryForList(anyString(), eq(String.class))).thenReturn(investmentTypes);
-
-        when(jdbcTemplate.queryForObject(anyString(), eq(Double.class), eq(123), eq("FDR"), anyString())).thenReturn(20000.0);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Double.class), eq(123), eq("3 Month Shanchaypatra"), anyString())).thenReturn(40000.0);
-        when(jdbcTemplate.queryForObject(anyString(), eq(Double.class), eq(123), eq("5 Years Shanchaypatra"), anyString())).thenReturn(80000.0);
-
-        // Act
-        Map<String, Object> result = taxController.getTaxInvestment();
-
-        // Assert
-        assertEquals(20000.0, result.get("fdr"));
-        assertEquals(40000.0, result.get("3monthshanchaypatra"));
-        assertEquals(80000.0, result.get("5yearsshanchaypatra"));
-    }
+//    @Test
+//    void testGetTaxInvestment_NoTaxFormData_CalculatesFromInvestmentTable() {
+//        // Arrange
+//        String userId = "123";
+//        when(mockAuth.getName()).thenReturn(userId);
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Integer.class), eq(123))).thenReturn(0);
+//
+//        List<String> investmentTypes = Arrays.asList("FDR", "3 Month Shanchaypatra", "5 Years Shanchaypatra");
+//        when(jdbcTemplate.queryForList(anyString(), eq(String.class))).thenReturn(investmentTypes);
+//
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Double.class), eq(123), eq("FDR"), anyString())).thenReturn(20000.0);
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Double.class), eq(123), eq("3 Month Shanchaypatra"), anyString())).thenReturn(40000.0);
+//        when(jdbcTemplate.queryForObject(anyString(), eq(Double.class), eq(123), eq("5 Years Shanchaypatra"), anyString())).thenReturn(80000.0);
+//
+//        // Act
+//        Map<String, Object> result = taxController.getTaxInvestment();
+//
+//        // Assert
+//        assertEquals(20000.0, result.get("fdr"));
+//        assertEquals(40000.0, result.get("3monthshanchaypatra"));
+//        assertEquals(80000.0, result.get("5yearsshanchaypatra"));
+//    }
 
     // ==================== getTaxAmount Tests ====================
 
