@@ -176,9 +176,9 @@ const Dashboard = () => {
               <span>🔐</span>
               Change Password
             </button>
-            <button className="action-btn">
+            <button className="action-btn" onClick={() => navigate('/tax-submissions')}>
               <span>⚙️</span>
-              Settings
+              Tax Submissions
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 package com.cselab.wealthe.controller;
 
-import com.cselab.wealthe.service.FetchPdfDataService;
+
 import com.cselab.wealthe.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +38,6 @@ public class TaxController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    private FetchPdfDataService fetchPdfDataService;
 
     @Autowired
     private static final Logger logger = LoggerFactory.getLogger(TaxController.class);
@@ -948,8 +946,7 @@ public class TaxController {
             response.put("min_tax", (int) Math.ceil(minTax != null ? minTax : 0.0));
             response.put("payable_tax", (int) Math.ceil(payableTax != null ? payableTax : 0.0));
 
-            FetchPdfDataService.TaxFormData data = fetchPdfDataService.getSubmittedTaxFormData(userId);
-            System.out.println(data.toString());
+
 
             return response;
 

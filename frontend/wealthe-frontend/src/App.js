@@ -18,6 +18,7 @@ import AddIncome from './pages/AddIncome';
 import EditIncome from './pages/EditIncome';
 import TaxEstimation from './pages/TaxEstimation';
 import TaxForm from './pages/TaxForm';
+import TaxSubmissions from './pages/TaxSubmissions';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import IncomeRule from './pages/Admin/IncomeRule';
 import InvestmentRule from './pages/Admin/InvestmentRule';
@@ -46,6 +47,7 @@ import EditBankLoan from './pages/EditBankLoan';
 import EditPersonLoan from './pages/EditPersonLoan';
 import './App.css';
 import { getAuthRole } from './utils/auth';
+import AdminFiles from './pages/Admin/AdminFiles';
 
 const AppRoutes = () => {
   const { isAuthenticated, user } = useAuth();
@@ -124,6 +126,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <TaxZoneRule />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/admin/files" 
+        element={ 
+          <ProtectedRoute>
+            <Layout>
+              <AdminFiles />
             </Layout>
           </ProtectedRoute>
         } 
@@ -367,6 +380,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <Layout>
               <TaxForm />
+            </Layout>
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/tax-submissions" 
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <TaxSubmissions />
             </Layout>
           </ProtectedRoute>
         } 

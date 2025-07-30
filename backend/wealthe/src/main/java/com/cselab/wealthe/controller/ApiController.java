@@ -1,5 +1,6 @@
 package com.cselab.wealthe.controller;
 
+import com.cselab.wealthe.service.FetchPdfDataService;
 import com.cselab.wealthe.util.JwtUtil;
 import com.cselab.wealthe.service.PdfService;
 
@@ -25,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.List;
@@ -48,6 +50,9 @@ public class ApiController {
     private PdfService pdfService;
 
     @Autowired
+    private FetchPdfDataService fetchPdfDataService;
+
+    @Autowired
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
 
@@ -56,6 +61,9 @@ public class ApiController {
         String sql;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         int id = Integer.parseInt(auth.getName());
+
+//        FetchPdfDataService.TaxFormData data = fetchPdfDataService.fetchAllTaxFormData(id);
+//        System.out.println(data.toString());
 
         if (id != 0) {
             sql = "SELECT * FROM user_info WHERE id = ?";
@@ -384,21 +392,96 @@ public class ApiController {
 
     @GetMapping("/user/generate-pdf")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<Map<String, Object>> generateUserInfoPdf() {
+    public ResponseEntity<Map<String, Object>> generateTaxFormPdf() {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            String filePath = pdfService.generateUserInfoPdf();
+            String filePath = pdfService.generateTaxFormPdf();
             
             response.put("success", true);
-            response.put("message", "PDF generated successfully");
+            response.put("message", "Tax Form PDF generated successfully");
             response.put("filePath", filePath);
             response.put("fileName", filePath.substring(filePath.lastIndexOf(System.getProperty("file.separator")) + 1));
             
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
-            logger.error("Error generating PDF: {}", e.getMessage());
+            logger.error("Error generating Tax Form PDF: {}", e.getMessage());
+            response.put("success", false);
+            response.put("message", "Failed to generate Tax Form PDF: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/user/tax-submissions")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getTaxSubmissions() {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+            
+            String sql = "SELECT id, date, done_submit FROM tax_form_table WHERE user_id = ? ORDER BY date DESC";
+            return jdbcTemplate.queryForList(sql, userId);
+            
+        } catch (Exception e) {
+            logger.error("Error fetching tax submissions: {}", e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+    @PostMapping("/user/generate-tax-pdf")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<Map<String, Object>> generateTaxPdf(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            int userId = Integer.parseInt(auth.getName());
+            
+            // Extract submission ID from request body
+            Integer submissionId = (Integer) request.get("submissionId");
+            if (submissionId == null) {
+                response.put("success", false);
+                response.put("message", "Submission ID is required");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Verify the submission belongs to the user
+            String verifySql = "SELECT id FROM tax_form_table WHERE id = ? AND user_id = ?";
+            List<Map<String, Object>> result = jdbcTemplate.queryForList(verifySql, submissionId, userId);
+
+
+            
+            if (result.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Submission not found or access denied");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            }
+            
+            // Generate filename: user_id + submission_id + return.pdf
+            String filename = userId + "_" + submissionId + "_return.pdf";
+            String filePath = "generated_pdfs" + System.getProperty("file.separator") + filename;
+            
+            // Check if file already exists
+            File existingFile = new File(filePath);
+            if (existingFile.exists()) {
+                response.put("success", true);
+                response.put("message", "PDF already exists");
+                response.put("fileName", filename);
+                return ResponseEntity.ok(response);
+            }
+            
+            // Generate PDF using the existing service
+            String generatedFilePath = pdfService.generateTaxFormPdfForSubmission(submissionId);
+            
+            response.put("success", true);
+            response.put("message", "PDF generated successfully");
+            response.put("fileName", filename);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.error("Error generating tax PDF: {}", e.getMessage());
             response.put("success", false);
             response.put("message", "Failed to generate PDF: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
@@ -414,7 +497,7 @@ public class ApiController {
             int userId = Integer.parseInt(auth.getName());
             
             // Validate filename contains user ID for security
-            if (!fileName.contains("user_info_" + userId + "_")) {
+            if (!fileName.contains("tax_form_" + userId + "_") && !fileName.contains("user_info_" + userId + "_") && !fileName.contains(userId + "_")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             

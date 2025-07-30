@@ -1057,3 +1057,84 @@ export const submitTaxForm = async () => {
     body: JSON.stringify({}), // Empty body
   });
 };
+
+export const getTaxSubmissions = async () => {
+  return apiCall('/user/tax-submissions', {
+    method: 'GET'
+  });
+};
+
+export const generateTaxPdf = async (submissionId) => {
+  return apiCall('/user/generate-tax-pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      submissionId: submissionId
+    }),
+  });
+};
+
+export const generateTaxPdfadmin = async (submissionId, userId) => {
+  return apiCall('/admin/generate-tax-pdf', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      submissionId: submissionId, 
+      userId: userId
+    }),
+  });
+};
+
+export const downloadPdf = async (fileName) => {
+  const url = `${API_BASE_URL}/user/download-pdf/${fileName}`;
+  const config = {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.blob();
+  } catch (error) {
+    throw new Error(`Failed to download PDF: ${error.message}`);
+  }
+};
+
+export const downloadPdfAdmin = async (fileName) => {
+  const url = `${API_BASE_URL}/admin/download-pdf/${fileName}`;
+  const config = {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    }
+  };
+
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    return response.blob();
+  } catch (error) {
+    throw new Error(`Failed to download PDF: ${error.message}`);
+  }
+};
+
+export const getAllTaxSubmissions = async () => {
+  return apiCall('/admin/all-tax-submissions', {
+    method: 'GET'
+  });
+};

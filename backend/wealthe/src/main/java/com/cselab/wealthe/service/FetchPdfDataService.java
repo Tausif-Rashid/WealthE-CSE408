@@ -4,15 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class FetchPdfDataService {
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(FetchPdfDataService.class);
+    
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    // Public variable to store all tax form data
+    public static TaxFormData TaxFormData;
 
     // Tax Form Data Model
     public static class TaxFormData {
@@ -65,6 +73,27 @@ public class FetchPdfDataService {
         private Double taxCompNetTax;
         private Double taxCompMinTax;
         private Double taxCompPayable;
+
+        // User info fields
+        private String userDob;
+
+        private String userName;
+        private String userNid;
+        private String userPhone;
+        private String userSpouseName;
+        private String userSpouseTin;
+
+        // User tax info fields
+        private String taxAreaName;
+        private String taxEmail;
+        private Integer taxId;
+        private Boolean taxIsDisabled;
+        private Boolean taxIsFemale;
+        private Boolean taxIsFf;
+        private Boolean taxIsResident;
+        private Integer taxCircle;
+        private Integer taxZone;
+        private String taxTin;
 
         // Constructors
         public TaxFormData() {}
@@ -178,6 +207,58 @@ public class FetchPdfDataService {
         public Double getTaxCompPayable() { return taxCompPayable; }
         public void setTaxCompPayable(Double taxCompPayable) { this.taxCompPayable = taxCompPayable; }
 
+        // User info getters and setters
+        public String getUserDob() { return userDob; }
+        public void setUserDob(String userDob) { this.userDob = userDob; }
+
+
+
+        public String getUserName() { return userName; }
+        public void setUserName(String userName) { this.userName = userName; }
+
+        public String getUserNid() { return userNid; }
+        public void setUserNid(String userNid) { this.userNid = userNid; }
+
+        public String getUserPhone() { return userPhone; }
+        public void setUserPhone(String userPhone) { this.userPhone = userPhone; }
+
+        public String getUserSpouseName() { return userSpouseName; }
+        public void setUserSpouseName(String userSpouseName) { this.userSpouseName = userSpouseName; }
+
+        public String getUserSpouseTin() { return userSpouseTin; }
+        public void setUserSpouseTin(String userSpouseTin) { this.userSpouseTin = userSpouseTin; }
+
+        // User tax info getters and setters
+        public String getTaxAreaName() { return taxAreaName; }
+        public void setTaxAreaName(String taxAreaName) { this.taxAreaName = taxAreaName; }
+
+        public String getTaxEmail() { return taxEmail; }
+        public void setTaxEmail(String taxEmail) { this.taxEmail = taxEmail; }
+
+        public Integer getTaxId() { return taxId; }
+        public void setTaxId(Integer taxId) { this.taxId = taxId; }
+
+        public Boolean getTaxIsDisabled() { return taxIsDisabled; }
+        public void setTaxIsDisabled(Boolean taxIsDisabled) { this.taxIsDisabled = taxIsDisabled; }
+
+        public Boolean getTaxIsFemale() { return taxIsFemale; }
+        public void setTaxIsFemale(Boolean taxIsFemale) { this.taxIsFemale = taxIsFemale; }
+
+        public Boolean getTaxIsFf() { return taxIsFf; }
+        public void setTaxIsFf(Boolean taxIsFf) { this.taxIsFf = taxIsFf; }
+
+        public Boolean getTaxIsResident() { return taxIsResident; }
+        public void setTaxIsResident(Boolean taxIsResident) { this.taxIsResident = taxIsResident; }
+
+        public Integer getTaxCircle() { return taxCircle; }
+        public void setTaxCircle(Integer taxCircle) { this.taxCircle = taxCircle; }
+
+        public Integer getTaxZone() { return taxZone; }
+        public void setTaxZone(Integer taxZone) { this.taxZone = taxZone; }
+
+        public String getTaxTin() { return taxTin; }
+        public void setTaxTin(String taxTin) { this.taxTin = taxTin; }
+
 
         @Override
         public String toString() {
@@ -218,6 +299,22 @@ public class FetchPdfDataService {
                     ", taxCompNetTax=" + taxCompNetTax +
                     ", taxCompMinTax=" + taxCompMinTax +
                     ", taxCompPayable=" + taxCompPayable +
+                    ", userDob=" + userDob +
+                    ", userName=" + userName +
+                    ", userNid=" + userNid +
+                    ", userPhone=" + userPhone +
+                    ", userSpouseName=" + userSpouseName +
+                    ", userSpouseTin=" + userSpouseTin +
+                    ", taxAreaName=" + taxAreaName +
+                    ", taxEmail=" + taxEmail +
+                    ", taxId=" + taxId +
+                    ", taxIsDisabled=" + taxIsDisabled +
+                    ", taxIsFemale=" + taxIsFemale +
+                    ", taxIsFf=" + taxIsFf +
+                    ", taxIsResident=" + taxIsResident +
+                    ", taxCircle=" + taxCircle +
+                    ", taxZone=" + taxZone +
+                    ", taxTin=" + taxTin +
                     '}';
         }
     }
@@ -237,6 +334,71 @@ public class FetchPdfDataService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public TaxFormData fetchAllTaxFormData(int userId) {
+        try {
+            // Fetch data from tax_form_table
+            String taxFormSql = "SELECT * FROM tax_form_table WHERE user_id = ? AND done_submit = true ORDER BY id DESC LIMIT 1";
+            Map<String, Object> taxFormResult = jdbcTemplate.queryForMap(taxFormSql, userId);
+            TaxFormData taxFormData = mapToTaxFormData(taxFormResult);
+
+            // Fetch data from user_info table
+            String userInfoSql = "SELECT * FROM user_info WHERE id = ?";
+            Map<String, Object> userInfoResult = jdbcTemplate.queryForMap(userInfoSql, userId);
+            
+            // Fetch data from user_tax_info table
+            String userTaxInfoSql = "SELECT * FROM user_tax_info WHERE id = ?";
+            Map<String, Object> userTaxInfoResult = jdbcTemplate.queryForMap(userTaxInfoSql, userId);
+
+            // Store the combined data in the public variable
+            TaxFormData = combineData(taxFormData, userInfoResult, userTaxInfoResult);
+            
+            return TaxFormData;
+
+        } catch (EmptyResultDataAccessException e) {
+            System.out.println("No data found for user: " + userId);
+            return null;
+        } catch (Exception e) {
+            System.out.println("Error fetching all tax form data: " + e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private TaxFormData combineData(TaxFormData taxFormData, Map<String, Object> userInfo, Map<String, Object> userTaxInfo) {
+        if (taxFormData == null) {
+            taxFormData = new TaxFormData();
+        }
+
+        // Map user_info data to TaxFormData
+        if (userInfo != null) {
+            taxFormData.setUserDob(safeConvertToString(userInfo.get("dob")));
+            taxFormData.setUserId(safeConvertToInteger(userInfo.get("id")));
+            taxFormData.setUserName(safeConvertToString(userInfo.get("name")));
+            taxFormData.setUserNid(safeConvertToString(userInfo.get("nid")));
+            taxFormData.setUserPhone(safeConvertToString(userInfo.get("phone")));
+            taxFormData.setUserSpouseName(safeConvertToString(userInfo.get("spouse_name")));
+            taxFormData.setUserSpouseTin(safeConvertToString(userInfo.get("spouse_tin")));
+            System.out.println("User info data mapped: " + userInfo);
+        }
+
+        // Map user_tax_info data to TaxFormData
+        if (userTaxInfo != null) {
+            taxFormData.setTaxAreaName(safeConvertToString(userTaxInfo.get("area_name")));
+            taxFormData.setTaxEmail(safeConvertToString(userTaxInfo.get("email")));
+            taxFormData.setTaxId(safeConvertToInteger(userTaxInfo.get("id")));
+            taxFormData.setTaxIsDisabled(safeConvertToBoolean(userTaxInfo.get("is_disabled")));
+            taxFormData.setTaxIsFemale(safeConvertToBoolean(userTaxInfo.get("is_female")));
+            taxFormData.setTaxIsFf(safeConvertToBoolean(userTaxInfo.get("is_ff")));
+            taxFormData.setTaxIsResident(safeConvertToBoolean(userTaxInfo.get("is_resident")));
+            taxFormData.setTaxCircle(safeConvertToInteger(userTaxInfo.get("tax_circle")));
+            taxFormData.setTaxZone(safeConvertToInteger(userTaxInfo.get("tax_zone")));
+            taxFormData.setTaxTin(safeConvertToString(userTaxInfo.get("tin")));
+            System.out.println("User tax info data mapped: " + userTaxInfo);
+        }
+
+        return taxFormData;
     }
 
     private TaxFormData mapToTaxFormData(Map<String, Object> result) {
@@ -336,6 +498,44 @@ public class FetchPdfDataService {
         try {
             return LocalDate.parse(value.toString());
         } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String safeConvertToString(Object value) {
+        if (value == null) return null;
+        return value.toString();
+    }
+    
+    public TaxFormData fetchTaxFormDataForSubmission(int submissionId, int userId) {
+        try {
+            // Fetch tax form data for specific submission
+            String taxFormSql = "SELECT * FROM tax_form_table WHERE id = ? AND user_id = ?";
+            List<Map<String, Object>> taxFormResult = jdbcTemplate.queryForList(taxFormSql, submissionId, userId);
+            
+            if (taxFormResult.isEmpty()) {
+                return null;
+            }
+            
+            // Fetch user info
+            String userInfoSql = "SELECT * FROM user_info WHERE id = ?";
+            List<Map<String, Object>> userInfoResult = jdbcTemplate.queryForList(userInfoSql, userId);
+            
+            // Fetch user tax info
+            String userTaxInfoSql = "SELECT * FROM user_tax_info WHERE id = ?";
+            List<Map<String, Object>> userTaxInfoResult = jdbcTemplate.queryForList(userTaxInfoSql, userId);
+            
+            // Map tax form data
+            TaxFormData taxFormData = mapToTaxFormData(taxFormResult.get(0));
+            
+            // Combine with user info and tax info
+            Map<String, Object> userInfo = userInfoResult.isEmpty() ? null : userInfoResult.get(0);
+            Map<String, Object> userTaxInfo = userTaxInfoResult.isEmpty() ? null : userTaxInfoResult.get(0);
+            
+            return combineData(taxFormData, userInfo, userTaxInfo);
+            
+        } catch (Exception e) {
+            logger.error("Error fetching tax form data for submission {}: {}", submissionId, e.getMessage());
             return null;
         }
     }
