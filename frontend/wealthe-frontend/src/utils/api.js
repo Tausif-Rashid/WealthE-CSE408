@@ -1111,13 +1111,18 @@ export const downloadPdf = async (fileName) => {
   }
 };
 
-export const downloadPdfAdmin = async (fileName) => {
-  const url = `${API_BASE_URL}/admin/download-pdf/${fileName}`;
+export const downloadPdfAdmin = async (fileName, userId) => {
+  const url = `${API_BASE_URL}/admin/download-pdf`;
   const config = {
-    method: 'GET',
+    method: 'POST',
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+      'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      fileName: fileName,
+      userId: userId
+    })
   };
 
   try {

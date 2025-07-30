@@ -37,25 +37,25 @@ const AdminFiles = () => {
                 setDialogType('success');
                 setDialogOpen(true);
                 
-                // Download the PDF using the api function
-                if (data.fileName) {
-                    try {
-                        const blob = await downloadPdf(data.fileName);
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = data.fileName;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-                    } catch (downloadError) {
-                        console.error('Error downloading PDF:', downloadError);
-                        setDialogMessage('PDF generated but download failed');
-                        setDialogType('error');
-                        setDialogOpen(true);
-                    }
-                }
+                                 // Download the PDF using the admin api function
+                 if (data.fileName) {
+                     try {
+                         const blob = await downloadPdfAdmin(data.fileName, userId);
+                         const url = window.URL.createObjectURL(blob);
+                         const a = document.createElement('a');
+                         a.href = url;
+                         a.download = data.fileName;
+                         document.body.appendChild(a);
+                         a.click();
+                         window.URL.revokeObjectURL(url);
+                         document.body.removeChild(a);
+                     } catch (downloadError) {
+                         console.error('Error downloading PDF:', downloadError);
+                         setDialogMessage('PDF generated but download failed');
+                         setDialogType('error');
+                         setDialogOpen(true);
+                     }
+                 }
             } else {
                 setDialogMessage(data.message || 'Failed to generate PDF');
                 setDialogType('error');

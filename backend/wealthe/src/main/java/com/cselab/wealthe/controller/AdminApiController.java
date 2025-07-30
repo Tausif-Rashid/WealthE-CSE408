@@ -741,15 +741,19 @@ public class AdminApiController {
         }
     }
 
-    @GetMapping("/admin/download-pdf/{fileName}")
+    @PostMapping("/admin/download-pdf")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<Resource> downloadPdf(@PathVariable String fileName) {
+    public ResponseEntity<Resource> downloadPdf(@RequestBody Map<String, Object> request) {
         try {
-            // Security check: ensure the user can only access their own files
+            // Extract filename and userId from request body
+            String fileName = (String) request.get("fileName");
+            Integer userId = (Integer) request.get("userId");
+            
+            if (fileName == null || userId == null) {
+                return ResponseEntity.badRequest().build();
+            }
 
-            int userId = 0;
-
-            // Validate filename contains user ID for security
+            // Validate filename contains the provided user ID for security
             if (!fileName.contains("tax_form_" + userId + "_") && !fileName.contains("user_info_" + userId + "_") && !fileName.contains(userId + "_")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
