@@ -209,7 +209,7 @@ const EditIncome = () => {
               value={formData.type}
               onChange={handleInputChange}
               required
-              className="form-input"
+              className="form-input-drop"
             >
               <option value="">Select income type</option>
               {incomeCategories.map((category, index) => (

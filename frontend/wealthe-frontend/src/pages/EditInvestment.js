@@ -187,7 +187,7 @@ const EditInvestment = () => {
               value={formData.category}
               onChange={handleInputChange}
               required
-              className="form-input"
+              className="form-input-dropt"
             >
               <option value="">Select investment category</option>
               {investmentCategories.map((category, index) => (
