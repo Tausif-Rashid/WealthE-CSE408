@@ -487,10 +487,8 @@ public class ApiControllerAzmal {
             System.out.println("Error occured: " + e);
             return null;
         }
-
-
-
     }
+
     @PostMapping("/user/add-investment")
     public ResponseEntity<Map<String, Object>> addInvestment(@RequestBody Map<String, Object> investmentData) {
         try {
@@ -1333,6 +1331,8 @@ public class ApiControllerAzmal {
             return null;
         }
     }
+
+//    similar 7 type
 
     @GetMapping("/user/cars")
     @CrossOrigin(origins = "*")
