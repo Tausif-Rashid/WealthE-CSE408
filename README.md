@@ -297,8 +297,6 @@ cd backend/wealthe
 # Run unit tests
 ./mvnw test
 
-# Run with coverage
-./mvnw test jacoco:report
 ```
 
 ## 🐳 Docker Deployment
@@ -380,16 +378,6 @@ We welcome contributions to WealthE! Please follow these steps:
 - Update documentation as needed
 - Ensure all tests pass before submitting PRs
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 📞 Support
-
-For support, questions, or suggestions:
-
-- 📧 Email: [your-email@domain.com]
-- 📝 Issues: [GitHub Issues](https://github.com/your-username/WealthE-CSE408/issues)
 - 📖 Documentation: `API_Documentation.md`
 
 ---
