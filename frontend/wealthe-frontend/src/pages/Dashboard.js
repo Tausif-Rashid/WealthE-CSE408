@@ -24,6 +24,9 @@ const Dashboard = () => {
   const barChartInstance = useRef(null);
   const navigate = useNavigate();
 
+  // Chart registry to track all charts
+  const chartRegistry = useRef(new Set());
+
   useEffect(() => {
     const fetchUserInfo = async () => {
         console.log('Fetch user called in Dashboard 12345...'); // Debug log
@@ -82,14 +85,63 @@ const Dashboard = () => {
     return Chart;
   };
 
-  const createPieChart = async (canvasRef, data, title, colors) => {
+  // Function to clear all charts
+  const clearAllCharts = () => {
+    try {
+      chartRegistry.current.forEach(chart => {
+        try {
+          chart.destroy();
+        } catch (error) {
+          console.warn('Error destroying chart:', error);
+        }
+      });
+      chartRegistry.current.clear();
+
+      if (incomeChartInstance.current) {
+        incomeChartInstance.current.destroy();
+        incomeChartInstance.current = null;
+      }
+      if (expenseChartInstance.current) {
+        expenseChartInstance.current.destroy();
+        expenseChartInstance.current = null;
+      }
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
+        barChartInstance.current = null;
+      }
+    } catch (error) {
+      console.warn('Error clearing charts:', error);
+    }
+  };
+
+  const createPieChart = async (canvasRef, data, title, colors, chartType = 'income') => {
     if (!data || data.length === 0) return null;
 
     const Chart = await loadChartJS();
     const ctx = canvasRef.current?.getContext('2d');
     if (!ctx) return null;
 
-    return new Chart(ctx, {
+    // Destroy existing chart based on chart type
+    if (chartType === 'income' && incomeChartInstance.current) {
+      try {
+        incomeChartInstance.current.destroy();
+      } catch (error) {
+        console.warn('Error destroying income chart:', error);
+      }
+      incomeChartInstance.current = null;
+    } else if (chartType === 'expense' && expenseChartInstance.current) {
+      try {
+        expenseChartInstance.current.destroy();
+      } catch (error) {
+        console.warn('Error destroying expense chart:', error);
+      }
+      expenseChartInstance.current = null;
+    }
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    const chart = new Chart(ctx, {
       type: 'pie',
       data: {
         labels: data.map(item => item.type || 'Unknown'),
@@ -141,6 +193,11 @@ const Dashboard = () => {
         }
       }
     });
+
+    // Register the chart
+    chartRegistry.current.add(chart);
+
+    return chart;
   };
 
   const createBarChart = async (canvasRef, data) => {
@@ -154,7 +211,20 @@ const Dashboard = () => {
     const incomeValues = data.map(item => parseFloat(item.income || 0));
     const expenseValues = data.map(item => parseFloat(item.expense || 0));
 
-    return new Chart(ctx, {
+    // Destroy existing chart if it exists
+    if (barChartInstance.current) {
+      try {
+        barChartInstance.current.destroy();
+      } catch (error) {
+        console.warn('Error destroying bar chart:', error);
+      }
+      barChartInstance.current = null;
+    }
+
+    // Clear the canvas
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    const chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: labels,
@@ -244,8 +314,15 @@ const Dashboard = () => {
         }
       }
     });
-  };
 
+    // Register the chart
+    chartRegistry.current.add(chart);
+
+    return chart;
+  };
+    // incomeChartInstance?.current?.destroy();
+    // expenseChartInstance?.current?.destroy();
+    // barChartInstance?.current?.destroy();
   // Fetch chart data
   useEffect(() => {
     const fetchChartData = async () => {
@@ -279,17 +356,9 @@ const Dashboard = () => {
   // Create charts when data is available
   useEffect(() => {
     const initializeCharts = async () => {
-      // Destroy existing charts
-      if (incomeChartInstance.current) {
-        incomeChartInstance.current.destroy();
-      }
-      if (expenseChartInstance.current) {
-        expenseChartInstance.current.destroy();
-      }
-      if (barChartInstance.current) {
-        barChartInstance.current.destroy();
-      }
-
+      // Clear all existing charts first
+      clearAllCharts();
+      
       // Income chart colors
       const incomeColors = [
         'rgba(34, 197, 94, 0.8)',   // Green
@@ -316,7 +385,8 @@ const Dashboard = () => {
           incomeChartRef, 
           incomeData, 
           'Monthly Income by Type', 
-          incomeColors
+          incomeColors,
+          'income'
         );
       }
 
@@ -325,7 +395,8 @@ const Dashboard = () => {
           expenseChartRef, 
           expenseData, 
           'Monthly Expense by Type', 
-          expenseColors
+          expenseColors,
+          'expense'
         );
       }
 
@@ -343,14 +414,32 @@ const Dashboard = () => {
 
     // Cleanup function
     return () => {
-      if (incomeChartInstance.current) {
-        incomeChartInstance.current.destroy();
-      }
-      if (expenseChartInstance.current) {
-        expenseChartInstance.current.destroy();
-      }
-      if (barChartInstance.current) {
-        barChartInstance.current.destroy();
+      try {
+        // Destroy all registered charts
+        chartRegistry.current.forEach(chart => {
+          try {
+            chart.destroy();
+          } catch (error) {
+            console.warn('Error destroying chart:', error);
+          }
+        });
+        chartRegistry.current.clear();
+
+        // Also destroy specific instances
+        if (incomeChartInstance.current) {
+          incomeChartInstance.current.destroy();
+          incomeChartInstance.current = null;
+        }
+        if (expenseChartInstance.current) {
+          expenseChartInstance.current.destroy();
+          expenseChartInstance.current = null;
+        }
+        if (barChartInstance.current) {
+          barChartInstance.current.destroy();
+          barChartInstance.current = null;
+        }
+      } catch (error) {
+        console.warn('Error during chart cleanup:', error);
       }
     };
   }, [incomeData, expenseData, previousMonthsData, chartsLoading, barChartLoading]);
