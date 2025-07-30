@@ -261,7 +261,7 @@ const EditExpense = () => {
               value={formData.type}
               onChange={handleInputChange}
               required
-              className="form-input"
+              className="form-input-drop"
             >
               <option value="">Select expense type</option>
               {expenseCategories.map((category, index) => (
@@ -380,7 +380,7 @@ const EditExpense = () => {
                 value={formData.recurrenceType}
                 onChange={handleInputChange}
                 required
-                className="form-input"
+                className="form-input-drop"
               >
                 <option value="">Select recurrence type</option>
                 <option value="daily">Daily</option>
