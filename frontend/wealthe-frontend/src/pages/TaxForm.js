@@ -178,6 +178,19 @@ const TaxForm = () => {
     }));
   };
 
+  // Prevent number input increment/decrement on arrow keys
+  const handleNumberInputKeyDown = (e) => {
+    // Prevent increment/decrement on arrow up/down
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+    }
+  };
+
+  // Prevent wheel scroll from changing number values
+  const handleNumberInputWheel = (e) => {
+    e.target.blur();
+  };
+
   const validatePersonalInfo = () => {
     const personalInfo = formData.personalInfo;
     console.log('Validating personal info:', personalInfo);
@@ -701,6 +714,8 @@ const TaxForm = () => {
             id="salary"
             value={formData.income.salary}
             onChange={(e) => handleInputChange('income', 'salary', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter salary amount"
           />
         </div>
@@ -711,6 +726,8 @@ const TaxForm = () => {
             id="agriculture"
             value={formData.income.agriculture}
             onChange={(e) => handleInputChange('income', 'agriculture', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter agriculture income"
           />
         </div>
@@ -721,6 +738,8 @@ const TaxForm = () => {
             id="rent"
             value={formData.income.rent}
             onChange={(e) => handleInputChange('income', 'rent', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter rental income"
           />
         </div>
@@ -731,6 +750,8 @@ const TaxForm = () => {
             id="interest"
             value={formData.income.interest}
             onChange={(e) => handleInputChange('income', 'interest', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter interest income"
           />
         </div>
@@ -741,6 +762,8 @@ const TaxForm = () => {
             id="others"
             value={formData.income.others}
             onChange={(e) => handleInputChange('income', 'others', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter other income"
           />
         </div>
@@ -759,6 +782,8 @@ const TaxForm = () => {
             id="personal"
             value={formData.expense.personal}
             onChange={(e) => handleInputChange('expense', 'personal', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter personal expenses"
           />
         </div>
@@ -769,6 +794,8 @@ const TaxForm = () => {
             id="housing"
             value={formData.expense.housing}
             onChange={(e) => handleInputChange('expense', 'housing', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter housing expenses"
           />
         </div>
@@ -779,6 +806,8 @@ const TaxForm = () => {
             id="utility"
             value={formData.expense.utility}
             onChange={(e) => handleInputChange('expense', 'utility', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter utility expenses"
           />
         </div>
@@ -789,6 +818,8 @@ const TaxForm = () => {
             id="education"
             value={formData.expense.education}
             onChange={(e) => handleInputChange('expense', 'education', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter education expenses"
           />
         </div>
@@ -799,6 +830,8 @@ const TaxForm = () => {
             id="transport"
             value={formData.expense.transport}
             onChange={(e) => handleInputChange('expense', 'transport', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter transport expenses"
           />
         </div>
@@ -809,6 +842,8 @@ const TaxForm = () => {
             id="others"
             value={formData.expense.others}
             onChange={(e) => handleInputChange('expense', 'others', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter other expenses"
           />
         </div>
@@ -827,6 +862,8 @@ const TaxForm = () => {
             id="three_month_sanchaypatra"
             value={formData.investment.three_month_sanchaypatra}
             onChange={(e) => handleInputChange('investment', 'three_month_sanchaypatra', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter three month sanchaypatra amount"
           />
         </div>
@@ -837,6 +874,8 @@ const TaxForm = () => {
             id="five_years_sanchaypatra"
             value={formData.investment.five_years_sanchaypatra}
             onChange={(e) => handleInputChange('investment', 'five_years_sanchaypatra', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter five years sanchaypatra amount"
           />
         </div>
@@ -847,6 +886,8 @@ const TaxForm = () => {
             id="Zakat"
             value={formData.investment.Zakat}
             onChange={(e) => handleInputChange('investment', 'Zakat', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter zakat amount"
           />
         </div>
@@ -857,6 +898,8 @@ const TaxForm = () => {
             id="FDR"
             value={formData.investment.FDR}
             onChange={(e) => handleInputChange('investment', 'FDR', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter FDR amount"
           />
         </div>
@@ -867,6 +910,8 @@ const TaxForm = () => {
             id="family_sanchaypatra"
             value={formData.investment.family_sanchaypatra}
             onChange={(e) => handleInputChange('investment', 'family_sanchaypatra', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter family sanchaypatra amount"
           />
         </div>
@@ -886,6 +931,8 @@ const TaxForm = () => {
             id="bankAccountTotal"
             value={formData.assetLiability.bankAccountTotal}
             onChange={(e) => handleInputChange('assetLiability', 'bankAccountTotal', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter bank account total"
           />
         </div>
@@ -896,6 +943,8 @@ const TaxForm = () => {
             id="carTotal"
             value={formData.assetLiability.carTotal}
             onChange={(e) => handleInputChange('assetLiability', 'carTotal', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter car total value"
           />
         </div>
@@ -906,6 +955,8 @@ const TaxForm = () => {
             id="flatTotal"
             value={formData.assetLiability.flatTotal}
             onChange={(e) => handleInputChange('assetLiability', 'flatTotal', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter flat total value"
           />
         </div>
@@ -916,6 +967,8 @@ const TaxForm = () => {
             id="jewelryTotal"
             value={formData.assetLiability.jewelryTotal}
             onChange={(e) => handleInputChange('assetLiability', 'jewelryTotal', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter jewelry total value"
           />
         </div>
@@ -926,6 +979,8 @@ const TaxForm = () => {
             id="plotTotal"
             value={formData.assetLiability.plotTotal}
             onChange={(e) => handleInputChange('assetLiability', 'plotTotal', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter plot total value"
           />
         </div>
@@ -937,6 +992,8 @@ const TaxForm = () => {
             id="bankLoan"
             value={formData.assetLiability.bankLoan}
             onChange={(e) => handleInputChange('assetLiability', 'bankLoan', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter bank loan amount"
           />
         </div>
@@ -947,6 +1004,8 @@ const TaxForm = () => {
             id="personLoan"
             value={formData.assetLiability.personLoan}
             onChange={(e) => handleInputChange('assetLiability', 'personLoan', e.target.value)}
+            onKeyDown={handleNumberInputKeyDown}
+            onWheel={handleNumberInputWheel}
             placeholder="Enter person loan amount"
           />
         </div>

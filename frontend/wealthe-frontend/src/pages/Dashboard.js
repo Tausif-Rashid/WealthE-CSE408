@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../components/AuthContext';
-import { getUserInfo, getTaxInfo } from '../utils/api';
+import { getUserInfo, getTaxInfo, getMonthlyIncomeByType, getMonthlyExpenseByType, getPreviousMonthsData } from '../utils/api';
 import './Dashboard.css';
 import { useNavigate } from 'react-router';
 
@@ -10,6 +10,18 @@ const Dashboard = () => {
   const [taxInfo, setTaxInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [incomeData, setIncomeData] = useState([]);
+  const [expenseData, setExpenseData] = useState([]);
+  const [previousMonthsData, setPreviousMonthsData] = useState([]);
+  const [chartsLoading, setChartsLoading] = useState(false);
+  const [barChartLoading, setBarChartLoading] = useState(false);
+  const [userInfoExpanded, setUserInfoExpanded] = useState(false);
+  const incomeChartRef = useRef(null);
+  const expenseChartRef = useRef(null);
+  const barChartRef = useRef(null);
+  const incomeChartInstance = useRef(null);
+  const expenseChartInstance = useRef(null);
+  const barChartInstance = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +75,286 @@ const Dashboard = () => {
     fetchTaxInfo();
   }, []);
 
+  // Chart.js dynamic import and chart functions
+  const loadChartJS = async () => {
+    const { Chart, registerables } = await import('chart.js');
+    Chart.register(...registerables);
+    return Chart;
+  };
+
+  const createPieChart = async (canvasRef, data, title, colors) => {
+    if (!data || data.length === 0) return null;
+
+    const Chart = await loadChartJS();
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return null;
+
+    return new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: data.map(item => item.type || 'Unknown'),
+        datasets: [{
+          data: data.map(item => parseFloat(item.total_income || item.total_expense || 0)),
+          backgroundColor: colors,
+          borderColor: colors.map(color => color.replace('0.8', '1')),
+          borderWidth: 2,
+          hoverBorderWidth: 3,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              font: {
+                size: 12,
+                family: 'Arial, sans-serif'
+              },
+              color: '#374151'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.parsed || 0;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return `${label}: ৳${value.toLocaleString()} (${percentage}%)`;
+              }
+            }
+          }
+        },
+        animation: {
+          animateRotate: true,
+          animateScale: true,
+          duration: 1000
+        }
+      }
+    });
+  };
+
+  const createBarChart = async (canvasRef, data) => {
+    if (!data || data.length === 0) return null;
+
+    const Chart = await loadChartJS();
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return null;
+
+    const labels = data.map(item => item.month || 'Unknown');
+    const incomeValues = data.map(item => parseFloat(item.income || 0));
+    const expenseValues = data.map(item => parseFloat(item.expense || 0));
+
+    return new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Income',
+            data: incomeValues,
+            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+            borderColor: 'rgba(34, 197, 94, 1)',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+          },
+          {
+            label: 'Expense',
+            data: expenseValues,
+            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+            borderColor: 'rgba(239, 68, 68, 1)',
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              font: {
+                size: 12,
+                family: 'Arial, sans-serif'
+              },
+              color: '#374151'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleColor: '#fff',
+            bodyColor: '#fff',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            callbacks: {
+              label: function(context) {
+                const label = context.dataset.label || '';
+                const value = context.parsed.y || 0;
+                return `${label}: ৳${value.toLocaleString()}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false,
+            },
+            ticks: {
+              color: '#374151',
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(0, 0, 0, 0.1)',
+            },
+            ticks: {
+              color: '#374151',
+              font: {
+                size: 11
+              },
+              callback: function(value) {
+                return '৳' + value.toLocaleString();
+              }
+            }
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeOutQuart'
+        }
+      }
+    });
+  };
+
+  // Fetch chart data
+  useEffect(() => {
+    const fetchChartData = async () => {
+      setChartsLoading(true);
+      setBarChartLoading(true);
+      try {
+        const [incomeResponse, expenseResponse, previousDataResponse] = await Promise.all([
+          getMonthlyIncomeByType(),
+          getMonthlyExpenseByType(),
+          getPreviousMonthsData()
+        ]);
+
+        console.log('Income data:', incomeResponse);
+        console.log('Expense data:', expenseResponse);
+        console.log('Previous months data:', previousDataResponse);
+
+        setIncomeData(incomeResponse || []);
+        setExpenseData(expenseResponse || []);
+        setPreviousMonthsData(previousDataResponse || []);
+      } catch (err) {
+        console.error('Error fetching chart data:', err);
+      } finally {
+        setChartsLoading(false);
+        setBarChartLoading(false);
+      }
+    };
+
+    fetchChartData();
+  }, []);
+
+  // Create charts when data is available
+  useEffect(() => {
+    const initializeCharts = async () => {
+      // Destroy existing charts
+      if (incomeChartInstance.current) {
+        incomeChartInstance.current.destroy();
+      }
+      if (expenseChartInstance.current) {
+        expenseChartInstance.current.destroy();
+      }
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
+      }
+
+      // Income chart colors
+      const incomeColors = [
+        'rgba(34, 197, 94, 0.8)',   // Green
+        'rgba(59, 130, 246, 0.8)',  // Blue
+        'rgba(168, 85, 247, 0.8)',  // Purple
+        'rgba(236, 72, 153, 0.8)',  // Pink
+        'rgba(245, 158, 11, 0.8)',  // Amber
+        'rgba(239, 68, 68, 0.8)',   // Red
+      ];
+
+      // Expense chart colors
+      const expenseColors = [
+        'rgba(239, 68, 68, 0.8)',   // Red
+        'rgba(245, 158, 11, 0.8)',  // Amber
+        'rgba(236, 72, 153, 0.8)',  // Pink
+        'rgba(168, 85, 247, 0.8)',  // Purple
+        'rgba(59, 130, 246, 0.8)',  // Blue
+        'rgba(34, 197, 94, 0.8)',   // Green
+      ];
+
+      // Create charts
+      if (incomeData.length > 0) {
+        incomeChartInstance.current = await createPieChart(
+          incomeChartRef, 
+          incomeData, 
+          'Monthly Income by Type', 
+          incomeColors
+        );
+      }
+
+      if (expenseData.length > 0) {
+        expenseChartInstance.current = await createPieChart(
+          expenseChartRef, 
+          expenseData, 
+          'Monthly Expense by Type', 
+          expenseColors
+        );
+      }
+
+      if (previousMonthsData.length > 0) {
+        barChartInstance.current = await createBarChart(
+          barChartRef,
+          previousMonthsData
+        );
+      }
+    };
+
+    if (!chartsLoading && !barChartLoading && (incomeData.length > 0 || expenseData.length > 0 || previousMonthsData.length > 0)) {
+      initializeCharts();
+    }
+
+    // Cleanup function
+    return () => {
+      if (incomeChartInstance.current) {
+        incomeChartInstance.current.destroy();
+      }
+      if (expenseChartInstance.current) {
+        expenseChartInstance.current.destroy();
+      }
+      if (barChartInstance.current) {
+        barChartInstance.current.destroy();
+      }
+    };
+  }, [incomeData, expenseData, previousMonthsData, chartsLoading, barChartLoading]);
+
   if (loading) {
     return (
       <div className="dashboard-container">
@@ -112,56 +404,126 @@ const Dashboard = () => {
             </div>
           </div>
         </div>        
-        <div className="user-details-section">
-          <div className="details-card">
-            <h2> User Information</h2>
-            <div className="details-grid">
-              <div className="detail-item">
-                <label>ID:</label>
-                <span>{user?.id || 'Not available'}</span> 
-                {/*this id is from user for testing, use from userInfo */}
-              </div>
-              <div className="detail-item">
-                <label>Full Name:</label>
-                <span>{userInfo?.name || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Phone:</label>
-                <span>{userInfo?.phone || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>NID:</label>
-                <span>{userInfo?.nid || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Date of Birth:</label>
-                <span>{userInfo?.dob ? new Date(userInfo.dob).toLocaleDateString() : 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Spouse Name:</label>
-                <span>{userInfo?.spouse_name || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Spouse TIN:</label>
-                <span>{userInfo?.spouse_tin || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>TIN:</label>
-                <span>{taxInfo?.tin || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Area:</label>
-                <span>{taxInfo?.area_name || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Tax Zone:</label>
-                <span>{taxInfo?.tax_zone || 'Not provided'}</span>
-              </div>
-              <div className="detail-item">
-                <label>Tax Circle:</label>
-                <span>{taxInfo?.tax_circle || 'Not provided'}</span>
+
+        {/* Charts Section */}
+        <div className="charts-section">
+          <div className="charts-container">
+            {/* Income Chart */}
+            <div className="chart-card">
+              <h3>📊 Monthly Income by Type</h3>
+              <div className="chart-wrapper">
+                {chartsLoading ? (
+                  <div className="chart-loading">
+                    <div className="spinner"></div>
+                    <p>Loading income data...</p>
+                  </div>
+                ) : incomeData.length > 0 ? (
+                  <canvas ref={incomeChartRef}></canvas>
+                ) : (
+                  <div className="no-data-message">
+                    <p>📈 No income data available for this month</p>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Expense Chart */}
+            <div className="chart-card">
+              <h3>📊 Monthly Expense by Type</h3>
+              <div className="chart-wrapper">
+                {chartsLoading ? (
+                  <div className="chart-loading">
+                    <div className="spinner"></div>
+                    <p>Loading expense data...</p>
+                  </div>
+                ) : expenseData.length > 0 ? (
+                  <canvas ref={expenseChartRef}></canvas>
+                ) : (
+                  <div className="no-data-message">
+                    <p>📉 No expense data available for this month</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Bar Chart */}
+            <div className="chart-card">
+              <h3>📊 Income vs Expense - Last 4 Months</h3>
+              <div className="chart-wrapper">
+                {barChartLoading ? (
+                  <div className="chart-loading">
+                    <div className="spinner"></div>
+                    <p>Loading previous months data...</p>
+                  </div>
+                ) : previousMonthsData.length > 0 ? (
+                  <canvas ref={barChartRef}></canvas>
+                ) : (
+                  <div className="no-data-message">
+                    <p>📈 No data available for previous months</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="user-details-section">
+          <div className="details-card">
+            <div className="details-header" onClick={() => setUserInfoExpanded(!userInfoExpanded)}>
+              <h2>👤 User Information</h2>
+              <span className={`expand-icon ${userInfoExpanded ? 'expanded' : ''}`}>
+                {userInfoExpanded ? '▼' : '▶'}
+              </span>
+            </div>
+            {userInfoExpanded && (
+              <div className="details-grid">
+                <div className="detail-item">
+                  <label>ID:</label>
+                  <span>{user?.id || 'Not available'}</span> 
+                  {/*this id is from user for testing, use from userInfo */}
+                </div>
+                <div className="detail-item">
+                  <label>Full Name:</label>
+                  <span>{userInfo?.name || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Phone:</label>
+                  <span>{userInfo?.phone || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>NID:</label>
+                  <span>{userInfo?.nid || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Date of Birth:</label>
+                  <span>{userInfo?.dob ? new Date(userInfo.dob).toLocaleDateString() : 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Spouse Name:</label>
+                  <span>{userInfo?.spouse_name || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Spouse TIN:</label>
+                  <span>{userInfo?.spouse_tin || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>TIN:</label>
+                  <span>{taxInfo?.tin || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Area:</label>
+                  <span>{taxInfo?.area_name || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Tax Zone:</label>
+                  <span>{taxInfo?.tax_zone || 'Not provided'}</span>
+                </div>
+                <div className="detail-item">
+                  <label>Tax Circle:</label>
+                  <span>{taxInfo?.tax_circle || 'Not provided'}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

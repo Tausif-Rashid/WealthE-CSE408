@@ -936,15 +936,18 @@ public class TaxController {
             }
 
 
-
-
+            int gross = (int) Math.ceil(grossTax != null ? grossTax : 0.0);
+            int rebate = (int) Math.ceil(rebateAmount != null ? rebateAmount : 0.0);
+            int net = (int) Math.ceil(netTax != null ? netTax : 0.0);
+            int min = (int) Math.ceil(minTax != null ? minTax : 0.0);
+            int payable = (int) Math.ceil(payableTax != null ? payableTax : 0.0);
 
             // 11. Build response object
-            response.put("gross_tax", (int) Math.ceil(grossTax != null ? grossTax : 0.0));
-            response.put("rebate_amount", (int) Math.ceil(rebateAmount != null ? rebateAmount : 0.0));
-            response.put("net_tax", (int) Math.ceil(netTax != null ? netTax : 0.0));
-            response.put("min_tax", (int) Math.ceil(minTax != null ? minTax : 0.0));
-            response.put("payable_tax", (int) Math.ceil(payableTax != null ? payableTax : 0.0));
+            response.put("gross_tax", gross);
+            response.put("rebate_amount", rebate);
+            response.put("net_tax", net);
+            response.put("min_tax", min);
+            response.put("payable_tax", payable);
 
 
 

@@ -55,6 +55,118 @@ public class ApiController {
     @Autowired
     private static final Logger logger = LoggerFactory.getLogger(ApiController.class);
 
+    @GetMapping("/user/previous-data")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getPreviousMonthsData() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        try {
+            int userId = Integer.parseInt(auth.getName());
+
+            if (userId == 0) {
+                logger.debug("Failed to get user id in /user/previous-data");
+                return response;
+            }
+
+            // Combined query to get both income and expense data with proper ordering
+            String combinedSql = "WITH months AS (" +
+                    "  SELECT DISTINCT " +
+                    "    EXTRACT(YEAR FROM date) as year_num, " +
+                    "    EXTRACT(MONTH FROM date) as month_num, " +
+                    "    TO_CHAR(date, 'Month') as month_name " +
+                    "  FROM (SELECT date FROM income WHERE user_id = ? AND date >= CURRENT_DATE - INTERVAL '4 months' " +
+                    "        UNION " +
+                    "        SELECT date FROM expense WHERE user_id = ? AND date >= CURRENT_DATE - INTERVAL '4 months') t " +
+                    "), " +
+                    "income_data AS (" +
+                    "  SELECT " +
+                    "    EXTRACT(YEAR FROM date) as year_num, " +
+                    "    EXTRACT(MONTH FROM date) as month_num, " +
+                    "    SUM(amount) as total_income " +
+                    "  FROM income " +
+                    "  WHERE user_id = ? AND date >= CURRENT_DATE - INTERVAL '4 months' " +
+                    "  GROUP BY EXTRACT(YEAR FROM date), EXTRACT(MONTH FROM date) " +
+                    "), " +
+                    "expense_data AS (" +
+                    "  SELECT " +
+                    "    EXTRACT(YEAR FROM date) as year_num, " +
+                    "    EXTRACT(MONTH FROM date) as month_num, " +
+                    "    SUM(amount) as total_expense " +
+                    "  FROM expense " +
+                    "  WHERE user_id = ? AND date >= CURRENT_DATE - INTERVAL '4 months' " +
+                    "  GROUP BY EXTRACT(YEAR FROM date), EXTRACT(MONTH FROM date) " +
+                    ") " +
+                    "SELECT " +
+                    "  m.month_name as month, " +
+                    "  COALESCE(i.total_income, 0) as income, " +
+                    "  COALESCE(e.total_expense, 0) as expense " +
+                    "FROM months m " +
+                    "LEFT JOIN income_data i ON m.year_num = i.year_num AND m.month_num = i.month_num " +
+                    "LEFT JOIN expense_data e ON m.year_num = e.year_num AND m.month_num = e.month_num " +
+                    "ORDER BY m.year_num, m.month_num";
+
+            response = jdbcTemplate.queryForList(combinedSql, userId, userId, userId, userId);
+
+            // Clean up month names (remove extra spaces)
+            for (Map<String, Object> monthData : response) {
+                String month = monthData.get("month").toString().trim();
+                monthData.put("month", month);
+            }
+
+            return response;
+
+        } catch (Exception e) {
+            System.out.println("Error occurred: " + e);
+            e.printStackTrace();
+            logger.error("Failed to retrieve previous months data: " + e.getMessage());
+            return response;
+        }
+    }
+
+    @GetMapping("/user/monthly-income")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getMonthlyIncomeByType() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        if (userId != 0) {
+            String sql = "SELECT type, SUM(amount) as total_income " +
+                    "FROM income " +
+                    "WHERE user_id = ? " +
+                    "AND date >= DATE_TRUNC('month', CURRENT_DATE) " +
+                    "AND date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' " +
+                    "GROUP BY type " +
+                    "ORDER BY total_income DESC";
+
+            return jdbcTemplate.queryForList(sql, userId);
+        }
+
+        logger.debug("Failed to get user id in /user/monthly-income-by-type");
+        return null;
+    }
+
+    @GetMapping("/user/monthly-expense")
+    @CrossOrigin(origins = "*")
+    public List<Map<String, Object>> getMonthlyExpenseByType() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        int userId = Integer.parseInt(auth.getName());
+
+        if (userId != 0) {
+            String sql = "SELECT type, SUM(amount) as total_expense " +
+                    "FROM expense " +
+                    "WHERE user_id = ? " +
+                    "AND date >= DATE_TRUNC('month', CURRENT_DATE) " +
+                    "AND date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' " +
+                    "GROUP BY type " +
+                    "ORDER BY total_expense DESC";
+
+            return jdbcTemplate.queryForList(sql, userId);
+        }
+
+        logger.debug("Failed to get user id in /user/monthly-expense-by-type");
+        return null;
+    }
 
     @GetMapping("/user/info")
     public List<Map<String, Object>> getUserInfo() { //Returns an array of user object with 1 element
