@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MessageDialog from '../components/MessageDialog';
-import { getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset,getTaxLiability, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAssetLiability,submitTaxForm,getTaxAmount} from '../utils/api';
+import {createTaxForm, getUserInfo, getTaxInfo, getTaxIncome, updateTaxFormIncome,getTaxExpense,getTaxInvestment,getTaxAsset,getTaxLiability, updateTaxFormExpense,updateTaxFormInvestment,updateTaxFormAssetLiability,submitTaxForm,getTaxAmount} from '../utils/api';
 import './TaxForm.css';
 
 const TaxForm = () => {
@@ -275,11 +275,9 @@ const TaxForm = () => {
         }
       } catch (error) {
         console.error('Error fetching income data:', error);
+        showDialog('error', 'Error', 'Failed to load income data. Please try again.');
+        return;
       }
-    }else if(activeTab === 1){
-      console.log('Expense data getting:');
-
-      
     }
 
     // Map tab index to form data key
@@ -291,138 +289,186 @@ const TaxForm = () => {
     
     try {
       setLoading(true);
+
+      console.log(`Handling next for tab: ${tabName}`);
       
-      // Make API call to save current tab data
-      let response;
+      // Make API call to save current tab data and fetch next tab data
+      let saveResponse;
+      let isSuccess = false;
+      
       if (tabName === 'income') {
         console.log('Updating income data:', currentTabData);
-        response = await updateTaxFormIncome(currentTabData);
-
-        const expenses = await getTaxExpense();
-      
-        if(expenses){
-          const expense = expenses;
-          setFormData(prev => ({
-            ...prev,
-            expense: {
-              ...prev.expense,
-              personal: expense.personal?.toString() || '',
-              housing: expense.housing?.toString() || '',
-              utility: expense.utility?.toString() || '',
-              education: expense.education?.toString() || '',
-              transport: expense.transportation?.toString() || '',
-              others: expense.others?.toString() || ''
+        saveResponse = await updateTaxFormIncome(currentTabData);
+        
+        if (saveResponse && saveResponse.success) {
+          isSuccess = true;
+          // Fetch expense data for next tab
+          try {
+            const expenses = await getTaxExpense();
+            console.log('Expense data:', expenses);
+            
+            if (expenses && typeof expenses === 'object') {
+              const expense = expenses;
+              setFormData(prev => ({
+                ...prev,
+                expense: {
+                  ...prev.expense,
+                  personal: expense.personal?.toString() || '',
+                  housing: expense.housing?.toString() || '',
+                  utility: expense.utility?.toString() || '',
+                  education: expense.education?.toString() || '',
+                  transport: expense.transportation?.toString() || '',
+                  others: expense.others?.toString() || ''
+                }
+              }));
             }
-          }));
+          } catch (fetchError) {
+            console.error('Error fetching expense data:', fetchError);
+            showDialog('warning', 'Warning', 'Data saved but failed to load next section data. You can continue filling the form.');
+          }
         }
-              } else if (tabName === 'expense') {
-          console.log('Updating expense data:', currentTabData);
-          response = await updateTaxFormExpense(currentTabData);
-
-          const investments = await getTaxInvestment();
-          console.log('Investment data:', investments);
-                 if(investments){
-             const investment = investments;
-             setFormData(prev => ({
-               ...prev,
-               investment: {
-                 ...prev.investment,
-                 three_month_sanchaypatra: investment.threemonthshanchaypatra?.toString() || '',
-                 five_years_sanchaypatra: investment.fiveyearsshanchaypatra?.toString() || '',
-                 Zakat: investment.zakat?.toString() || '',
-                 FDR: investment.fdr?.toString() || '',
-                 family_sanchaypatra: investment.familyshanchaypatra?.toString() || ''
-               }
-             }));
-           }
-        } else if (tabName === 'investment') {
-          console.log('Updating investment data:', currentTabData);
-          response = await updateTaxFormInvestment(currentTabData);
-
-          const assets = await getTaxAsset();
-          console.log('Asset data:', assets);
-          if(assets){
-            const asset = assets;
+      } else if (tabName === 'expense') {
+        console.log('Updating expense data:', currentTabData);
+        saveResponse = await updateTaxFormExpense(currentTabData);
+        
+        if (saveResponse && saveResponse.success) {
+          isSuccess = true;
+          // Fetch investment data for next tab
+          try {
+            const investments = await getTaxInvestment();
+            console.log('Investment data:', investments);
+            
+            if (investments && typeof investments === 'object') {
+              const investment = investments;
+              setFormData(prev => ({
+                ...prev,
+                investment: {
+                  ...prev.investment,
+                  three_month_sanchaypatra: investment.threemonthshanchaypatra?.toString() || '',
+                  five_years_sanchaypatra: investment.fiveyearsshanchaypatra?.toString() || '',
+                  Zakat: investment.zakat?.toString() || '',
+                  FDR: investment.fdr?.toString() || '',
+                  family_sanchaypatra: investment.familyshanchaypatra?.toString() || ''
+                }
+              }));
+            }
+          } catch (fetchError) {
+            console.error('Error fetching investment data:', fetchError);
+            showDialog('warning', 'Warning', 'Data saved but failed to load next section data. You can continue filling the form.');
+          }
+        }
+      } else if (tabName === 'investment') {
+        console.log('Updating investment data:', currentTabData);
+        saveResponse = await updateTaxFormInvestment(currentTabData);
+        
+        if (saveResponse && saveResponse.success) {
+          isSuccess = true;
+          // Fetch asset and liability data for next tab
+          try {
+            const [assets, liabilities] = await Promise.all([
+              getTaxAsset(),
+              getTaxLiability()
+            ]);
+            
+            console.log('Asset data:', assets);
+            console.log('Liability data:', liabilities);
+            
             setFormData(prev => ({
               ...prev,
               assetLiability: {
                 ...prev.assetLiability,
-                bankAccountTotal: asset.bankAccount?.toString() || '',
-                carTotal: asset.car?.toString() || '',
-                flatTotal: asset.flat?.toString() || '',
-                jewelryTotal: asset.jewellery?.toString() || '',
-                plotTotal: asset.plot?.toString() || '',
+                // Asset data
+                bankAccountTotal: assets?.bankAccount?.toString() || '',
+                carTotal: assets?.car?.toString() || '',
+                flatTotal: assets?.flat?.toString() || '',
+                jewelryTotal: assets?.jewellery?.toString() || '',
+                plotTotal: assets?.plot?.toString() || '',
+                // Liability data
+                bankLoan: liabilities?.bankLoan?.toString() || '',
+                personLoan: liabilities?.personLoan?.toString() || ''
               }
             }));
+          } catch (fetchError) {
+            console.error('Error fetching asset/liability data:', fetchError);
+            showDialog('warning', 'Warning', 'Data saved but failed to load next section data. You can continue filling the form.');
           }
+        }
+      } else if (tabName === 'assetLiability') {
+        console.log('Updating asset liability data:', currentTabData);
+        saveResponse = await updateTaxFormAssetLiability(currentTabData);
+        
+        if (saveResponse && saveResponse.success) {
+          isSuccess = true;
+          // Fetch tax computation data for final tab
+          try {
+            const taxAmount = await getTaxAmount();
+            console.log('Tax amount data:', taxAmount);
+            
+            if (taxAmount && typeof taxAmount === 'object') {
+              const tax = taxAmount;
+              setFormData(prev => ({
+                ...prev,
+                taxComputation: {
+                  ...prev.taxComputation,
+                  grossTax: tax.gross_tax?.toString() || '',
+                  minTax: tax.min_tax?.toString() || '',
+                  rebateAmount: tax.rebate_amount?.toString() || '',
+                  payableTax: tax.payable_tax?.toString() || '',
+                  netTax: tax.net_tax?.toString() || ''
+                }
+              }));
+            }
+          } catch (fetchError) {
+            console.error('Error fetching tax computation data:', fetchError);
+            showDialog('warning', 'Warning', 'Data saved but failed to load tax computation. You can continue to submit the form.');
+          }
+        }
+      } else if(tabName === 'personalInfo') {
+        saveResponse = await createTaxForm();
 
-          const liabilities = await getTaxLiability();
-          console.log('Liability data:', liabilities);
-          if(liabilities){
-            const liability = liabilities;
-            setFormData(prev => ({
-              ...prev,
-              assetLiability: {
-                ...prev.assetLiability,
-                bankLoan: liability.bankLoan?.toString() || '',
-                personLoan: liability.personLoan?.toString() || ''
-              }
-            }));
+        if (saveResponse && saveResponse.success) {
+          isSuccess = true;
+          
+        }
+      }
+      else {
+        // Fallback for other tabs (if any)
+        console.log("in fallback API call");
+        try {
+          const API_BASE_URL ='http://localhost:8081';
+          const response = await fetch(`${API_BASE_URL}/user/tax-${tabName}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(currentTabData)
+          });
+          
+          if (response.ok) {
+            isSuccess = true;
+          } else {
+            const errorData = await response.json();
+            showDialog('error', 'Error', errorData.message || 'Failed to save data');
           }
-        } else if (tabName === 'assetLiability') {
-          console.log('Updating asset liability data:', currentTabData);
-          response = await updateTaxFormAssetLiability(currentTabData);
-
-          const taxAmount = await getTaxAmount();
-          console.log('Tax amount data:', taxAmount);
-          if(taxAmount){
-            const tax = taxAmount;
-                         setFormData(prev => ({
-               ...prev,
-               taxComputation: {
-                 ...prev.taxComputation,
-                 grossTax: tax.gross_tax?.toString() || '',
-                 minTax: tax.min_tax?.toString() || '',
-                 rebateAmount: tax.rebate_amount?.toString() || '',
-                 payableTax: tax.payable_tax?.toString() || '',
-                 netTax: tax.net_tax?.toString() || ''
-               }
-             }));
-          }
-        } else {
-        response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          },
-          body: JSON.stringify(currentTabData)
-        });
+        } catch (apiError) {
+          console.error('Error with fallback API:', apiError);
+          showDialog('error', 'Error', 'Failed to save data. Please check your connection and try again.');
+        }
       }
 
-      if (tabName === 'income' || tabName === 'expense' || tabName === 'investment' || tabName === 'assetLiability') {
-        // For income, expense, investment, and asset APIs, check the success property in JSON response
-        if (response.success) {
-          // Move to next tab
-          setActiveTab(prev => prev + 1);
-          showDialog('success', 'Success', `${tabs[activeTab].name} data saved successfully!`);
-        } else {
-          showDialog('error', 'Error', response.message || 'Failed to save data');
-        }
+      // Handle the result
+      if (isSuccess) {
+        setActiveTab(prev => prev + 1);
+        showDialog('success', 'Success', `${tabs[activeTab].name} data saved successfully!`);
       } else {
-        // For other APIs, check HTTP status
-        if (response.ok) {
-          // Move to next tab
-          setActiveTab(prev => prev + 1);
-          showDialog('success', 'Success', `${tabs[activeTab].name} data saved successfully!`);
-        } else {
-          const errorData = await response.json();
-          showDialog('error', 'Error', errorData.message || 'Failed to save data');
-        }
+        const errorMessage = saveResponse?.message || 'Failed to save data. Please try again.';
+        showDialog('error', 'Error', errorMessage);
       }
+      
     } catch (error) {
-      console.error('Error saving data:', error);
-      showDialog('error', 'Error', 'Failed to save data. Please try again.');
+      console.error('Error in handleNext:', error);
+      showDialog('error', 'Error', 'An unexpected error occurred. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
@@ -435,62 +481,24 @@ const TaxForm = () => {
   };
 
   const handleSubmit = async () => {
-    // Map tab index to form data key
-    // const tabMapping = ['personalInfo', 'income', 'expense', 'investment', 'assetLiability', 'taxComputation'];
-    // const tabName = tabMapping[activeTab];
-    // const currentTabData = formData[tabName];
-    
-    // try {
-    //   setLoading(true);
+    try {
+      setLoading(true);
+      console.log('Submitting tax form...');
       
-    //   // Make API call to save final tab data
-    //   let response;
-    //   if (tabName === 'income') {
-    //     response = await updateTaxFormIncome(currentTabData);
-    //           } else if (tabName === 'expense') {
-    //       response = await updateTaxFormExpense(currentTabData);
-    //     } else if (tabName === 'investment') {
-    //       response = await updateTaxFormInvestment(currentTabData);
-    //     } else if (tabName === 'assetLiability') {
-    //       response = await updateTaxFormAssetLiability(currentTabData);
-    //     } else {
-    //     response = await fetch(`http://localhost:8081/user/tax-${tabName}`, {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //         'Authorization': `Bearer ${localStorage.getItem('token')}`
-    //       },
-    //       body: JSON.stringify(currentTabData)
-    //     });
-    //   }
-
-    //   if (tabName === 'income' || tabName === 'expense' || tabName === 'investment' || tabName === 'assetLiability') {
-    //     // For income, expense, investment, and asset APIs, check the success property in JSON response
-    //     if (response.success) {
-    //       showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
-    //     } else {
-    //       showDialog('error', 'Error', response.message || 'Failed to submit form');
-    //     }
-    //   } else {
-        // For other APIs, check HTTP status
-        try{
-          setLoading(true);
-          const response = await submitTaxForm();
-          console.log('Submit tax form response:', response);
-        if (response.success) {
-          setLoading(false);
-          setActiveTab(prev => prev + 1);
-          showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
-        } else {
-          const errorData = await response.json();
-          setLoading(false);
-          showDialog('error', 'Error', errorData.message || 'Failed to submit form');
-        }
+      const response = await submitTaxForm();
+      console.log('Submit tax form response:', response);
+      
+      if (response && response.success) {
+        setActiveTab(prev => prev + 1);
+        showDialog('success', 'Success', 'Tax form submitted successfully! Click OK to go to dashboard.');
+      } else {
+        const errorMessage = response?.message || 'Failed to submit form. Please try again.';
+        showDialog('error', 'Error', errorMessage);
+      }
       
     } catch (error) {
-      setLoading(false);
       console.error('Error submitting form:', error);
-      showDialog('error', 'Error', 'Failed to submit form. Please try again.');
+      showDialog('error', 'Error', 'Failed to submit form. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
