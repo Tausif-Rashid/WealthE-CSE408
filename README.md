@@ -1,7 +1,7 @@
 # <div align="center">WealthE💰</div>
 
 <div align="center">
-  <strong>Personal Finance Management System</strong>
+  <strong>Personal Finance Management System</strong><br>
   Link: http://152.42.167.4/
 </div>
 
