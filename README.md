@@ -2,6 +2,7 @@
 
 <div align="center">
   <strong>Personal Finance Management System</strong>
+  Link: http://152.42.167.4/
 </div>
 
 <div align="center">
@@ -117,9 +118,9 @@ Detailed system architecture is available in `Software_architecture.pdf`
    cd WealthE-CSE408
    ```
 
-2. **Start the application with Docker**
+2. **Start the application with Docker, (make sure port 80 is free, stop nginx if running)**
    ```bash
-   docker-compose up -d
+   sudo docker-compose up -d
    ```
 
 3. **Access the application**
