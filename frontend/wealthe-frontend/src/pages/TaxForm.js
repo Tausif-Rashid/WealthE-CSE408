@@ -435,7 +435,8 @@ const TaxForm = () => {
         // Fallback for other tabs (if any)
         console.log("in fallback API call");
         try {
-          const API_BASE_URL ='http://localhost:8081';
+          //const API_BASE_URL ='http://localhost:8081'; 
+          const API_BASE_URL ='http://152.42.167.4:8081';
           const response = await fetch(`${API_BASE_URL}/user/tax-${tabName}`, {
             method: 'POST',
             headers: {
