@@ -113,7 +113,7 @@ Detailed system architecture is available in `Software_architecture.pdf`
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/WealthE-CSE408.git
+   git clone [https://github.com/your-username/WealthE-CSE408.git](https://github.com/Tausif-Rashid/WealthE-CSE408.git)
    cd WealthE-CSE408
    ```
 
