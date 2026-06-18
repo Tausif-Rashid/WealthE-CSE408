@@ -2,7 +2,7 @@
 
 <div align="center">
   <strong>Personal Finance Management System</strong><br>
-  Link: http://152.42.167.4/
+  <!-- Link: http://152.42.167.4/ -->
 </div>
 
 <div align="center">
