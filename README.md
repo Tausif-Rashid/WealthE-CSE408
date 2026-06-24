@@ -2,7 +2,10 @@
 
 <div align="center">
   <strong>Personal Finance Management System</strong><br>
-  <!-- Link: http://152.42.167.4/ -->
+  Link: http://152.42.167.4/ <br>
+  For testing: <br>
+  User-abc@yahoo.com Pw: 1234<br>
+  admin0@example.com Pw: 1234
 </div>
 
 <div align="center">
