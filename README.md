@@ -2,7 +2,7 @@
 
 <div align="center">
   <strong>Personal Finance Management System</strong><br>
-  Link: http://152.42.167.4/ <br>
+  Link: http://159.223.92.193/ <br>
   For testing: <br>
   User-abc@yahoo.com Pw: 1234<br>
   admin0@example.com Pw: 1234
@@ -121,7 +121,7 @@ Detailed system architecture is available in `Software_architecture.pdf`
    cd WealthE-CSE408
    ```
 
-2. **Start the application with Docker, (make sure port 80 is free, stop nginx if running)**
+2. **Start the application with Docker, (make sure port 80 is free, stop nginx if running. User must be in docker group. Frontend api address needs adjusting)**
    ```bash
    sudo docker-compose up -d
    ```
